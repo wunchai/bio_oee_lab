@@ -15,8 +15,6 @@ import 'package:bio_oee_lab/data/services/device_info_service.dart';
 
 // ฟังก์ชันนี้จะเตรียม Provider ทั้งหมดที่แอปต้องใช้
 Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
-
-
   // --- 1. สร้าง Services (ที่ Repository ต้องใช้) ---
   // (เราสร้าง Service พวกนี้ไว้ใช้แค่ครั้งเดียว)
   final deviceInfoService = DeviceInfoService();
@@ -37,16 +35,17 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
 
   // --- คืนค่า List ของ Providers ทั้งหมด ---
   return [
-    // 1. Database Provider   
+    // 1. Database Provider
     dbProvider,
 
     // 2. Service Providers (เผื่อหน้าอื่นอยากใช้ DeviceInfo)
     Provider<DeviceInfoService>.value(value: deviceInfoService),
-    
+
     // 3. Repository Providers (ที่ใช้ ChangeNotifier)
     ChangeNotifierProvider<LoginRepository>(
       create: (context) => loginRepository,
 
-    // (เพิ่ม Repository อื่นๆ ที่นี่)
+      // (เพิ่ม Repository อื่นๆ ที่นี่)
+    )
   ];
 }

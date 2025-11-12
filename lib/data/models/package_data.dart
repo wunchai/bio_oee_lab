@@ -5,17 +5,26 @@ part 'package_data.g.dart'; // <<< นี่คือไฟล์ที่จะ
 
 @JsonSerializable()
 class PackageData {
-  final String? packageId;
-  final String? packageName;
+  @JsonKey(name: 'PackageID')
+  final int packageId;
+
+  @JsonKey(name: 'PackageName')
+  final String packageName;
+
+  @JsonKey(name: 'Description')
+  final String description;
+
+  @JsonKey(name: 'IsActive')
+  final bool isActive;
 
   PackageData({
-    this.packageId,
-    this.packageName,
+    required this.packageId,
+    required this.packageName,
+    required this.description,
+    required this.isActive,
   });
 
-  // --- JSON Serialization ---
   factory PackageData.fromJson(Map<String, dynamic> json) =>
       _$PackageDataFromJson(json);
-
   Map<String, dynamic> toJson() => _$PackageDataToJson(this);
 }

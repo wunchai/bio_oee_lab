@@ -1,5 +1,7 @@
 // lib/data/repositories/login_repository.dart
-import 'package.flutter/material.dart';
+import 'package:flutter/material.dart'; // <<< แก้ไขตรงนี้
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 // ⚠️ แก้ชื่อ 'bio_oee_lab' ให้เป็นชื่อโปรเจกต์ของคุณ
 import 'package:bio_oee_lab/data/database/app_database.dart';
@@ -10,7 +12,7 @@ import 'package:bio_oee_lab/data/network/user_api_service.dart';
 import 'package:bio_oee_lab/data/services/device_info_service.dart';
 
 // (นี่คือ Repository ที่ใช้ ChangeNotifier เพื่อแจ้งเตือน UI เมื่อสถานะเปลี่ยน)
-class LoginRepository with ChangeNotifier {
+class LoginRepository extends ChangeNotifier {
   // --- 1. Dependencies (ส่วนประกอบที่ต้องใช้) ---
   final UserDao _userDao;
   final UserApiService _userApiService;
