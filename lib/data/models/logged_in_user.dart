@@ -2,6 +2,7 @@
 
 import 'package:json_annotation/json_annotation.dart';
 // ⚠️ แก้ชื่อ 'bio_oee_lab' ให้เป็นชื่อโปรเจกต์ของคุณ
+import 'package:bio_oee_lab/data/database/app_database.dart'; // Import your main database
 import 'package:bio_oee_lab/data/database/tables/user_table.dart';
 import 'package:bio_oee_lab/data/models/package_data.dart';
 
@@ -13,7 +14,7 @@ part 'logged_in_user.g.dart'; // <<< อย่าลืมรัน build_runner
 class LoggedInUser {
   // ข้อมูล User หลัก (จากตาราง User)
   @JsonKey(name: 'User')
-  final UserData user;
+  final DbUser user;
 
   // Token ที่ใช้ในการเรียก API ครั้งถัดไป
   @JsonKey(name: 'Token')

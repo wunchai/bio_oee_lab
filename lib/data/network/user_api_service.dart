@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 
 // ⚠️ แก้ชื่อ 'bio_oee_lab' ให้เป็นชื่อโปรเจกต์ของคุณ
 import 'package:bio_oee_lab/core/app_config.dart';
+import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/tables/user_table.dart';
 import 'package:bio_oee_lab/data/models/login_result.dart';
 import 'package:bio_oee_lab/data/models/package_data.dart';
@@ -19,7 +20,7 @@ class UserApiService {
   final String _loginUrl =
       '${AppConfig.baseUrl}/Login/Login'; // <<< ⚠️ คุณอาจต้องแก้ Path นี้ให้ตรงกับ API ของคุณ
 
-  Future<LoginResult> login(
+  Future<LoggedInUser> login(
       String username, String password, String deviceId) async {
     final Uri uri = Uri.parse(_loginUrl);
 
@@ -53,10 +54,11 @@ class UserApiService {
         try {
           // สมมติว่า Server คืนค่า UserData และ PackageData มา
           final userDataJson = jsonResponse['user'] as Map<String, dynamic>;
+          final DbUser user = DbUser.fromJson(userDataJson);
+
           final List<dynamic> packagesJson =
               jsonResponse['packages'] as List<dynamic>;
 
-          final UserData user = UserData.fromJson(userDataJson);
           final List<PackageData> packages = packagesJson
               .map((pkgJson) =>
                   PackageData.fromJson(pkgJson as Map<String, dynamic>))
@@ -64,44 +66,28 @@ class UserApiService {
 
           final String token = jsonResponse['token'] ?? ''; // (ดึง Token ถ้ามี)
 
-          final loggedInUser =
-              LoggedInUser(user: user, token: token, packages: packages);
-
-          // (ส่งผลลัพธ์กลับไป แต่ใน LoginResult เรายังไม่ได้เก็บ User)
-          // เดี๋ยวเราจะไปแก้ LoginRepository ให้เก็บ User ลง DB
-          return LoginResult(status: LoginStatus.success);
+          // 6. สร้างและคืนค่า LoggedInUser
+          return LoggedInUser(user: user, token: token, packages: packages);
         } catch (e) {
-          // JSON ที่ Server ส่งกลับมาไม่ตรงโครงสร้างที่เราคาดหวัง
-          return LoginResult(
-              status: LoginStatus.serverError,
-              message: 'Invalid server response format.');
+          // ถ้าโครงสร้าง JSON ที่ Server ส่งมาไม่ตรงที่เราแก้
+          throw Exception('Invalid server response format.');
         }
       } else if (response.statusCode == 401 || response.statusCode == 404) {
-        // --- 3.2 ข้อมูลผิด (Invalid Credentials) ---
-        return LoginResult(
-            status: LoginStatus.invalidCredentials,
-            message: 'Invalid username or password.');
+        // ⬇️⬇️⬇️ FIX 5: เปลี่ยนจาก return เป็น throw ⬇️⬇️⬇️
+        throw Exception('Invalid username or password.');
       } else {
-        // --- 3.3 Server พัง (Server Error) ---
-        return LoginResult(
-            status: LoginStatus.serverError,
-            message: 'Server error: ${response.statusCode}');
+        // ⬇️⬇️⬇️ FIX 6: เปลี่ยนจาก return เป็น throw ⬇️⬇️⬇️
+        throw Exception('Server error: ${response.statusCode}');
       }
     } on SocketException {
-      // --- 4. ปิดอินเทอร์เน็ต (Network Error) ---
-      return LoginResult(
-          status: LoginStatus.networkError,
-          message: 'Cannot connect to server. Please check network.');
+      // ⬇️⬇️⬇️ FIX 7: เปลี่ยนจาก return เป็น throw ⬇️⬇️⬇️
+      throw Exception('Cannot connect to server. Please check network.');
     } on TimeoutException {
-      // --- 5. Server ตอบช้า (Timeout) ---
-      return LoginResult(
-          status: LoginStatus.networkError,
-          message: 'Server did not respond in time.');
+      // ⬇️⬇️⬇️ FIX 8: เปลี่ยนจาก return เป็น throw ⬇️⬇️⬇️
+      throw Exception('Server did not respond in time.');
     } catch (e) {
-      // --- 6. Error ไม่ทราบสาเหตุ ---
-      return LoginResult(
-          status: LoginStatus.unknownError,
-          message: 'An unknown error occurred: $e');
+      // ส่งต่อ Error อื่นๆ
+      throw Exception('An unknown error occurred: $e');
     }
   }
 }

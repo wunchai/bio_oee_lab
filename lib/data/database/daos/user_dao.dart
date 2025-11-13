@@ -9,8 +9,10 @@ part 'user_dao.g.dart';
 class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
   UserDao(AppDatabase db) : super(db);
 
+/*
   // Equivalent to suspend fun insertUser(user: DbUser) in DaoUser.kt
   Future<int> insertUser(UsersCompanion entry) => into(users).insert(entry);
+*/
 
   // Equivalent to suspend fun insertAll(users: List<DbUser>)
   Future<void> insertAllUsers(List<UsersCompanion> entries) async {
@@ -74,4 +76,22 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
 
   // Equivalent to suspend fun deleteAll()
   Future<int> deleteAllUsers() => delete(users).go();
+
+//// 1. ดึงผู้ใช้ที่ Login อยู่
+  // ⬇️ คลาสข้อมูล (Data Class) คือ 'DbUser' ตามที่คุณบอก
+  Future<DbUser?> getLoggedInUser() =>
+      // ⬇️ ตัวแปรตาราง (Table) คือ 'users' (ตัวเล็ก)
+      (select(users)..limit(1)).getSingleOrNull();
+
+  /// 2. ลบผู้ใช้ทั้งหมด
+  // ⬇️ สั่งลบจากตาราง 'users'
+  Future<int> clearAllUsers() => delete(users).go();
+
+  /// 3. บันทึกผู้ใช้ (ถ้ามีอยู่แล้วจะทับที่)
+  // ⬇️ รับพารามิเตอร์เป็นคลาสข้อมูล 'DbUser'
+  Future<void> insertUser(DbUser user) =>
+      // ⬇️ บันทึกลงตาราง 'users'
+      into(users).insert(user, mode: InsertMode.replace);
+
+  // --- ⬆️⬆️⬆️ สิ้นสุดส่วนที่แก้ไข ⬆️⬆️⬆️ ---
 }
