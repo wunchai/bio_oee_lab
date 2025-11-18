@@ -7455,9 +7455,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, DbUser> {
   late final GeneratedColumn<int> status = GeneratedColumn<int>(
     'Status',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    defaultValue: const Constant(0),
   );
   static const VerificationMeta _lastSyncMeta = const VerificationMeta(
     'lastSync',
@@ -7474,24 +7475,24 @@ class $UsersTable extends Users with TableInfo<$UsersTable, DbUser> {
     'updatedAt',
   );
   @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updatedAt',
     aliasedName,
     true,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _isLocalSessionActiveMeta =
       const VerificationMeta('isLocalSessionActive');
   @override
   late final GeneratedColumn<bool> isLocalSessionActive = GeneratedColumn<bool>(
-    'is_local_session_active',
+    'isLocalSessionActive',
     aliasedName,
     false,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_local_session_active" IN (0, 1))',
+      'CHECK ("isLocalSessionActive" IN (0, 1))',
     ),
     defaultValue: const Constant(false),
   );
@@ -7568,17 +7569,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, DbUser> {
         lastSync.isAcceptableOrUnknown(data['lastSync']!, _lastSyncMeta),
       );
     }
-    if (data.containsKey('updated_at')) {
+    if (data.containsKey('updatedAt')) {
       context.handle(
         _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+        updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
       );
     }
-    if (data.containsKey('is_local_session_active')) {
+    if (data.containsKey('isLocalSessionActive')) {
       context.handle(
         _isLocalSessionActiveMeta,
         isLocalSessionActive.isAcceptableOrUnknown(
-          data['is_local_session_active']!,
+          data['isLocalSessionActive']!,
           _isLocalSessionActiveMeta,
         ),
       );
@@ -7619,18 +7620,18 @@ class $UsersTable extends Users with TableInfo<$UsersTable, DbUser> {
       status: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}Status'],
-      ),
+      )!,
       lastSync: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}lastSync'],
       ),
       updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
+        DriftSqlType.string,
+        data['${effectivePrefix}updatedAt'],
       ),
       isLocalSessionActive: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
-        data['${effectivePrefix}is_local_session_active'],
+        data['${effectivePrefix}isLocalSessionActive'],
       )!,
     );
   }
@@ -7648,9 +7649,9 @@ class DbUser extends DataClass implements Insertable<DbUser> {
   final String? password;
   final String? userName;
   final String? position;
-  final int? status;
+  final int status;
   final String? lastSync;
-  final DateTime? updatedAt;
+  final String? updatedAt;
   final bool isLocalSessionActive;
   const DbUser({
     required this.uid,
@@ -7659,7 +7660,7 @@ class DbUser extends DataClass implements Insertable<DbUser> {
     this.password,
     this.userName,
     this.position,
-    this.status,
+    required this.status,
     this.lastSync,
     this.updatedAt,
     required this.isLocalSessionActive,
@@ -7683,16 +7684,14 @@ class DbUser extends DataClass implements Insertable<DbUser> {
     if (!nullToAbsent || position != null) {
       map['position'] = Variable<String>(position);
     }
-    if (!nullToAbsent || status != null) {
-      map['Status'] = Variable<int>(status);
-    }
+    map['Status'] = Variable<int>(status);
     if (!nullToAbsent || lastSync != null) {
       map['lastSync'] = Variable<String>(lastSync);
     }
     if (!nullToAbsent || updatedAt != null) {
-      map['updated_at'] = Variable<DateTime>(updatedAt);
+      map['updatedAt'] = Variable<String>(updatedAt);
     }
-    map['is_local_session_active'] = Variable<bool>(isLocalSessionActive);
+    map['isLocalSessionActive'] = Variable<bool>(isLocalSessionActive);
     return map;
   }
 
@@ -7714,9 +7713,7 @@ class DbUser extends DataClass implements Insertable<DbUser> {
       position: position == null && nullToAbsent
           ? const Value.absent()
           : Value(position),
-      status: status == null && nullToAbsent
-          ? const Value.absent()
-          : Value(status),
+      status: Value(status),
       lastSync: lastSync == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSync),
@@ -7739,9 +7736,9 @@ class DbUser extends DataClass implements Insertable<DbUser> {
       password: serializer.fromJson<String?>(json['password']),
       userName: serializer.fromJson<String?>(json['userName']),
       position: serializer.fromJson<String?>(json['position']),
-      status: serializer.fromJson<int?>(json['status']),
+      status: serializer.fromJson<int>(json['status']),
       lastSync: serializer.fromJson<String?>(json['lastSync']),
-      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
       isLocalSessionActive: serializer.fromJson<bool>(
         json['isLocalSessionActive'],
       ),
@@ -7757,9 +7754,9 @@ class DbUser extends DataClass implements Insertable<DbUser> {
       'password': serializer.toJson<String?>(password),
       'userName': serializer.toJson<String?>(userName),
       'position': serializer.toJson<String?>(position),
-      'status': serializer.toJson<int?>(status),
+      'status': serializer.toJson<int>(status),
       'lastSync': serializer.toJson<String?>(lastSync),
-      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+      'updatedAt': serializer.toJson<String?>(updatedAt),
       'isLocalSessionActive': serializer.toJson<bool>(isLocalSessionActive),
     };
   }
@@ -7771,9 +7768,9 @@ class DbUser extends DataClass implements Insertable<DbUser> {
     Value<String?> password = const Value.absent(),
     Value<String?> userName = const Value.absent(),
     Value<String?> position = const Value.absent(),
-    Value<int?> status = const Value.absent(),
+    int? status,
     Value<String?> lastSync = const Value.absent(),
-    Value<DateTime?> updatedAt = const Value.absent(),
+    Value<String?> updatedAt = const Value.absent(),
     bool? isLocalSessionActive,
   }) => DbUser(
     uid: uid ?? this.uid,
@@ -7782,7 +7779,7 @@ class DbUser extends DataClass implements Insertable<DbUser> {
     password: password.present ? password.value : this.password,
     userName: userName.present ? userName.value : this.userName,
     position: position.present ? position.value : this.position,
-    status: status.present ? status.value : this.status,
+    status: status ?? this.status,
     lastSync: lastSync.present ? lastSync.value : this.lastSync,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     isLocalSessionActive: isLocalSessionActive ?? this.isLocalSessionActive,
@@ -7857,9 +7854,9 @@ class UsersCompanion extends UpdateCompanion<DbUser> {
   final Value<String?> password;
   final Value<String?> userName;
   final Value<String?> position;
-  final Value<int?> status;
+  final Value<int> status;
   final Value<String?> lastSync;
-  final Value<DateTime?> updatedAt;
+  final Value<String?> updatedAt;
   final Value<bool> isLocalSessionActive;
   const UsersCompanion({
     this.uid = const Value.absent(),
@@ -7894,7 +7891,7 @@ class UsersCompanion extends UpdateCompanion<DbUser> {
     Expression<String>? position,
     Expression<int>? status,
     Expression<String>? lastSync,
-    Expression<DateTime>? updatedAt,
+    Expression<String>? updatedAt,
     Expression<bool>? isLocalSessionActive,
   }) {
     return RawValuesInsertable({
@@ -7906,9 +7903,9 @@ class UsersCompanion extends UpdateCompanion<DbUser> {
       if (position != null) 'position': position,
       if (status != null) 'Status': status,
       if (lastSync != null) 'lastSync': lastSync,
-      if (updatedAt != null) 'updated_at': updatedAt,
+      if (updatedAt != null) 'updatedAt': updatedAt,
       if (isLocalSessionActive != null)
-        'is_local_session_active': isLocalSessionActive,
+        'isLocalSessionActive': isLocalSessionActive,
     });
   }
 
@@ -7919,9 +7916,9 @@ class UsersCompanion extends UpdateCompanion<DbUser> {
     Value<String?>? password,
     Value<String?>? userName,
     Value<String?>? position,
-    Value<int?>? status,
+    Value<int>? status,
     Value<String?>? lastSync,
-    Value<DateTime?>? updatedAt,
+    Value<String?>? updatedAt,
     Value<bool>? isLocalSessionActive,
   }) {
     return UsersCompanion(
@@ -7966,12 +7963,10 @@ class UsersCompanion extends UpdateCompanion<DbUser> {
       map['lastSync'] = Variable<String>(lastSync.value);
     }
     if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+      map['updatedAt'] = Variable<String>(updatedAt.value);
     }
     if (isLocalSessionActive.present) {
-      map['is_local_session_active'] = Variable<bool>(
-        isLocalSessionActive.value,
-      );
+      map['isLocalSessionActive'] = Variable<bool>(isLocalSessionActive.value);
     }
     return map;
   }
@@ -13016,9 +13011,9 @@ typedef $$UsersTableCreateCompanionBuilder =
       Value<String?> password,
       Value<String?> userName,
       Value<String?> position,
-      Value<int?> status,
+      Value<int> status,
       Value<String?> lastSync,
-      Value<DateTime?> updatedAt,
+      Value<String?> updatedAt,
       Value<bool> isLocalSessionActive,
     });
 typedef $$UsersTableUpdateCompanionBuilder =
@@ -13029,9 +13024,9 @@ typedef $$UsersTableUpdateCompanionBuilder =
       Value<String?> password,
       Value<String?> userName,
       Value<String?> position,
-      Value<int?> status,
+      Value<int> status,
       Value<String?> lastSync,
-      Value<DateTime?> updatedAt,
+      Value<String?> updatedAt,
       Value<bool> isLocalSessionActive,
     });
 
@@ -13083,7 +13078,7 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+  ColumnFilters<String> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnFilters(column),
   );
@@ -13143,7 +13138,7 @@ class $$UsersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
@@ -13187,7 +13182,7 @@ class $$UsersTableAnnotationComposer
   GeneratedColumn<String> get lastSync =>
       $composableBuilder(column: $table.lastSync, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get updatedAt =>
+  GeneratedColumn<String> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 
   GeneratedColumn<bool> get isLocalSessionActive => $composableBuilder(
@@ -13230,9 +13225,9 @@ class $$UsersTableTableManager
                 Value<String?> password = const Value.absent(),
                 Value<String?> userName = const Value.absent(),
                 Value<String?> position = const Value.absent(),
-                Value<int?> status = const Value.absent(),
+                Value<int> status = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
-                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
                 Value<bool> isLocalSessionActive = const Value.absent(),
               }) => UsersCompanion(
                 uid: uid,
@@ -13254,9 +13249,9 @@ class $$UsersTableTableManager
                 Value<String?> password = const Value.absent(),
                 Value<String?> userName = const Value.absent(),
                 Value<String?> position = const Value.absent(),
-                Value<int?> status = const Value.absent(),
+                Value<int> status = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
-                Value<DateTime?> updatedAt = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
                 Value<bool> isLocalSessionActive = const Value.absent(),
               }) => UsersCompanion.insert(
                 uid: uid,

@@ -148,7 +148,7 @@ class LoginRepository with ChangeNotifier {
         userName: Value(loggedInUser.user.userName),
         userCode: Value(loggedInUser.user.userCode),
         position: Value(loggedInUser.user.position),
-        status: Value(loggedInUser.user.status),
+        status: loggedInUser.user.status,
         // --- ⬆️⬆️⬆️ -------------------------- ⬆️⬆️⬆️ ---
       );
 

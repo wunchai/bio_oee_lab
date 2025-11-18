@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'dart:io'; // For SocketException
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 
 // ⚠️ แก้ชื่อ 'bio_oee_lab' ให้เป็นชื่อโปรเจกต์ของคุณ
 import 'package:bio_oee_lab/core/app_config.dart';
@@ -17,19 +18,22 @@ class UserApiService {
   final http.Client _client = http.Client();
 
   // นี่คือ URL ของ API ที่จะยิง (เราดึงมาจาก AppConfig)
-  final String _loginUrl =
-      '${AppConfig.baseUrl}/Login/Login'; // <<< ⚠️ คุณอาจต้องแก้ Path นี้ให้ตรงกับ API ของคุณ
+  final String _getUsersUrl = '${AppConfig.baseUrl}/OEE_USER_LOGIN';
 
   Future<LoggedInUser> login(
-      String username, String password, String deviceId) async {
-    final Uri uri = Uri.parse(_loginUrl);
+    String userId,
+    String password,
+    String deviceId,
+  ) async {
+    final Uri uri = Uri.parse(_getUsersUrl);
 
     // 1. เตรียมข้อมูลที่จะส่ง (Body)
-    final requestBody = jsonEncode({
-      'userId': username,
-      'password': password,
-      'deviceId': deviceId,
-    });
+    final requestBody = jsonEncode({'userId': userId, 'password': password});
+
+    if (kDebugMode) {
+      print('--- LOGIN API RequestBody ---');
+      print(requestBody);
+    }
 
     try {
       // 2. ยิง POST Request
@@ -46,30 +50,95 @@ class UserApiService {
 
       // 3. ตรวจสอบผลลัพธ์
       if (response.statusCode == 200) {
+        if (kDebugMode) {
+          print('--- LOGIN API Response ---');
+          print(response.body);
+        }
+
         // --- 3.1 สำเร็จ (Success) ---
         final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
 
-        // (ตัวอย่างการแปลง JSON ที่ซับซ้อน)
-        // คุณต้องแก้ส่วนนี้ให้ตรงกับ JSON ที่ Server คุณส่งกลับมา
+        // ⬇️⬇️⬇️ --- เริ่มส่วนที่แก้ไข --- ⬇️⬇️⬇️
         try {
-          // สมมติว่า Server คืนค่า UserData และ PackageData มา
-          final userDataJson = jsonResponse['user'] as Map<String, dynamic>;
-          final DbUser user = DbUser.fromJson(userDataJson);
+          if (kDebugMode) {
+            print('--- user  Start---');
+          }
 
+          final List<dynamic> userListJson =
+              jsonResponse['user'] as List<dynamic>;
+          if (userListJson.isEmpty) {
+            throw Exception('User list in response is empty.');
+          }
+          final Map<String, dynamic> userDataJson =
+              userListJson[0] as Map<String, dynamic>;
+
+          // ⬇️⬇️⬇️ --- เริ่มส่วนที่แก้ไข --- ⬇️⬇️⬇️
+
+          // ลบบรรทัดนี้ทิ้ง (นี่คือตัวปัญหา):
+          // final DbUser user = DbUser.fromJson(userDataJson);
+
+          // ⭐️ แทนที่ด้วยการ Manual Mapping (DTO Pattern) ⭐️
+          // (เราต้องสร้าง DbUser object โดยระบุทุก field
+          // อ้างอิงจาก user_table.dart)
+          final DbUser user = DbUser(
+            // 1. uid ไม่ได้มาจาก API, ใส่ค่า default (0 หรือ 1)
+            //    (ไม่มีผลอะไร เพราะนี่เป็นแค่ DTO ชั่วคราว)
+            uid: 0,
+
+            // 2. แมพค่าจาก JSON (Map)
+            userId: userDataJson['userId'] as String?,
+            userCode: userDataJson['userCode'] as String?,
+            userName: userDataJson['userName'] as String?,
+            position: userDataJson['position'] as String?,
+
+            // 3. ⭐️⭐️⭐️ นี่คือการแก้ปัญหา ⭐️⭐️⭐️
+            //    ดึงจาก 'Status' (S ใหญ่)
+            status: userDataJson['Status'] as int? ?? 0,
+
+            // 4. เติม field ที่เหลือให้ครบ (ที่ API ไม่ได้ส่งมา)
+            password: null,
+            lastSync: null,
+            updatedAt: null,
+            isLocalSessionActive: false,
+          );
+
+          if (kDebugMode) {
+            print('--- packages  Start---');
+          }
+          // 2. ดึง Packages (API ส่ง Key 'packages' มา ถูกต้องแล้ว)
           final List<dynamic> packagesJson =
-              jsonResponse['packages'] as List<dynamic>;
+              jsonResponse['packages']
+                  as List<dynamic>; // <<< ส่วนนี้ถูกต้องแล้ว
 
           final List<PackageData> packages = packagesJson
-              .map((pkgJson) =>
-                  PackageData.fromJson(pkgJson as Map<String, dynamic>))
+              .map(
+                (pkgJson) =>
+                    PackageData.fromJson(pkgJson as Map<String, dynamic>),
+              )
               .toList();
 
-          final String token = jsonResponse['token'] ?? ''; // (ดึง Token ถ้ามี)
+          if (kDebugMode) {
+            print('--- token  Start---');
+          }
+          // 3. ดึง Token (API ส่ง Key 'token' เป็น List)
+          final List<dynamic> tokenListJson =
+              jsonResponse['token'] as List<dynamic>;
+          if (tokenListJson.isEmpty) {
+            throw Exception('Token list in response is empty.');
+          }
+          // เข้าถึง object ตัวแรกใน List แล้วดึง 'token' ที่อยู่ข้างใน
+          final String token = tokenListJson[0]['token'] ?? '';
 
+          if (kDebugMode) {
+            print('--- LoggedInUser  Start---');
+          }
           // 6. สร้างและคืนค่า LoggedInUser
           return LoggedInUser(user: user, token: token, packages: packages);
         } catch (e) {
           // ถ้าโครงสร้าง JSON ที่ Server ส่งมาไม่ตรงที่เราแก้
+          print(
+            'Error parsing JSON response: $e',
+          ); // <<< เพิ่ม print เพื่อ Debug
           throw Exception('Invalid server response format.');
         }
       } else if (response.statusCode == 401 || response.statusCode == 404) {
@@ -87,6 +156,9 @@ class UserApiService {
       throw Exception('Server did not respond in time.');
     } catch (e) {
       // ส่งต่อ Error อื่นๆ
+      if (kDebugMode) {
+        print('An unknown error occurred: $e');
+      }
       throw Exception('An unknown error occurred: $e');
     }
   }

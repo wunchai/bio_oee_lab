@@ -22,11 +22,23 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
   }
 
   Future<void> batchInsertUsers(List<DbUser> userList) {
+    final companions = userList.map((user) {
+      // เราใช้ "Companion" เพื่อระบุเฉพาะ field ที่เราต้องการ insert
+      // และ "เว้นว่าง" field 'uid' ไว้
+      return UsersCompanion(
+        userId: Value(user.userId),
+        userCode: Value(user.userCode),
+        userName: Value(user.userName),
+        position: Value(user.position),
+        status: Value(user.status),
+      );
+    }).toList();
+
     return db.batch((batch) {
       batch.insertAll(
         users, // ตาราง 'Users'
-        userList,
-        mode: InsertMode.replace, // ใส่ทับถ้ามี
+        companions,
+        mode: InsertMode.insert, // ใส่ทับถ้ามี
       );
     });
   }
