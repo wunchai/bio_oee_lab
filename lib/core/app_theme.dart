@@ -1,107 +1,107 @@
 // lib/core/app_theme.dart
 import 'package:flutter/material.dart';
-import 'app_config.dart'; // <<< ใช้สีที่เรากำหนดไว้
+// ⚠️ แก้ชื่อ 'bio_oee_lab' ให้เป็นชื่อโปรเจกต์ของคุณ
+//import 'package:bio_oee_lab/core/app_fonts.dart'; // <<< เราจะสร้างไฟล์นี้ในอนาคต (ตอนนี้ปล่อยไว้ก่อนได้)
+
+// --- ⬇️⬇️⬇️ นี่คือสีเขียว "เมล็ดพันธุ์" (Seed Color) ที่เราจะใช้ ⬇️⬇️⬇️ ---
+// (ผมเลือกใช้สีเขียวเข้มที่ดูสุขุม สบายตา)
+const Color primaryGreenSeed = Color(0xFF2E7D32); // (Material Green 800)
+// --- ⬆️⬆️⬆️ ------------------------------------------- ⬆️⬆️⬆️ ---
 
 ThemeData appTheme() {
+  // 1. สร้างชุดสี (Color Scheme) จากสีเมล็ดพันธุ์
+  // Flutter (Material 3) จะสร้างชุดสีที่เข้ากันทั้งหมดให้เรา
+  // (เช่น primary, onPrimary, secondary, onSecondary, surface, background)
+  final ColorScheme colorScheme = ColorScheme.fromSeed(
+    seedColor: primaryGreenSeed,
+    brightness: Brightness.light, // <<< ธีมสว่าง (Light Mode)
+  );
+
+  // 2. สร้าง ThemeData หลัก
   return ThemeData(
-    // ใช้ Material 3
     useMaterial3: true,
-
-    // 1. Color Scheme (โทนสี)
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: primaryThemeBlue, // สีหลัก
-      primary: primaryThemeBlue,
-      secondary: accentThemeAmber, // สีรอง
-      background: scaffoldBackgroundLightGrey, // สีพื้นหลัง
-      brightness: Brightness.light, // ธีมสว่าง
-    ),
-
-    // 2. AppBar Theme (ธีมของแถบด้านบน)
-    appBarTheme: const AppBarTheme(
-      backgroundColor: primaryThemeBlue,
-      foregroundColor: lightText, // สีของตัวอักษรและไอคอนบน AppBar
-      elevation: 4.0,
-      titleTextStyle: TextStyle(
-        fontSize: 20,
+    colorScheme: colorScheme, // <<< ใช้ชุดสีที่เราสร้าง
+    // --- การตั้งค่า AppBar ---
+    appBarTheme: AppBarTheme(
+      backgroundColor: colorScheme.surfaceContainer, // <<< สีพื้นหลัง AppBar
+      foregroundColor: colorScheme.onSurface, // <<< สีตัวอักษร/ไอคอน บน AppBar
+      elevation: 0,
+      centerTitle: true,
+      titleTextStyle: const TextStyle(
+        fontSize: 18,
         fontWeight: FontWeight.bold,
-        color: lightText,
+        color: primaryGreenSeed, // <<< (ตัวเลือก: ทำให้หัวข้อเป็นสีเขียวเข้ม)
       ),
     ),
 
-    // 3. Text Theme (ธีมของตัวอักษร)
-    textTheme: const TextTheme(
-      headlineLarge: TextStyle(
-          fontSize: 32.0, fontWeight: FontWeight.bold, color: darkText),
-      headlineMedium: TextStyle(
-          fontSize: 24.0, fontWeight: FontWeight.bold, color: darkText),
-      headlineSmall: TextStyle(
-          fontSize: 20.0, fontWeight: FontWeight.bold, color: darkText),
-
-      titleLarge: TextStyle(
-          fontSize: 22.0, fontWeight: FontWeight.w500, color: darkText),
-      titleMedium: TextStyle(
-          fontSize: 18.0, fontWeight: FontWeight.w500, color: darkText),
-      titleSmall: TextStyle(
-          fontSize: 16.0, fontWeight: FontWeight.w500, color: darkText),
-
-      bodyLarge: TextStyle(fontSize: 16.0, color: darkText),
-      bodyMedium: TextStyle(fontSize: 14.0, color: darkText),
-      bodySmall: TextStyle(fontSize: 12.0, color: Colors.black54),
-
-      labelLarge: TextStyle(
-          fontSize: 16.0,
-          fontWeight: FontWeight.bold,
-          color: lightText), // Text on buttons
-    ),
-
-    // 4. Button Themes (ธีมปุ่ม)
+    // --- การตั้งค่าปุ่ม ---
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryThemeBlue, // สีพื้นหลังปุ่ม
-        foregroundColor: lightText, // สีตัวอักษรบนปุ่ม
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        backgroundColor: colorScheme.primary, // <<< สีพื้นหลังปุ่ม (สีเขียว)
+        foregroundColor: colorScheme.onPrimary, // <<< สีตัวอักษรบนปุ่ม (สีขาว)
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(12), // <<< ทำให้ปุ่มโค้งมน
         ),
       ),
     ),
 
-    textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: primaryThemeBlue, // สีตัวอักษรปุ่ม Text
+    // --- การตั้งค่าปุ่ม Outlined ---
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: colorScheme.primary, // <<< สีขอบและตัวอักษร (สีเขียว)
+        side: BorderSide(color: colorScheme.primary, width: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),
 
-    // 5. Input Decoration Theme (ธีมของช่องกรอกข้อมูล)
+    // --- การตั้งค่าช่องกรอกข้อมูล (Text Fields) ---
     inputDecorationTheme: InputDecorationTheme(
-      filled: true,
-      fillColor: Colors.white.withOpacity(0.9),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Colors.grey),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: colorScheme.outline),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: Colors.grey.shade400),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: primaryThemeBlue, width: 2),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: colorScheme.primary, width: 2),
       ),
-      labelStyle: const TextStyle(color: darkText),
-      floatingLabelStyle: const TextStyle(color: primaryThemeBlue),
+      filled: true,
+      fillColor: colorScheme.surfaceContainerHighest, // <<< สีพื้นหลังช่องกรอก
+      labelStyle: TextStyle(color: colorScheme.onSurfaceVariant),
     ),
 
-    // 6. Card Theme (ธีมของการ์ด)
-    cardTheme: CardThemeData(
-      // <<< ✅ แก้ไขตรงนี้
-      elevation: 2,
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-    ),
+    // --- การตั้งค่าฟอนต์ (เผื่อไว้ในอนาคต) ---
+    // (เราจะใช้ AppFonts.primaryFontFamily เมื่อเราตั้งค่าไฟล์ app_fonts.dart)
+    // textTheme: appTextTheme(colorScheme),
+    // fontFamily: AppFonts.primaryFontFamily,
   );
 }
+
+/*
+// ❗️ (เราจะสร้าง 2 ส่วนนี้ในอนาคต ถ้าต้องการใช้ฟอนต์ OpenSans)
+
+// --- ไฟล์: lib/core/app_fonts.dart ---
+// class AppFonts {
+//   static const String primaryFontFamily = 'OpenSans';
+// }
+
+// --- เพิ่มใน app_theme.dart ---
+// TextTheme appTextTheme(ColorScheme colorScheme) {
+//   return TextTheme(
+//     headlineLarge: TextStyle(
+//       fontFamily: AppFonts.primaryFontFamily,
+//       fontWeight: FontWeight.bold,
+//       fontSize: 32,
+//       color: colorScheme.onSurface,
+//     ),
+//     // (ตั้งค่า text styles อื่นๆ ที่นี่)
+//   );
+// }
+*/

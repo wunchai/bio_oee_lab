@@ -9,7 +9,7 @@ part 'user_dao.g.dart';
 class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
   UserDao(AppDatabase db) : super(db);
 
-/*
+  /*
   // Equivalent to suspend fun insertUser(user: DbUser) in DaoUser.kt
   Future<int> insertUser(UsersCompanion entry) => into(users).insert(entry);
 */
@@ -21,15 +21,32 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
     });
   }
 
+  Future<void> batchInsertUsers(List<DbUser> userList) {
+    return db.batch((batch) {
+      batch.insertAll(
+        users, // ตาราง 'Users'
+        userList,
+        mode: InsertMode.replace, // ใส่ทับถ้ามี
+      );
+    });
+  }
+
   /// NEW: Updates an existing user record.
   Future<bool> updateUser(UsersCompanion entry) {
     return update(users).replace(entry);
   }
 
+  Future<DbUser?> findUserByUserId(String userId) {
+    return (select(
+      users,
+    )..where((tbl) => tbl.userId.equals(userId))).getSingleOrNull();
+  }
+
   /// NEW: Gets a single user record by its userId.
   Future<DbUser?> getUserByUserId(String userId) {
-    return (select(users)..where((tbl) => tbl.userId.equals(userId)))
-        .getSingleOrNull();
+    return (select(
+      users,
+    )..where((tbl) => tbl.userId.equals(userId))).getSingleOrNull();
   }
 
   /// NEW: Gets the latest lastSync timestamp from the users table.
@@ -44,19 +61,23 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
 
   // Equivalent to suspend fun getUser(userId: String): DbUser?
   Future<DbUser?> getUser(String userId) {
-    return (select(users)..where((tbl) => tbl.userId.equals(userId)))
-        .getSingleOrNull();
+    return (select(
+      users,
+    )..where((tbl) => tbl.userId.equals(userId))).getSingleOrNull();
   }
 
   // Equivalent to suspend fun getLogin(userCode: String, password: String): DbUser?
   Future<DbUser?> getLogin(String userId, String password) {
     print(
-        'Attempting login with userId: $userId, password: $password'); // <<< Add this
+      'Attempting login with userId: $userId, password: $password',
+    ); // <<< Add this
     final query = (select(users)
       ..where(
-          (tbl) => tbl.userId.equals(userId) & tbl.password.equals(password)));
+        (tbl) => tbl.userId.equals(userId) & tbl.password.equals(password),
+      ));
     print(
-        'Generated SQL for getLogin: ${query.toString()}'); // Useful for debugging raw SQL
+      'Generated SQL for getLogin: ${query.toString()}',
+    ); // Useful for debugging raw SQL
     return query.getSingleOrNull().then((dbUser) {
       if (dbUser == null) {
         print('No user found for given credentials.');
@@ -77,7 +98,7 @@ class UserDao extends DatabaseAccessor<AppDatabase> with _$UserDaoMixin {
   // Equivalent to suspend fun deleteAll()
   Future<int> deleteAllUsers() => delete(users).go();
 
-//// 1. ดึงผู้ใช้ที่ Login อยู่
+  //// 1. ดึงผู้ใช้ที่ Login อยู่
   // ⬇️ คลาสข้อมูล (Data Class) คือ 'DbUser' ตามที่คุณบอก
   Future<DbUser?> getLoggedInUser() =>
       // ⬇️ ตัวแปรตาราง (Table) คือ 'users' (ตัวเล็ก)

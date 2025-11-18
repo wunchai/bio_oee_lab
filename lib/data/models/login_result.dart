@@ -9,6 +9,7 @@ enum LoginStatus {
   networkError,
   unknownError,
   userNotFound, // เพิ่มสถานะ: ไม่พบผู้ใช้
+  userNotFoundOffline,
 }
 
 class LoginResult {

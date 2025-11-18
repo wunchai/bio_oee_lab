@@ -80,102 +80,95 @@ class AppDatabase extends _$AppDatabase {
       ChecksheetMasterImageDao(this);
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 14;
 
   // Define the migration strategy.
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (Migrator m) async {
-          await m.createAll();
-          await _createAllUpdatedAtTriggers(m);
-        },
-        onUpgrade: (Migrator m, int from, int to) async {
-          if (from < 2) {
-            await m.addColumn(documentRecords, documentRecords.updatedAt);
-            // If you had other tables in v1 that need updatedAt, add them here.
-          }
-          if (from < 3) {
-            // Add 'updatedAt' column to all *newly added* tables or tables that didn't have it before v3
-            await m.addColumn(jobs, jobs.updatedAt);
-            await m.addColumn(documents, documents.updatedAt);
-            await m.addColumn(documentMachines, documentMachines.updatedAt);
-            await m.addColumn(jobMachines, jobMachines.updatedAt);
-            await m.addColumn(jobTags, jobTags.updatedAt);
-            await m.addColumn(problems, problems.updatedAt);
-            await m.addColumn(syncs, syncs.updatedAt);
-            await m.addColumn(users, users.updatedAt);
-            await m.addColumn(images, images.updatedAt);
+    onCreate: (Migrator m) async {
+      await m.createAll();
+      await _createAllUpdatedAtTriggers(m);
+    },
+    onUpgrade: (Migrator m, int from, int to) async {
+      if (from < 2) {
+        await m.addColumn(documentRecords, documentRecords.updatedAt);
+        // If you had other tables in v1 that need updatedAt, add them here.
+      }
+      if (from < 3) {
+        // Add 'updatedAt' column to all *newly added* tables or tables that didn't have it before v3
+        await m.addColumn(jobs, jobs.updatedAt);
+        await m.addColumn(documents, documents.updatedAt);
+        await m.addColumn(documentMachines, documentMachines.updatedAt);
+        await m.addColumn(jobMachines, jobMachines.updatedAt);
+        await m.addColumn(jobTags, jobTags.updatedAt);
+        await m.addColumn(problems, problems.updatedAt);
+        await m.addColumn(syncs, syncs.updatedAt);
+        await m.addColumn(users, users.updatedAt);
+        await m.addColumn(images, images.updatedAt);
 
-            await _createAllUpdatedAtTriggers(m);
-          }
-          if (from < 4) {
-            // <<< NEW: If upgrading from version 3 to 4
-            // Re-create all triggers to include AFTER INSERT
-            await _createAllUpdatedAtTriggers(m);
-          }
-          if (from < 5) {
-            // <<< NEW: If upgrading from version 4 to 5
-            // Add the new 'isLocalSessionActive' column to Users table
-            await m.addColumn(users, users.isLocalSessionActive);
-            // Optionally, set a default value for existing rows if needed (e.g., all existing users are active)
-            // await m.customStatement('UPDATE users SET isLocalSessionActive = 1;');
-          }
-          // --- 2. เพิ่ม Logic การ Migration สำหรับเวอร์ชัน 6 ---
-          if (from < 6) {
-            // เพิ่มคอลัมน์ uiType เข้าไปในตาราง documentMachines
-            await m.addColumn(documentMachines, documentMachines.uiType);
-          }
-          if (from < 7) {
-            await m.createTable(
-                checkSheetMasterImages); // ใช้ m.createTable สำหรับตารางใหม่
-            await _createUpdatedAtTrigger(
-                m, 'checksheet_master_images', 'updatedAt');
-          }
-          if (from < 8) {
-            await m.addColumn(
-                checkSheetMasterImages, checkSheetMasterImages.newImage);
-          }
-        },
-      );
+        await _createAllUpdatedAtTriggers(m);
+      }
+      if (from < 4) {
+        // <<< NEW: If upgrading from version 3 to 4
+        // Re-create all triggers to include AFTER INSERT
+        await _createAllUpdatedAtTriggers(m);
+      }
+      if (from < 5) {
+        // <<< NEW: If upgrading from version 4 to 5
+        // Add the new 'isLocalSessionActive' column to Users table
+        await m.addColumn(users, users.isLocalSessionActive);
+        // Optionally, set a default value for existing rows if needed (e.g., all existing users are active)
+        // await m.customStatement('UPDATE users SET isLocalSessionActive = 1;');
+      }
+      // --- 2. เพิ่ม Logic การ Migration สำหรับเวอร์ชัน 6 ---
+      if (from < 6) {
+        // เพิ่มคอลัมน์ uiType เข้าไปในตาราง documentMachines
+        await m.addColumn(documentMachines, documentMachines.uiType);
+      }
+      if (from < 7) {
+        await m.createTable(
+          checkSheetMasterImages,
+        ); // ใช้ m.createTable สำหรับตารางใหม่
+        await _createUpdatedAtTrigger(
+          m,
+          'checksheet_master_images',
+          'updatedAt',
+        );
+      }
+      if (from < 8) {
+        await m.addColumn(
+          checkSheetMasterImages,
+          checkSheetMasterImages.newImage,
+        );
+      }
+      if (from < 11) {
+        await m.deleteTable(users.actualTableName);
+        await m.createTable(users);
+        await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
+      }
+      if (from < 12) {
+        await m.deleteTable(users.actualTableName);
+        await m.createTable(users);
+        await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
+      }
+      if (from < 14) {
+        await m.deleteTable(users.actualTableName);
+        await m.createTable(users);
+        await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
+      }
+    },
+  );
 
-  /*
-  // Helper method to create a single SQL trigger for updatedAt column
+  // --- *** จุดที่แก้ไข *** ---
   Future<void> _createUpdatedAtTrigger(
-      Migrator m, String tableName, String columnName) async {
-    final triggerName = 'update_${tableName}_${columnName}';
-    // CRUCIAL FIX: Access customStatement via m.database (which is the AppDatabase instance)
-    await m.database.customStatement(
-        // <<< CRUCIAL FIX: Changed m.customStatement to m.database.customStatement
-        '''
-      CREATE TRIGGER IF NOT EXISTS $triggerName
-      AFTER UPDATE ON $tableName
-      FOR EACH ROW
-      BEGIN
-        UPDATE $tableName SET $columnName = STRFTIME('%Y-%m-%dT%H:%M:%f', 'now') WHERE uid = OLD.uid;
-      END;
-      ''');
-    print('SQL Trigger "$triggerName" created/ensured.');
-
-    // NEW: Trigger for AFTER INSERT
-    final insertTriggerName = 'update_${tableName}_${columnName}_on_insert';
-    await m.database.customStatement('''
-      CREATE TRIGGER IF NOT EXISTS $insertTriggerName
-      AFTER INSERT ON $tableName
-      FOR EACH ROW
-      BEGIN
-        UPDATE $tableName SET $columnName = STRFTIME('%Y-%m-%dT%H:%M:%f', 'now') WHERE uid = NEW.uid;
-      END;
-      ''');
-    print('SQL Trigger "$insertTriggerName" created/ensured.');
-  }
-*/
-
-// --- *** จุดที่แก้ไข *** ---
-  Future<void> _createUpdatedAtTrigger(
-      Migrator m, String tableName, String columnName) async {
+    Migrator m,
+    String tableName,
+    String columnName,
+  ) async {
     // 1. ตรวจสอบชื่อตารางเพื่อเลือก Primary Key ที่ถูกต้อง
-    final String primaryKeyColumn =
-        (tableName == 'checksheet_master_images') ? 'id' : 'uid';
+    final String primaryKeyColumn = (tableName == 'checksheet_master_images')
+        ? 'id'
+        : 'uid';
 
     // 2. สร้าง Trigger สำหรับ AFTER UPDATE
     final triggerName = 'update_${tableName}_${columnName}';

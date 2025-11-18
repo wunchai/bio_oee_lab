@@ -9,6 +9,9 @@ import 'package:bio_oee_lab/data/models/login_result.dart'; // สำหรั�
 import 'package:bio_oee_lab/presentation/screens/login/form_states/login_form_state.dart';
 import 'package:bio_oee_lab/presentation/widgets/error_dialog.dart'; // <<< ต้องสร้างไฟล์นี้ในภายหลัง
 
+import 'package:bio_oee_lab/data/repositories/sync_repository.dart';
+import 'package:bio_oee_lab/presentation/widgets/sync_progress_dialog.dart';
+
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -28,14 +31,33 @@ class _LoginScreenContent extends StatelessWidget {
 
   void _onLoginResult(BuildContext context, LoginResult result) {
     final formState = Provider.of<LoginFormState>(context, listen: false);
-    formState.setIsLoading(false); // หยุดโหลดเสมอเมื่อได้ผลลัพธ์
+    formState.setIsLoading(false); // หยุดโหลดเสมอ
 
     if (result.status == LoginStatus.success) {
       // Login สำเร็จ: นำทางไปยังหน้าหลัก
-      // ใช้ pushReplacementNamed เพื่อลบหน้า Login ออกจาก stack
       Navigator.of(context).pushReplacementNamed('/main_wrapper');
+
+      // --- นี่คือ Logic ใหม่ที่เราเพิ่ม ---
+    } else if (result.status == LoginStatus.userNotFoundOffline) {
+      // ถ้าหา User ไม่เจอ (ต้อง Sync)
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('User Not Found'),
+          content: Text(
+            result.message ??
+                'This user is not in the local database. Please sync users first.',
+          ),
+          actions: [
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(ctx).pop(),
+            ),
+          ],
+        ),
+      );
     } else {
-      // Login ล้มเหลว: แสดงข้อความ Error
+      // Login ล้มเหลวอื่นๆ (รหัสผิด, network error ตอน login ครั้งแรก)
       showDialog(
         context: context,
         builder: (ctx) => ErrorDialog(
@@ -47,7 +69,9 @@ class _LoginScreenContent extends StatelessWidget {
   }
 
   Future<void> _handleLogin(
-      BuildContext context, LoginRepository repository) async {
+    BuildContext context,
+    LoginRepository repository,
+  ) async {
     final formState = Provider.of<LoginFormState>(context, listen: false);
 
     // 1. ตรวจสอบข้อมูลก่อนส่ง
@@ -66,12 +90,47 @@ class _LoginScreenContent extends StatelessWidget {
     formState.setIsLoading(true);
 
     // 3. เรียก Repository (Logic ส่วนใหญ่จะอยู่ใน Repository)
-    final result =
-        await repository.login(formState.username, formState.password);
+    final result = await repository.login(
+      formState.username,
+      formState.password,
+    );
 
     // 4. จัดการผลลัพธ์
     // (เราใช้ _onLoginResult เป็นตัวจัดการผลลัพธ์แยกต่างหาก)
     _onLoginResult(context, result);
+  }
+
+  Future<void> _handleSyncUsers(BuildContext context) async {
+    // ดึง SyncRepository มา
+    final syncRepository = Provider.of<SyncRepository>(context, listen: false);
+
+    // 1. แสดงหน้าต่าง "กำลัง Sync..." (ที่เราสร้างในขั้นตอนที่ 5)
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => const SyncProgressDialog(),
+    );
+
+    // 2. สั่งให้ Repository ทำงาน
+    final bool success = await syncRepository.syncAllUsers();
+
+    // 3. ปิดหน้าต่าง "กำลัง Sync..."
+    Navigator.of(context, rootNavigator: true).pop();
+
+    // 4. แสดงผลลัพธ์ (สำเร็จ หรือ ล้มเหลว)
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(success ? 'Sync Complete' : 'Sync Failed'),
+        content: Text(syncRepository.lastSyncMessage),
+        actions: [
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () => Navigator.of(ctx).pop(),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -81,6 +140,9 @@ class _LoginScreenContent extends StatelessWidget {
 
     // LoginFormState เป็น Local State สำหรับหน้า Login นี้
     final formState = Provider.of<LoginFormState>(context);
+
+    final syncState = context.watch<SyncRepository>().syncStatus;
+    final bool isBusy = formState.isLoading || syncState == SyncStatus.syncing;
 
     return Scaffold(
       body: Center(
@@ -94,13 +156,15 @@ class _LoginScreenContent extends StatelessWidget {
 
               const SizedBox(height: 30),
 
-              Text('Bio OEE Lab',
-                  style: Theme.of(context).textTheme.headlineLarge),
+              Text(
+                'Bio OEE Lab',
+                style: Theme.of(context).textTheme.headlineLarge,
+              ),
               const Text('Please log in to continue'),
 
               const SizedBox(height: 30),
 
-              // 2. Username Input
+              // Username
               TextField(
                 decoration: const InputDecoration(
                   labelText: 'Username',
@@ -108,13 +172,12 @@ class _LoginScreenContent extends StatelessWidget {
                   prefixIcon: Icon(Icons.person),
                 ),
                 onChanged: formState.setUsername,
-                enabled: !formState.isLoading,
+                enabled: !isBusy, // <<< FIX 4: ใช้ isBusy
                 textInputAction: TextInputAction.next,
               ),
-
               const SizedBox(height: 16),
 
-              // 3. Password Input
+              // Password
               TextField(
                 decoration: const InputDecoration(
                   labelText: 'Password',
@@ -123,10 +186,9 @@ class _LoginScreenContent extends StatelessWidget {
                 ),
                 obscureText: true,
                 onChanged: formState.setPassword,
-                enabled: !formState.isLoading,
+                enabled: !isBusy, // <<< FIX 5: ใช้ isBusy
                 onSubmitted: (_) => _handleLogin(context, loginRepository),
               ),
-
               const SizedBox(height: 30),
 
               // 4. Login Button
@@ -143,10 +205,37 @@ class _LoginScreenContent extends StatelessWidget {
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white),
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           ),
                         )
                       : const Text('LOG IN', style: TextStyle(fontSize: 18)),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: OutlinedButton.icon(
+                  icon: syncState == SyncStatus.syncing
+                      ? const SizedBox(
+                          // ถ้ากำลัง Sync ให้หมุนๆ
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.sync), // สถานะปกติ
+                  label: Text(
+                    syncState == SyncStatus.syncing
+                        ? 'SYNCING...'
+                        : 'SYNC USERS',
+                  ),
+                  onPressed: isBusy ? null : () => _handleSyncUsers(context),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Theme.of(context).primaryColor,
+                  ),
                 ),
               ),
 
@@ -161,11 +250,11 @@ class _LoginScreenContent extends StatelessWidget {
 
               // 6. Register/Link Button (ถ้ามี)
               TextButton(
-                onPressed: formState.isLoading
+                onPressed: isBusy
                     ? null
                     : () {
+                        // <<< FIX 8: ใช้ isBusy
                         // TODO: Implement Registration/Device Link Dialog
-                        // showDialog(context: context, builder: (ctx) => const RegisterDialog());
                       },
                 child: const Text('Register Device / Contact Support'),
               ),

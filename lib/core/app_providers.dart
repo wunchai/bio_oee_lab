@@ -7,7 +7,8 @@ import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 import 'package:bio_oee_lab/data/network/user_api_service.dart';
 import 'package:bio_oee_lab/data/services/device_info_service.dart';
-
+import 'package:bio_oee_lab/data/network/sync_api_service.dart';
+import 'package:bio_oee_lab/data/repositories/sync_repository.dart';
 // --- ⚠️ เราจะทะยอย Import Repository เมื่อเราสร้างมัน ---
 // import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 // import 'package:bio_oee_lab/data/repositories/document_repository.dart';
@@ -19,6 +20,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   // (เราสร้าง Service พวกนี้ไว้ใช้แค่ครั้งเดียว)
   final deviceInfoService = DeviceInfoService();
   final userApiService = UserApiService();
+  final syncApiService = SyncApiService();
 
   // สร้าง Instance ของ Database (เราได้รับมาจาก main.dart)
   final dbProvider = Provider<AppDatabase>.value(value: appDatabase);
@@ -31,6 +33,11 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     userDao: appDatabase.userDao, // <<< ดึง Dao มาจาก Database
     userApiService: userApiService,
     deviceInfoService: deviceInfoService,
+  );
+
+  final syncRepository = SyncRepository(
+    syncApiService: syncApiService,
+    userDao: appDatabase.userDao, // <<< ใช้ UserDao เหมือนกัน
   );
 
   // --- คืนค่า List ของ Providers ทั้งหมด ---
@@ -46,6 +53,8 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
       create: (context) => loginRepository,
 
       // (เพิ่ม Repository อื่นๆ ที่นี่)
-    )
+    ),
+
+    ChangeNotifierProvider<SyncRepository>(create: (context) => syncRepository),
   ];
 }

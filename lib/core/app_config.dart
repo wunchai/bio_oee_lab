@@ -12,8 +12,7 @@ const Color lightText = Colors.white; // White for text on dark backgrounds
 class AppConfig {
   // --- ⚠️ URL หลักของ API Server ---
   // <<< แก้ไข URL นี้ให้เป็นที่อยู่ Server ของคุณ
-  static const String baseUrl = 'http://YOUR_OEE_SERVER_IP_OR_DOMAIN';
-
+  static const String baseUrl = 'http://10.1.200.26:94';
   // --- การตั้งค่าอื่นๆ (สามารถเพิ่มได้ในอนาคต) ---
 
   // ตัวอย่าง: ระยะเวลา timeout สำหรับการเชื่อมต่อ API (เป็นวินาที)

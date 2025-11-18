@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-   sdk: '>=3.0.0 <4.0.0'
+   sdk: '^3.8.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -46,7 +46,7 @@ dependencies:
   http: ^1.1.0
   
   # JSON Serialization
-  json_annotation: ^4.8.1 # Annotations for code generation to/from JSON
+  json_annotation: ^4.9.0 # Annotations for code generation to/from JSON
 
   # State Management (you can choose others later if preferred, e.g., BLoC, Riverpod)
   provider: ^6.0.5 # A popular and easy-to-use state ma`agement solution
