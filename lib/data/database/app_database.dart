@@ -80,7 +80,7 @@ class AppDatabase extends _$AppDatabase {
       ChecksheetMasterImageDao(this);
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   // Define the migration strategy.
   @override

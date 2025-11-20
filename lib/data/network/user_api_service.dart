@@ -105,18 +105,25 @@ class UserApiService {
           if (kDebugMode) {
             print('--- packages  Start---');
           }
-          // 2. ดึง Packages (API ส่ง Key 'packages' มา ถูกต้องแล้ว)
           final List<dynamic> packagesJson =
-              jsonResponse['packages']
-                  as List<dynamic>; // <<< ส่วนนี้ถูกต้องแล้ว
+              jsonResponse['packages'] as List<dynamic>;
 
-          final List<PackageData> packages = packagesJson
-              .map(
-                (pkgJson) =>
-                    PackageData.fromJson(pkgJson as Map<String, dynamic>),
-              )
-              .toList();
+          final List<PackageData> packages = packagesJson.map((pkgJson) {
+            final map = pkgJson as Map<String, dynamic>;
 
+            // ⚠️ Manual Mapping: แก้ปัญหา Key ตัวเล็ก และแปลง String เป็น int/bool
+            return PackageData(
+              // แปลง String "1" -> int 1
+              packageId: int.tryParse(map['packageId'].toString()) ?? 0,
+
+              packageName: map['packageName']?.toString() ?? '',
+
+              description: map['description']?.toString() ?? '',
+
+              // แปลง String "1" -> bool true
+              isActive: (map['isActive'].toString() == '1'),
+            );
+          }).toList();
           if (kDebugMode) {
             print('--- token  Start---');
           }

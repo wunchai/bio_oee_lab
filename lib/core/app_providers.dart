@@ -9,10 +9,9 @@ import 'package:bio_oee_lab/data/network/user_api_service.dart';
 import 'package:bio_oee_lab/data/services/device_info_service.dart';
 import 'package:bio_oee_lab/data/network/sync_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/sync_repository.dart';
-// --- ⚠️ เราจะทะยอย Import Repository เมื่อเราสร้างมัน ---
-// import 'package:bio_oee_lab/data/repositories/login_repository.dart';
-// import 'package:bio_oee_lab/data/repositories/document_repository.dart';
-// ... (อื่นๆ) ...
+import 'package:bio_oee_lab/data/network/job_api_service.dart';
+import 'package:bio_oee_lab/data/repositories/job_repository.dart';
+import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 
 // ฟังก์ชันนี้จะเตรียม Provider ทั้งหมดที่แอปต้องใช้
 Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
@@ -21,6 +20,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final deviceInfoService = DeviceInfoService();
   final userApiService = UserApiService();
   final syncApiService = SyncApiService();
+  final jobApiService = JobApiService();
 
   // สร้าง Instance ของ Database (เราได้รับมาจาก main.dart)
   final dbProvider = Provider<AppDatabase>.value(value: appDatabase);
@@ -40,6 +40,15 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     userDao: appDatabase.userDao, // <<< ใช้ UserDao เหมือนกัน
   );
 
+  final jobRepository = JobRepository(
+    apiService: jobApiService,
+    jobDao: appDatabase.jobDao, // ดึงจาก DB ตัวหลัก
+  );
+
+  final documentRepository = DocumentRepository(
+    appDatabase: appDatabase, // ส่ง database เข้าไป
+  );
+
   // --- คืนค่า List ของ Providers ทั้งหมด ---
   return [
     // 1. Database Provider
@@ -56,5 +65,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     ),
 
     ChangeNotifierProvider<SyncRepository>(create: (context) => syncRepository),
+    ChangeNotifierProvider.value(value: jobRepository),
+    Provider<DocumentRepository>.value(value: documentRepository),
   ];
 }

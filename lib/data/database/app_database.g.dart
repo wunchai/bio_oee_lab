@@ -768,6 +768,73 @@ class $DocumentsTable extends Documents
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
+    'syncStatus',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _runningDateMeta = const VerificationMeta(
+    'runningDate',
+  );
+  @override
+  late final GeneratedColumn<String> runningDate = GeneratedColumn<String>(
+    'RunningDate',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _endDateMeta = const VerificationMeta(
+    'endDate',
+  );
+  @override
+  late final GeneratedColumn<String> endDate = GeneratedColumn<String>(
+    'EndDate',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _deleteDateMeta = const VerificationMeta(
+    'deleteDate',
+  );
+  @override
+  late final GeneratedColumn<String> deleteDate = GeneratedColumn<String>(
+    'DeleteDate',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _cancelDateMeta = const VerificationMeta(
+    'cancelDate',
+  );
+  @override
+  late final GeneratedColumn<String> cancelDate = GeneratedColumn<String>(
+    'CancleDate',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _postDateMeta = const VerificationMeta(
+    'postDate',
+  );
+  @override
+  late final GeneratedColumn<String> postDate = GeneratedColumn<String>(
+    'PostDate',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
@@ -779,6 +846,12 @@ class $DocumentsTable extends Documents
     status,
     lastSync,
     updatedAt,
+    syncStatus,
+    runningDate,
+    endDate,
+    deleteDate,
+    cancelDate,
+    postDate,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -849,6 +922,45 @@ class $DocumentsTable extends Documents
         updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
       );
     }
+    if (data.containsKey('syncStatus')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('RunningDate')) {
+      context.handle(
+        _runningDateMeta,
+        runningDate.isAcceptableOrUnknown(
+          data['RunningDate']!,
+          _runningDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('EndDate')) {
+      context.handle(
+        _endDateMeta,
+        endDate.isAcceptableOrUnknown(data['EndDate']!, _endDateMeta),
+      );
+    }
+    if (data.containsKey('DeleteDate')) {
+      context.handle(
+        _deleteDateMeta,
+        deleteDate.isAcceptableOrUnknown(data['DeleteDate']!, _deleteDateMeta),
+      );
+    }
+    if (data.containsKey('CancleDate')) {
+      context.handle(
+        _cancelDateMeta,
+        cancelDate.isAcceptableOrUnknown(data['CancleDate']!, _cancelDateMeta),
+      );
+    }
+    if (data.containsKey('PostDate')) {
+      context.handle(
+        _postDateMeta,
+        postDate.isAcceptableOrUnknown(data['PostDate']!, _postDateMeta),
+      );
+    }
     return context;
   }
 
@@ -894,6 +1006,30 @@ class $DocumentsTable extends Documents
         DriftSqlType.string,
         data['${effectivePrefix}updatedAt'],
       ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}syncStatus'],
+      )!,
+      runningDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}RunningDate'],
+      ),
+      endDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}EndDate'],
+      ),
+      deleteDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}DeleteDate'],
+      ),
+      cancelDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}CancleDate'],
+      ),
+      postDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}PostDate'],
+      ),
     );
   }
 
@@ -913,6 +1049,12 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
   final int status;
   final String? lastSync;
   final String? updatedAt;
+  final int syncStatus;
+  final String? runningDate;
+  final String? endDate;
+  final String? deleteDate;
+  final String? cancelDate;
+  final String? postDate;
   const DbDocument({
     required this.uid,
     this.documentId,
@@ -923,6 +1065,12 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     required this.status,
     this.lastSync,
     this.updatedAt,
+    required this.syncStatus,
+    this.runningDate,
+    this.endDate,
+    this.deleteDate,
+    this.cancelDate,
+    this.postDate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -949,6 +1097,22 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     }
     if (!nullToAbsent || updatedAt != null) {
       map['updatedAt'] = Variable<String>(updatedAt);
+    }
+    map['syncStatus'] = Variable<int>(syncStatus);
+    if (!nullToAbsent || runningDate != null) {
+      map['RunningDate'] = Variable<String>(runningDate);
+    }
+    if (!nullToAbsent || endDate != null) {
+      map['EndDate'] = Variable<String>(endDate);
+    }
+    if (!nullToAbsent || deleteDate != null) {
+      map['DeleteDate'] = Variable<String>(deleteDate);
+    }
+    if (!nullToAbsent || cancelDate != null) {
+      map['CancleDate'] = Variable<String>(cancelDate);
+    }
+    if (!nullToAbsent || postDate != null) {
+      map['PostDate'] = Variable<String>(postDate);
     }
     return map;
   }
@@ -978,6 +1142,22 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(updatedAt),
+      syncStatus: Value(syncStatus),
+      runningDate: runningDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(runningDate),
+      endDate: endDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endDate),
+      deleteDate: deleteDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deleteDate),
+      cancelDate: cancelDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cancelDate),
+      postDate: postDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(postDate),
     );
   }
 
@@ -996,6 +1176,12 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       status: serializer.fromJson<int>(json['status']),
       lastSync: serializer.fromJson<String?>(json['lastSync']),
       updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+      syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      runningDate: serializer.fromJson<String?>(json['runningDate']),
+      endDate: serializer.fromJson<String?>(json['endDate']),
+      deleteDate: serializer.fromJson<String?>(json['deleteDate']),
+      cancelDate: serializer.fromJson<String?>(json['cancelDate']),
+      postDate: serializer.fromJson<String?>(json['postDate']),
     );
   }
   @override
@@ -1011,6 +1197,12 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       'status': serializer.toJson<int>(status),
       'lastSync': serializer.toJson<String?>(lastSync),
       'updatedAt': serializer.toJson<String?>(updatedAt),
+      'syncStatus': serializer.toJson<int>(syncStatus),
+      'runningDate': serializer.toJson<String?>(runningDate),
+      'endDate': serializer.toJson<String?>(endDate),
+      'deleteDate': serializer.toJson<String?>(deleteDate),
+      'cancelDate': serializer.toJson<String?>(cancelDate),
+      'postDate': serializer.toJson<String?>(postDate),
     };
   }
 
@@ -1024,6 +1216,12 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     int? status,
     Value<String?> lastSync = const Value.absent(),
     Value<String?> updatedAt = const Value.absent(),
+    int? syncStatus,
+    Value<String?> runningDate = const Value.absent(),
+    Value<String?> endDate = const Value.absent(),
+    Value<String?> deleteDate = const Value.absent(),
+    Value<String?> cancelDate = const Value.absent(),
+    Value<String?> postDate = const Value.absent(),
   }) => DbDocument(
     uid: uid ?? this.uid,
     documentId: documentId.present ? documentId.value : this.documentId,
@@ -1034,6 +1232,12 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     status: status ?? this.status,
     lastSync: lastSync.present ? lastSync.value : this.lastSync,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    syncStatus: syncStatus ?? this.syncStatus,
+    runningDate: runningDate.present ? runningDate.value : this.runningDate,
+    endDate: endDate.present ? endDate.value : this.endDate,
+    deleteDate: deleteDate.present ? deleteDate.value : this.deleteDate,
+    cancelDate: cancelDate.present ? cancelDate.value : this.cancelDate,
+    postDate: postDate.present ? postDate.value : this.postDate,
   );
   DbDocument copyWithCompanion(DocumentsCompanion data) {
     return DbDocument(
@@ -1052,6 +1256,20 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       status: data.status.present ? data.status.value : this.status,
       lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      runningDate: data.runningDate.present
+          ? data.runningDate.value
+          : this.runningDate,
+      endDate: data.endDate.present ? data.endDate.value : this.endDate,
+      deleteDate: data.deleteDate.present
+          ? data.deleteDate.value
+          : this.deleteDate,
+      cancelDate: data.cancelDate.present
+          ? data.cancelDate.value
+          : this.cancelDate,
+      postDate: data.postDate.present ? data.postDate.value : this.postDate,
     );
   }
 
@@ -1066,7 +1284,13 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
           ..write('createDate: $createDate, ')
           ..write('status: $status, ')
           ..write('lastSync: $lastSync, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('runningDate: $runningDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('deleteDate: $deleteDate, ')
+          ..write('cancelDate: $cancelDate, ')
+          ..write('postDate: $postDate')
           ..write(')'))
         .toString();
   }
@@ -1082,6 +1306,12 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     status,
     lastSync,
     updatedAt,
+    syncStatus,
+    runningDate,
+    endDate,
+    deleteDate,
+    cancelDate,
+    postDate,
   );
   @override
   bool operator ==(Object other) =>
@@ -1095,7 +1325,13 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
           other.createDate == this.createDate &&
           other.status == this.status &&
           other.lastSync == this.lastSync &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.syncStatus == this.syncStatus &&
+          other.runningDate == this.runningDate &&
+          other.endDate == this.endDate &&
+          other.deleteDate == this.deleteDate &&
+          other.cancelDate == this.cancelDate &&
+          other.postDate == this.postDate);
 }
 
 class DocumentsCompanion extends UpdateCompanion<DbDocument> {
@@ -1108,6 +1344,12 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
   final Value<int> status;
   final Value<String?> lastSync;
   final Value<String?> updatedAt;
+  final Value<int> syncStatus;
+  final Value<String?> runningDate;
+  final Value<String?> endDate;
+  final Value<String?> deleteDate;
+  final Value<String?> cancelDate;
+  final Value<String?> postDate;
   const DocumentsCompanion({
     this.uid = const Value.absent(),
     this.documentId = const Value.absent(),
@@ -1118,6 +1360,12 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     this.status = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.runningDate = const Value.absent(),
+    this.endDate = const Value.absent(),
+    this.deleteDate = const Value.absent(),
+    this.cancelDate = const Value.absent(),
+    this.postDate = const Value.absent(),
   });
   DocumentsCompanion.insert({
     this.uid = const Value.absent(),
@@ -1129,6 +1377,12 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     this.status = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.runningDate = const Value.absent(),
+    this.endDate = const Value.absent(),
+    this.deleteDate = const Value.absent(),
+    this.cancelDate = const Value.absent(),
+    this.postDate = const Value.absent(),
   });
   static Insertable<DbDocument> custom({
     Expression<int>? uid,
@@ -1140,6 +1394,12 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     Expression<int>? status,
     Expression<String>? lastSync,
     Expression<String>? updatedAt,
+    Expression<int>? syncStatus,
+    Expression<String>? runningDate,
+    Expression<String>? endDate,
+    Expression<String>? deleteDate,
+    Expression<String>? cancelDate,
+    Expression<String>? postDate,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
@@ -1151,6 +1411,12 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
       if (status != null) 'status': status,
       if (lastSync != null) 'lastSync': lastSync,
       if (updatedAt != null) 'updatedAt': updatedAt,
+      if (syncStatus != null) 'syncStatus': syncStatus,
+      if (runningDate != null) 'RunningDate': runningDate,
+      if (endDate != null) 'EndDate': endDate,
+      if (deleteDate != null) 'DeleteDate': deleteDate,
+      if (cancelDate != null) 'CancleDate': cancelDate,
+      if (postDate != null) 'PostDate': postDate,
     });
   }
 
@@ -1164,6 +1430,12 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     Value<int>? status,
     Value<String?>? lastSync,
     Value<String?>? updatedAt,
+    Value<int>? syncStatus,
+    Value<String?>? runningDate,
+    Value<String?>? endDate,
+    Value<String?>? deleteDate,
+    Value<String?>? cancelDate,
+    Value<String?>? postDate,
   }) {
     return DocumentsCompanion(
       uid: uid ?? this.uid,
@@ -1175,6 +1447,12 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
       status: status ?? this.status,
       lastSync: lastSync ?? this.lastSync,
       updatedAt: updatedAt ?? this.updatedAt,
+      syncStatus: syncStatus ?? this.syncStatus,
+      runningDate: runningDate ?? this.runningDate,
+      endDate: endDate ?? this.endDate,
+      deleteDate: deleteDate ?? this.deleteDate,
+      cancelDate: cancelDate ?? this.cancelDate,
+      postDate: postDate ?? this.postDate,
     );
   }
 
@@ -1208,6 +1486,24 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     if (updatedAt.present) {
       map['updatedAt'] = Variable<String>(updatedAt.value);
     }
+    if (syncStatus.present) {
+      map['syncStatus'] = Variable<int>(syncStatus.value);
+    }
+    if (runningDate.present) {
+      map['RunningDate'] = Variable<String>(runningDate.value);
+    }
+    if (endDate.present) {
+      map['EndDate'] = Variable<String>(endDate.value);
+    }
+    if (deleteDate.present) {
+      map['DeleteDate'] = Variable<String>(deleteDate.value);
+    }
+    if (cancelDate.present) {
+      map['CancleDate'] = Variable<String>(cancelDate.value);
+    }
+    if (postDate.present) {
+      map['PostDate'] = Variable<String>(postDate.value);
+    }
     return map;
   }
 
@@ -1222,7 +1518,13 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
           ..write('createDate: $createDate, ')
           ..write('status: $status, ')
           ..write('lastSync: $lastSync, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('runningDate: $runningDate, ')
+          ..write('endDate: $endDate, ')
+          ..write('deleteDate: $deleteDate, ')
+          ..write('cancelDate: $cancelDate, ')
+          ..write('postDate: $postDate')
           ..write(')'))
         .toString();
   }
@@ -10005,6 +10307,12 @@ typedef $$DocumentsTableCreateCompanionBuilder =
       Value<int> status,
       Value<String?> lastSync,
       Value<String?> updatedAt,
+      Value<int> syncStatus,
+      Value<String?> runningDate,
+      Value<String?> endDate,
+      Value<String?> deleteDate,
+      Value<String?> cancelDate,
+      Value<String?> postDate,
     });
 typedef $$DocumentsTableUpdateCompanionBuilder =
     DocumentsCompanion Function({
@@ -10017,6 +10325,12 @@ typedef $$DocumentsTableUpdateCompanionBuilder =
       Value<int> status,
       Value<String?> lastSync,
       Value<String?> updatedAt,
+      Value<int> syncStatus,
+      Value<String?> runningDate,
+      Value<String?> endDate,
+      Value<String?> deleteDate,
+      Value<String?> cancelDate,
+      Value<String?> postDate,
     });
 
 class $$DocumentsTableFilterComposer
@@ -10070,6 +10384,36 @@ class $$DocumentsTableFilterComposer
 
   ColumnFilters<String> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get runningDate => $composableBuilder(
+    column: $table.runningDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endDate => $composableBuilder(
+    column: $table.endDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get deleteDate => $composableBuilder(
+    column: $table.deleteDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cancelDate => $composableBuilder(
+    column: $table.cancelDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get postDate => $composableBuilder(
+    column: $table.postDate,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -10127,6 +10471,36 @@ class $$DocumentsTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get runningDate => $composableBuilder(
+    column: $table.runningDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endDate => $composableBuilder(
+    column: $table.endDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get deleteDate => $composableBuilder(
+    column: $table.deleteDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cancelDate => $composableBuilder(
+    column: $table.cancelDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get postDate => $composableBuilder(
+    column: $table.postDate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DocumentsTableAnnotationComposer
@@ -10170,6 +10544,32 @@ class $$DocumentsTableAnnotationComposer
 
   GeneratedColumn<String> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get runningDate => $composableBuilder(
+    column: $table.runningDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get endDate =>
+      $composableBuilder(column: $table.endDate, builder: (column) => column);
+
+  GeneratedColumn<String> get deleteDate => $composableBuilder(
+    column: $table.deleteDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get cancelDate => $composableBuilder(
+    column: $table.cancelDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get postDate =>
+      $composableBuilder(column: $table.postDate, builder: (column) => column);
 }
 
 class $$DocumentsTableTableManager
@@ -10212,6 +10612,12 @@ class $$DocumentsTableTableManager
                 Value<int> status = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<String?> updatedAt = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+                Value<String?> runningDate = const Value.absent(),
+                Value<String?> endDate = const Value.absent(),
+                Value<String?> deleteDate = const Value.absent(),
+                Value<String?> cancelDate = const Value.absent(),
+                Value<String?> postDate = const Value.absent(),
               }) => DocumentsCompanion(
                 uid: uid,
                 documentId: documentId,
@@ -10222,6 +10628,12 @@ class $$DocumentsTableTableManager
                 status: status,
                 lastSync: lastSync,
                 updatedAt: updatedAt,
+                syncStatus: syncStatus,
+                runningDate: runningDate,
+                endDate: endDate,
+                deleteDate: deleteDate,
+                cancelDate: cancelDate,
+                postDate: postDate,
               ),
           createCompanionCallback:
               ({
@@ -10234,6 +10646,12 @@ class $$DocumentsTableTableManager
                 Value<int> status = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<String?> updatedAt = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+                Value<String?> runningDate = const Value.absent(),
+                Value<String?> endDate = const Value.absent(),
+                Value<String?> deleteDate = const Value.absent(),
+                Value<String?> cancelDate = const Value.absent(),
+                Value<String?> postDate = const Value.absent(),
               }) => DocumentsCompanion.insert(
                 uid: uid,
                 documentId: documentId,
@@ -10244,6 +10662,12 @@ class $$DocumentsTableTableManager
                 status: status,
                 lastSync: lastSync,
                 updatedAt: updatedAt,
+                syncStatus: syncStatus,
+                runningDate: runningDate,
+                endDate: endDate,
+                deleteDate: deleteDate,
+                cancelDate: cancelDate,
+                postDate: postDate,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

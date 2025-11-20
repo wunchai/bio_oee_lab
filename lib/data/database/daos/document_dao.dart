@@ -23,15 +23,16 @@ class DocumentDao extends DatabaseAccessor<AppDatabase>
 
   /// NEW: Deletes documents by a list of documentIds.
   Future<int> deleteDocumentsByIds(List<String> documentIds) {
-    return (delete(documents)..where((tbl) => tbl.documentId.isIn(documentIds)))
-        .go();
+    return (delete(
+      documents,
+    )..where((tbl) => tbl.documentId.isIn(documentIds))).go();
   }
 
   // Equivalent to suspend fun getDocument(documentId: String): DbDocument?
   Future<DbDocument?> getDocument(String documentId) {
-    return (select(documents)
-          ..where((tbl) => tbl.documentId.equals(documentId)))
-        .getSingleOrNull();
+    return (select(
+      documents,
+    )..where((tbl) => tbl.documentId.equals(documentId))).getSingleOrNull();
   }
 
   // Equivalent to suspend fun getAllDocument(): List<DbDocument>
@@ -40,9 +41,9 @@ class DocumentDao extends DatabaseAccessor<AppDatabase>
 
   // NEW: Method to get a single document by its documentId
   Future<DbDocument?> getDocumentById(String documentId) {
-    return (select(documents)
-          ..where((tbl) => tbl.documentId.equals(documentId)))
-        .getSingleOrNull();
+    return (select(
+      documents,
+    )..where((tbl) => tbl.documentId.equals(documentId))).getSingleOrNull();
   }
 
   // Equivalent to suspend fun updateDocument(document: DbDocument)
@@ -66,9 +67,22 @@ class DocumentDao extends DatabaseAccessor<AppDatabase>
     return (select(documents)..where((tbl) => tbl.jobId.equals(jobId))).watch();
   }
 
-  // You might have custom queries in your DaoDocument.kt,
-  // for example, to get documents by jobId. You can add them here:
-  // Future<List<DbDocument>> getDocumentsByJobId(String jobId) {
-  //   return (select(documents)..where((tbl) => tbl.jobId.equals(jobId))).get();
-  // }
+  Stream<int> watchActiveDocumentCount(String userId) {
+    return (select(documents)..where(
+          (tbl) => tbl.userId.equals(userId) & tbl.status.isIn([0, 1]),
+        )) // 0=Draft, 1=Running
+        .watch()
+        .map((list) => list.length); // คืนค่าเป็นจำนวนรายการ
+  }
+
+  Stream<int> watchActiveDocumentCountByJob(String userId, String jobId) {
+    return (select(documents)..where(
+          (tbl) =>
+              tbl.userId.equals(userId) &
+              tbl.jobId.equals(jobId) & // กรองตาม Job ID
+              tbl.status.isIn([0, 1]),
+        ))
+        .watch()
+        .map((list) => list.length);
+  }
 }
