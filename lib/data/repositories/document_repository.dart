@@ -4,15 +4,90 @@ import 'package:uuid/uuid.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/document_record_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/document_timelog_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
+import 'package:bio_oee_lab/data/database/tables/job_working_time_table.dart';
 
 /// Repository for managing document data.
 class DocumentRepository {
   final DocumentDao _documentDao;
   final DocumentRecordDao _documentRecordDao;
+  final RunningJobDetailsDao _runningJobDetailsDao;
 
   DocumentRepository({required AppDatabase appDatabase})
     : _documentDao = appDatabase.documentDao,
-      _documentRecordDao = appDatabase.documentRecordDao;
+      _documentRecordDao = appDatabase.documentRecordDao,
+      _runningJobDetailsDao = appDatabase.runningJobDetailsDao;
+
+  // -----------------------------------------------------------------------------
+  // 🟢 ส่วนจัดการสถานะและเวลา (Running Job Logic)
+  // -----------------------------------------------------------------------------
+
+  Future<void> handleUserAction({
+    required String documentId,
+    required String userId,
+    required String activityType,
+    required int newDocStatus, // 1=Running, 2=End
+  }) async {
+    try {
+      final now = DateTime.now().toIso8601String();
+
+      // 1. หา Log ล่าสุดที่ยังเปิดอยู่
+      final lastLog = await _runningJobDetailsDao.getLastUserLog(
+        documentId,
+        userId,
+      );
+
+      // 2. ปิด Log เก่า (ถ้ามี)
+      if (lastLog != null && lastLog.endTime == null) {
+        final closedLog = lastLog.copyWith(
+          // ⚠️ FIX: Nullable fields ต้องใช้ drift.Value()
+          endTime: drift.Value(now),
+          updatedAt: drift.Value(now),
+
+          // ⚠️ FIX: Non-Nullable fields ใช้ค่าตรงๆ
+          status: 1,
+          syncStatus: 0,
+        );
+        await _runningJobDetailsDao.updateWorkingTime(closedLog);
+      }
+
+      // 3. เปิด Log ใหม่ (ถ้าไม่ใช่ End)
+      if (newDocStatus != 2) {
+        final newLog = JobWorkingTimesCompanion(
+          documentId: drift.Value(documentId),
+          userId: drift.Value(userId),
+          activityId: drift.Value(activityType),
+          startTime: drift.Value(now),
+          // EndTime ปล่อย null ไว้
+          status: const drift.Value(1),
+          syncStatus: const drift.Value(0),
+          updatedAt: drift.Value(now),
+        );
+        await _runningJobDetailsDao.insertWorkingTime(newLog);
+      }
+
+      // 4. อัปเดตสถานะของ Document หลัก
+      await updateDocumentStatus(documentId, newDocStatus);
+
+      if (kDebugMode) {
+        print(
+          'User Action: $activityType | DocStatus: $newDocStatus | Time: $now',
+        );
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error handling user action: $e');
+      rethrow;
+    }
+  }
+
+  // -----------------------------------------------------------------------------
+  // 🟡 ส่วนจัดการ Document (สร้าง, ก๊อปปี้, ลบ) - เหมือนเดิม
+  // -----------------------------------------------------------------------------
+
+  // -----------------------------------------------------------------------------
+  // 🟡 ส่วนจัดการ Document (เดิม)
+  // -----------------------------------------------------------------------------
 
   Stream<int> watchActiveDocCount(String userId) {
     return _documentDao.watchActiveDocumentCount(userId);
@@ -258,5 +333,30 @@ class DocumentRepository {
 
   String _generateUniqueDocumentId(String jobId) {
     return '${jobId}_${DateTime.now().millisecondsSinceEpoch}';
+  }
+
+  Stream<List<DbDocument>> watchActiveDocuments(
+    String userId, {
+    String? query,
+  }) {
+    return _documentDao.watchActiveDocuments(userId, query: query);
+  }
+
+  Future<void> uploadPendingDocuments() async {
+    try {
+      // 1. ดึงเอกสารที่ syncStatus = 0 (ยังไม่ได้ซิงค์)
+      // (ในอนาคต: ดึงจาก DB จริงๆ)
+
+      // 2. ส่งขึ้น API (เรียก ApiService)
+      // await _documentApiService.syncDocuments(...);
+
+      // จำลองการทำงาน (Fake Upload)
+      await Future.delayed(const Duration(seconds: 2));
+
+      print('Manual Sync Completed!');
+    } catch (e) {
+      print('Manual Sync Failed: $e');
+      throw Exception('Sync failed: $e');
+    }
   }
 }

@@ -10,6 +10,7 @@ import 'package:bio_oee_lab/data/database/app_database.dart';
 // Import สำหรับ QR Scan
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
 
 class JobScreen extends StatefulWidget {
   const JobScreen({super.key});
@@ -489,32 +490,6 @@ class _JobScreenState extends State<JobScreen> {
           setState(() {
             _searchQuery = value;
           });
-        },
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------
-// 📄 หน้าจอ Scanner (แยก Class ออกมาเพื่อความสะอาด)
-// ---------------------------------------------------------
-class ScannerScreen extends StatelessWidget {
-  const ScannerScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Scan QR Code')),
-      body: MobileScanner(
-        onDetect: (capture) {
-          final List<Barcode> barcodes = capture.barcodes;
-          if (barcodes.isNotEmpty) {
-            final String? code = barcodes.first.rawValue;
-            if (code != null) {
-              // ส่งค่า Code กลับไปหน้า JobScreen
-              Navigator.pop(context, code);
-            }
-          }
         },
       ),
     );

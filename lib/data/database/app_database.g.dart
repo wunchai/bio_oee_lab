@@ -9936,6 +9936,3707 @@ class CheckSheetMasterImagesCompanion
   }
 }
 
+class $DocumentTimeLogsTable extends DocumentTimeLogs
+    with TableInfo<$DocumentTimeLogsTable, DbDocumentTimeLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $DocumentTimeLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'documentId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _logTypeMeta = const VerificationMeta(
+    'logType',
+  );
+  @override
+  late final GeneratedColumn<int> logType = GeneratedColumn<int>(
+    'logType',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _logTimeMeta = const VerificationMeta(
+    'logTime',
+  );
+  @override
+  late final GeneratedColumn<String> logTime = GeneratedColumn<String>(
+    'logTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _remarkMeta = const VerificationMeta('remark');
+  @override
+  late final GeneratedColumn<String> remark = GeneratedColumn<String>(
+    'remark',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    documentId,
+    logType,
+    logTime,
+    remark,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'document_time_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbDocumentTimeLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('documentId')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['documentId']!, _documentIdMeta),
+      );
+    }
+    if (data.containsKey('logType')) {
+      context.handle(
+        _logTypeMeta,
+        logType.isAcceptableOrUnknown(data['logType']!, _logTypeMeta),
+      );
+    }
+    if (data.containsKey('logTime')) {
+      context.handle(
+        _logTimeMeta,
+        logTime.isAcceptableOrUnknown(data['logTime']!, _logTimeMeta),
+      );
+    }
+    if (data.containsKey('remark')) {
+      context.handle(
+        _remarkMeta,
+        remark.isAcceptableOrUnknown(data['remark']!, _remarkMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbDocumentTimeLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbDocumentTimeLog(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}documentId'],
+      ),
+      logType: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}logType'],
+      )!,
+      logTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}logTime'],
+      ),
+      remark: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remark'],
+      ),
+    );
+  }
+
+  @override
+  $DocumentTimeLogsTable createAlias(String alias) {
+    return $DocumentTimeLogsTable(attachedDatabase, alias);
+  }
+}
+
+class DbDocumentTimeLog extends DataClass
+    implements Insertable<DbDocumentTimeLog> {
+  final int uid;
+  final String? documentId;
+  final int logType;
+  final String? logTime;
+  final String? remark;
+  const DbDocumentTimeLog({
+    required this.uid,
+    this.documentId,
+    required this.logType,
+    this.logTime,
+    this.remark,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || documentId != null) {
+      map['documentId'] = Variable<String>(documentId);
+    }
+    map['logType'] = Variable<int>(logType);
+    if (!nullToAbsent || logTime != null) {
+      map['logTime'] = Variable<String>(logTime);
+    }
+    if (!nullToAbsent || remark != null) {
+      map['remark'] = Variable<String>(remark);
+    }
+    return map;
+  }
+
+  DocumentTimeLogsCompanion toCompanion(bool nullToAbsent) {
+    return DocumentTimeLogsCompanion(
+      uid: Value(uid),
+      documentId: documentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(documentId),
+      logType: Value(logType),
+      logTime: logTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(logTime),
+      remark: remark == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remark),
+    );
+  }
+
+  factory DbDocumentTimeLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbDocumentTimeLog(
+      uid: serializer.fromJson<int>(json['uid']),
+      documentId: serializer.fromJson<String?>(json['documentId']),
+      logType: serializer.fromJson<int>(json['logType']),
+      logTime: serializer.fromJson<String?>(json['logTime']),
+      remark: serializer.fromJson<String?>(json['remark']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'documentId': serializer.toJson<String?>(documentId),
+      'logType': serializer.toJson<int>(logType),
+      'logTime': serializer.toJson<String?>(logTime),
+      'remark': serializer.toJson<String?>(remark),
+    };
+  }
+
+  DbDocumentTimeLog copyWith({
+    int? uid,
+    Value<String?> documentId = const Value.absent(),
+    int? logType,
+    Value<String?> logTime = const Value.absent(),
+    Value<String?> remark = const Value.absent(),
+  }) => DbDocumentTimeLog(
+    uid: uid ?? this.uid,
+    documentId: documentId.present ? documentId.value : this.documentId,
+    logType: logType ?? this.logType,
+    logTime: logTime.present ? logTime.value : this.logTime,
+    remark: remark.present ? remark.value : this.remark,
+  );
+  DbDocumentTimeLog copyWithCompanion(DocumentTimeLogsCompanion data) {
+    return DbDocumentTimeLog(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      logType: data.logType.present ? data.logType.value : this.logType,
+      logTime: data.logTime.present ? data.logTime.value : this.logTime,
+      remark: data.remark.present ? data.remark.value : this.remark,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbDocumentTimeLog(')
+          ..write('uid: $uid, ')
+          ..write('documentId: $documentId, ')
+          ..write('logType: $logType, ')
+          ..write('logTime: $logTime, ')
+          ..write('remark: $remark')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(uid, documentId, logType, logTime, remark);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbDocumentTimeLog &&
+          other.uid == this.uid &&
+          other.documentId == this.documentId &&
+          other.logType == this.logType &&
+          other.logTime == this.logTime &&
+          other.remark == this.remark);
+}
+
+class DocumentTimeLogsCompanion extends UpdateCompanion<DbDocumentTimeLog> {
+  final Value<int> uid;
+  final Value<String?> documentId;
+  final Value<int> logType;
+  final Value<String?> logTime;
+  final Value<String?> remark;
+  const DocumentTimeLogsCompanion({
+    this.uid = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.logType = const Value.absent(),
+    this.logTime = const Value.absent(),
+    this.remark = const Value.absent(),
+  });
+  DocumentTimeLogsCompanion.insert({
+    this.uid = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.logType = const Value.absent(),
+    this.logTime = const Value.absent(),
+    this.remark = const Value.absent(),
+  });
+  static Insertable<DbDocumentTimeLog> custom({
+    Expression<int>? uid,
+    Expression<String>? documentId,
+    Expression<int>? logType,
+    Expression<String>? logTime,
+    Expression<String>? remark,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (documentId != null) 'documentId': documentId,
+      if (logType != null) 'logType': logType,
+      if (logTime != null) 'logTime': logTime,
+      if (remark != null) 'remark': remark,
+    });
+  }
+
+  DocumentTimeLogsCompanion copyWith({
+    Value<int>? uid,
+    Value<String?>? documentId,
+    Value<int>? logType,
+    Value<String?>? logTime,
+    Value<String?>? remark,
+  }) {
+    return DocumentTimeLogsCompanion(
+      uid: uid ?? this.uid,
+      documentId: documentId ?? this.documentId,
+      logType: logType ?? this.logType,
+      logTime: logTime ?? this.logTime,
+      remark: remark ?? this.remark,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (documentId.present) {
+      map['documentId'] = Variable<String>(documentId.value);
+    }
+    if (logType.present) {
+      map['logType'] = Variable<int>(logType.value);
+    }
+    if (logTime.present) {
+      map['logTime'] = Variable<String>(logTime.value);
+    }
+    if (remark.present) {
+      map['remark'] = Variable<String>(remark.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DocumentTimeLogsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('documentId: $documentId, ')
+          ..write('logType: $logType, ')
+          ..write('logTime: $logTime, ')
+          ..write('remark: $remark')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $JobTestSetsTable extends JobTestSets
+    with TableInfo<$JobTestSetsTable, DbJobTestSet> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobTestSetsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'recID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'documentId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _setItemNoMeta = const VerificationMeta(
+    'setItemNo',
+  );
+  @override
+  late final GeneratedColumn<String> setItemNo = GeneratedColumn<String>(
+    'setItemNo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _registerDateTimeMeta = const VerificationMeta(
+    'registerDateTime',
+  );
+  @override
+  late final GeneratedColumn<String> registerDateTime = GeneratedColumn<String>(
+    'registerDateTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _registerUserMeta = const VerificationMeta(
+    'registerUser',
+  );
+  @override
+  late final GeneratedColumn<String> registerUser = GeneratedColumn<String>(
+    'registerUser',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updatedAt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSyncMeta = const VerificationMeta(
+    'lastSync',
+  );
+  @override
+  late final GeneratedColumn<String> lastSync = GeneratedColumn<String>(
+    'lastSync',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
+    'syncStatus',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    recId,
+    documentId,
+    setItemNo,
+    registerDateTime,
+    registerUser,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'job_test_sets';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbJobTestSet> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('recID')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['recID']!, _recIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recIdMeta);
+    }
+    if (data.containsKey('documentId')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['documentId']!, _documentIdMeta),
+      );
+    }
+    if (data.containsKey('setItemNo')) {
+      context.handle(
+        _setItemNoMeta,
+        setItemNo.isAcceptableOrUnknown(data['setItemNo']!, _setItemNoMeta),
+      );
+    }
+    if (data.containsKey('registerDateTime')) {
+      context.handle(
+        _registerDateTimeMeta,
+        registerDateTime.isAcceptableOrUnknown(
+          data['registerDateTime']!,
+          _registerDateTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('registerUser')) {
+      context.handle(
+        _registerUserMeta,
+        registerUser.isAcceptableOrUnknown(
+          data['registerUser']!,
+          _registerUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('updatedAt')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('lastSync')) {
+      context.handle(
+        _lastSyncMeta,
+        lastSync.isAcceptableOrUnknown(data['lastSync']!, _lastSyncMeta),
+      );
+    }
+    if (data.containsKey('syncStatus')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbJobTestSet map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbJobTestSet(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recID'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}documentId'],
+      ),
+      setItemNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}setItemNo'],
+      ),
+      registerDateTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}registerDateTime'],
+      ),
+      registerUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}registerUser'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updatedAt'],
+      ),
+      lastSync: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lastSync'],
+      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}syncStatus'],
+      )!,
+    );
+  }
+
+  @override
+  $JobTestSetsTable createAlias(String alias) {
+    return $JobTestSetsTable(attachedDatabase, alias);
+  }
+}
+
+class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
+  final int uid;
+  final String recId;
+  final String? documentId;
+  final String? setItemNo;
+  final String? registerDateTime;
+  final String? registerUser;
+  final int status;
+  final String? updatedAt;
+  final String? lastSync;
+  final int syncStatus;
+  const DbJobTestSet({
+    required this.uid,
+    required this.recId,
+    this.documentId,
+    this.setItemNo,
+    this.registerDateTime,
+    this.registerUser,
+    required this.status,
+    this.updatedAt,
+    this.lastSync,
+    required this.syncStatus,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    map['recID'] = Variable<String>(recId);
+    if (!nullToAbsent || documentId != null) {
+      map['documentId'] = Variable<String>(documentId);
+    }
+    if (!nullToAbsent || setItemNo != null) {
+      map['setItemNo'] = Variable<String>(setItemNo);
+    }
+    if (!nullToAbsent || registerDateTime != null) {
+      map['registerDateTime'] = Variable<String>(registerDateTime);
+    }
+    if (!nullToAbsent || registerUser != null) {
+      map['registerUser'] = Variable<String>(registerUser);
+    }
+    map['status'] = Variable<int>(status);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updatedAt'] = Variable<String>(updatedAt);
+    }
+    if (!nullToAbsent || lastSync != null) {
+      map['lastSync'] = Variable<String>(lastSync);
+    }
+    map['syncStatus'] = Variable<int>(syncStatus);
+    return map;
+  }
+
+  JobTestSetsCompanion toCompanion(bool nullToAbsent) {
+    return JobTestSetsCompanion(
+      uid: Value(uid),
+      recId: Value(recId),
+      documentId: documentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(documentId),
+      setItemNo: setItemNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setItemNo),
+      registerDateTime: registerDateTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registerDateTime),
+      registerUser: registerUser == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registerUser),
+      status: Value(status),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      lastSync: lastSync == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSync),
+      syncStatus: Value(syncStatus),
+    );
+  }
+
+  factory DbJobTestSet.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbJobTestSet(
+      uid: serializer.fromJson<int>(json['uid']),
+      recId: serializer.fromJson<String>(json['recId']),
+      documentId: serializer.fromJson<String?>(json['documentId']),
+      setItemNo: serializer.fromJson<String?>(json['setItemNo']),
+      registerDateTime: serializer.fromJson<String?>(json['registerDateTime']),
+      registerUser: serializer.fromJson<String?>(json['registerUser']),
+      status: serializer.fromJson<int>(json['status']),
+      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+      lastSync: serializer.fromJson<String?>(json['lastSync']),
+      syncStatus: serializer.fromJson<int>(json['syncStatus']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'recId': serializer.toJson<String>(recId),
+      'documentId': serializer.toJson<String?>(documentId),
+      'setItemNo': serializer.toJson<String?>(setItemNo),
+      'registerDateTime': serializer.toJson<String?>(registerDateTime),
+      'registerUser': serializer.toJson<String?>(registerUser),
+      'status': serializer.toJson<int>(status),
+      'updatedAt': serializer.toJson<String?>(updatedAt),
+      'lastSync': serializer.toJson<String?>(lastSync),
+      'syncStatus': serializer.toJson<int>(syncStatus),
+    };
+  }
+
+  DbJobTestSet copyWith({
+    int? uid,
+    String? recId,
+    Value<String?> documentId = const Value.absent(),
+    Value<String?> setItemNo = const Value.absent(),
+    Value<String?> registerDateTime = const Value.absent(),
+    Value<String?> registerUser = const Value.absent(),
+    int? status,
+    Value<String?> updatedAt = const Value.absent(),
+    Value<String?> lastSync = const Value.absent(),
+    int? syncStatus,
+  }) => DbJobTestSet(
+    uid: uid ?? this.uid,
+    recId: recId ?? this.recId,
+    documentId: documentId.present ? documentId.value : this.documentId,
+    setItemNo: setItemNo.present ? setItemNo.value : this.setItemNo,
+    registerDateTime: registerDateTime.present
+        ? registerDateTime.value
+        : this.registerDateTime,
+    registerUser: registerUser.present ? registerUser.value : this.registerUser,
+    status: status ?? this.status,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    lastSync: lastSync.present ? lastSync.value : this.lastSync,
+    syncStatus: syncStatus ?? this.syncStatus,
+  );
+  DbJobTestSet copyWithCompanion(JobTestSetsCompanion data) {
+    return DbJobTestSet(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      recId: data.recId.present ? data.recId.value : this.recId,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      setItemNo: data.setItemNo.present ? data.setItemNo.value : this.setItemNo,
+      registerDateTime: data.registerDateTime.present
+          ? data.registerDateTime.value
+          : this.registerDateTime,
+      registerUser: data.registerUser.present
+          ? data.registerUser.value
+          : this.registerUser,
+      status: data.status.present ? data.status.value : this.status,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbJobTestSet(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('documentId: $documentId, ')
+          ..write('setItemNo: $setItemNo, ')
+          ..write('registerDateTime: $registerDateTime, ')
+          ..write('registerUser: $registerUser, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    recId,
+    documentId,
+    setItemNo,
+    registerDateTime,
+    registerUser,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbJobTestSet &&
+          other.uid == this.uid &&
+          other.recId == this.recId &&
+          other.documentId == this.documentId &&
+          other.setItemNo == this.setItemNo &&
+          other.registerDateTime == this.registerDateTime &&
+          other.registerUser == this.registerUser &&
+          other.status == this.status &&
+          other.updatedAt == this.updatedAt &&
+          other.lastSync == this.lastSync &&
+          other.syncStatus == this.syncStatus);
+}
+
+class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
+  final Value<int> uid;
+  final Value<String> recId;
+  final Value<String?> documentId;
+  final Value<String?> setItemNo;
+  final Value<String?> registerDateTime;
+  final Value<String?> registerUser;
+  final Value<int> status;
+  final Value<String?> updatedAt;
+  final Value<String?> lastSync;
+  final Value<int> syncStatus;
+  const JobTestSetsCompanion({
+    this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.setItemNo = const Value.absent(),
+    this.registerDateTime = const Value.absent(),
+    this.registerUser = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  });
+  JobTestSetsCompanion.insert({
+    this.uid = const Value.absent(),
+    required String recId,
+    this.documentId = const Value.absent(),
+    this.setItemNo = const Value.absent(),
+    this.registerDateTime = const Value.absent(),
+    this.registerUser = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  }) : recId = Value(recId);
+  static Insertable<DbJobTestSet> custom({
+    Expression<int>? uid,
+    Expression<String>? recId,
+    Expression<String>? documentId,
+    Expression<String>? setItemNo,
+    Expression<String>? registerDateTime,
+    Expression<String>? registerUser,
+    Expression<int>? status,
+    Expression<String>? updatedAt,
+    Expression<String>? lastSync,
+    Expression<int>? syncStatus,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (recId != null) 'recID': recId,
+      if (documentId != null) 'documentId': documentId,
+      if (setItemNo != null) 'setItemNo': setItemNo,
+      if (registerDateTime != null) 'registerDateTime': registerDateTime,
+      if (registerUser != null) 'registerUser': registerUser,
+      if (status != null) 'status': status,
+      if (updatedAt != null) 'updatedAt': updatedAt,
+      if (lastSync != null) 'lastSync': lastSync,
+      if (syncStatus != null) 'syncStatus': syncStatus,
+    });
+  }
+
+  JobTestSetsCompanion copyWith({
+    Value<int>? uid,
+    Value<String>? recId,
+    Value<String?>? documentId,
+    Value<String?>? setItemNo,
+    Value<String?>? registerDateTime,
+    Value<String?>? registerUser,
+    Value<int>? status,
+    Value<String?>? updatedAt,
+    Value<String?>? lastSync,
+    Value<int>? syncStatus,
+  }) {
+    return JobTestSetsCompanion(
+      uid: uid ?? this.uid,
+      recId: recId ?? this.recId,
+      documentId: documentId ?? this.documentId,
+      setItemNo: setItemNo ?? this.setItemNo,
+      registerDateTime: registerDateTime ?? this.registerDateTime,
+      registerUser: registerUser ?? this.registerUser,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastSync: lastSync ?? this.lastSync,
+      syncStatus: syncStatus ?? this.syncStatus,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (recId.present) {
+      map['recID'] = Variable<String>(recId.value);
+    }
+    if (documentId.present) {
+      map['documentId'] = Variable<String>(documentId.value);
+    }
+    if (setItemNo.present) {
+      map['setItemNo'] = Variable<String>(setItemNo.value);
+    }
+    if (registerDateTime.present) {
+      map['registerDateTime'] = Variable<String>(registerDateTime.value);
+    }
+    if (registerUser.present) {
+      map['registerUser'] = Variable<String>(registerUser.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (updatedAt.present) {
+      map['updatedAt'] = Variable<String>(updatedAt.value);
+    }
+    if (lastSync.present) {
+      map['lastSync'] = Variable<String>(lastSync.value);
+    }
+    if (syncStatus.present) {
+      map['syncStatus'] = Variable<int>(syncStatus.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobTestSetsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('documentId: $documentId, ')
+          ..write('setItemNo: $setItemNo, ')
+          ..write('registerDateTime: $registerDateTime, ')
+          ..write('registerUser: $registerUser, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RunningJobMachinesTable extends RunningJobMachines
+    with TableInfo<$RunningJobMachinesTable, DbRunningJobMachine> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RunningJobMachinesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'recID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'documentId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _machineNoMeta = const VerificationMeta(
+    'machineNo',
+  );
+  @override
+  late final GeneratedColumn<String> machineNo = GeneratedColumn<String>(
+    'MachineNo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _registerDateTimeMeta = const VerificationMeta(
+    'registerDateTime',
+  );
+  @override
+  late final GeneratedColumn<String> registerDateTime = GeneratedColumn<String>(
+    'registerDateTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _registerUserMeta = const VerificationMeta(
+    'registerUser',
+  );
+  @override
+  late final GeneratedColumn<String> registerUser = GeneratedColumn<String>(
+    'registerUser',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updatedAt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSyncMeta = const VerificationMeta(
+    'lastSync',
+  );
+  @override
+  late final GeneratedColumn<String> lastSync = GeneratedColumn<String>(
+    'lastSync',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
+    'syncStatus',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    recId,
+    documentId,
+    machineNo,
+    registerDateTime,
+    registerUser,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'running_job_machines';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbRunningJobMachine> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('recID')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['recID']!, _recIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recIdMeta);
+    }
+    if (data.containsKey('documentId')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['documentId']!, _documentIdMeta),
+      );
+    }
+    if (data.containsKey('MachineNo')) {
+      context.handle(
+        _machineNoMeta,
+        machineNo.isAcceptableOrUnknown(data['MachineNo']!, _machineNoMeta),
+      );
+    }
+    if (data.containsKey('registerDateTime')) {
+      context.handle(
+        _registerDateTimeMeta,
+        registerDateTime.isAcceptableOrUnknown(
+          data['registerDateTime']!,
+          _registerDateTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('registerUser')) {
+      context.handle(
+        _registerUserMeta,
+        registerUser.isAcceptableOrUnknown(
+          data['registerUser']!,
+          _registerUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('updatedAt')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('lastSync')) {
+      context.handle(
+        _lastSyncMeta,
+        lastSync.isAcceptableOrUnknown(data['lastSync']!, _lastSyncMeta),
+      );
+    }
+    if (data.containsKey('syncStatus')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbRunningJobMachine map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbRunningJobMachine(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recID'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}documentId'],
+      ),
+      machineNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}MachineNo'],
+      ),
+      registerDateTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}registerDateTime'],
+      ),
+      registerUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}registerUser'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updatedAt'],
+      ),
+      lastSync: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lastSync'],
+      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}syncStatus'],
+      )!,
+    );
+  }
+
+  @override
+  $RunningJobMachinesTable createAlias(String alias) {
+    return $RunningJobMachinesTable(attachedDatabase, alias);
+  }
+}
+
+class DbRunningJobMachine extends DataClass
+    implements Insertable<DbRunningJobMachine> {
+  final int uid;
+  final String recId;
+  final String? documentId;
+  final String? machineNo;
+  final String? registerDateTime;
+  final String? registerUser;
+  final int status;
+  final String? updatedAt;
+  final String? lastSync;
+  final int syncStatus;
+  const DbRunningJobMachine({
+    required this.uid,
+    required this.recId,
+    this.documentId,
+    this.machineNo,
+    this.registerDateTime,
+    this.registerUser,
+    required this.status,
+    this.updatedAt,
+    this.lastSync,
+    required this.syncStatus,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    map['recID'] = Variable<String>(recId);
+    if (!nullToAbsent || documentId != null) {
+      map['documentId'] = Variable<String>(documentId);
+    }
+    if (!nullToAbsent || machineNo != null) {
+      map['MachineNo'] = Variable<String>(machineNo);
+    }
+    if (!nullToAbsent || registerDateTime != null) {
+      map['registerDateTime'] = Variable<String>(registerDateTime);
+    }
+    if (!nullToAbsent || registerUser != null) {
+      map['registerUser'] = Variable<String>(registerUser);
+    }
+    map['status'] = Variable<int>(status);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updatedAt'] = Variable<String>(updatedAt);
+    }
+    if (!nullToAbsent || lastSync != null) {
+      map['lastSync'] = Variable<String>(lastSync);
+    }
+    map['syncStatus'] = Variable<int>(syncStatus);
+    return map;
+  }
+
+  RunningJobMachinesCompanion toCompanion(bool nullToAbsent) {
+    return RunningJobMachinesCompanion(
+      uid: Value(uid),
+      recId: Value(recId),
+      documentId: documentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(documentId),
+      machineNo: machineNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(machineNo),
+      registerDateTime: registerDateTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registerDateTime),
+      registerUser: registerUser == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registerUser),
+      status: Value(status),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      lastSync: lastSync == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSync),
+      syncStatus: Value(syncStatus),
+    );
+  }
+
+  factory DbRunningJobMachine.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbRunningJobMachine(
+      uid: serializer.fromJson<int>(json['uid']),
+      recId: serializer.fromJson<String>(json['recId']),
+      documentId: serializer.fromJson<String?>(json['documentId']),
+      machineNo: serializer.fromJson<String?>(json['machineNo']),
+      registerDateTime: serializer.fromJson<String?>(json['registerDateTime']),
+      registerUser: serializer.fromJson<String?>(json['registerUser']),
+      status: serializer.fromJson<int>(json['status']),
+      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+      lastSync: serializer.fromJson<String?>(json['lastSync']),
+      syncStatus: serializer.fromJson<int>(json['syncStatus']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'recId': serializer.toJson<String>(recId),
+      'documentId': serializer.toJson<String?>(documentId),
+      'machineNo': serializer.toJson<String?>(machineNo),
+      'registerDateTime': serializer.toJson<String?>(registerDateTime),
+      'registerUser': serializer.toJson<String?>(registerUser),
+      'status': serializer.toJson<int>(status),
+      'updatedAt': serializer.toJson<String?>(updatedAt),
+      'lastSync': serializer.toJson<String?>(lastSync),
+      'syncStatus': serializer.toJson<int>(syncStatus),
+    };
+  }
+
+  DbRunningJobMachine copyWith({
+    int? uid,
+    String? recId,
+    Value<String?> documentId = const Value.absent(),
+    Value<String?> machineNo = const Value.absent(),
+    Value<String?> registerDateTime = const Value.absent(),
+    Value<String?> registerUser = const Value.absent(),
+    int? status,
+    Value<String?> updatedAt = const Value.absent(),
+    Value<String?> lastSync = const Value.absent(),
+    int? syncStatus,
+  }) => DbRunningJobMachine(
+    uid: uid ?? this.uid,
+    recId: recId ?? this.recId,
+    documentId: documentId.present ? documentId.value : this.documentId,
+    machineNo: machineNo.present ? machineNo.value : this.machineNo,
+    registerDateTime: registerDateTime.present
+        ? registerDateTime.value
+        : this.registerDateTime,
+    registerUser: registerUser.present ? registerUser.value : this.registerUser,
+    status: status ?? this.status,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    lastSync: lastSync.present ? lastSync.value : this.lastSync,
+    syncStatus: syncStatus ?? this.syncStatus,
+  );
+  DbRunningJobMachine copyWithCompanion(RunningJobMachinesCompanion data) {
+    return DbRunningJobMachine(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      recId: data.recId.present ? data.recId.value : this.recId,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      machineNo: data.machineNo.present ? data.machineNo.value : this.machineNo,
+      registerDateTime: data.registerDateTime.present
+          ? data.registerDateTime.value
+          : this.registerDateTime,
+      registerUser: data.registerUser.present
+          ? data.registerUser.value
+          : this.registerUser,
+      status: data.status.present ? data.status.value : this.status,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbRunningJobMachine(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('documentId: $documentId, ')
+          ..write('machineNo: $machineNo, ')
+          ..write('registerDateTime: $registerDateTime, ')
+          ..write('registerUser: $registerUser, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    recId,
+    documentId,
+    machineNo,
+    registerDateTime,
+    registerUser,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbRunningJobMachine &&
+          other.uid == this.uid &&
+          other.recId == this.recId &&
+          other.documentId == this.documentId &&
+          other.machineNo == this.machineNo &&
+          other.registerDateTime == this.registerDateTime &&
+          other.registerUser == this.registerUser &&
+          other.status == this.status &&
+          other.updatedAt == this.updatedAt &&
+          other.lastSync == this.lastSync &&
+          other.syncStatus == this.syncStatus);
+}
+
+class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
+  final Value<int> uid;
+  final Value<String> recId;
+  final Value<String?> documentId;
+  final Value<String?> machineNo;
+  final Value<String?> registerDateTime;
+  final Value<String?> registerUser;
+  final Value<int> status;
+  final Value<String?> updatedAt;
+  final Value<String?> lastSync;
+  final Value<int> syncStatus;
+  const RunningJobMachinesCompanion({
+    this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.machineNo = const Value.absent(),
+    this.registerDateTime = const Value.absent(),
+    this.registerUser = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  });
+  RunningJobMachinesCompanion.insert({
+    this.uid = const Value.absent(),
+    required String recId,
+    this.documentId = const Value.absent(),
+    this.machineNo = const Value.absent(),
+    this.registerDateTime = const Value.absent(),
+    this.registerUser = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  }) : recId = Value(recId);
+  static Insertable<DbRunningJobMachine> custom({
+    Expression<int>? uid,
+    Expression<String>? recId,
+    Expression<String>? documentId,
+    Expression<String>? machineNo,
+    Expression<String>? registerDateTime,
+    Expression<String>? registerUser,
+    Expression<int>? status,
+    Expression<String>? updatedAt,
+    Expression<String>? lastSync,
+    Expression<int>? syncStatus,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (recId != null) 'recID': recId,
+      if (documentId != null) 'documentId': documentId,
+      if (machineNo != null) 'MachineNo': machineNo,
+      if (registerDateTime != null) 'registerDateTime': registerDateTime,
+      if (registerUser != null) 'registerUser': registerUser,
+      if (status != null) 'status': status,
+      if (updatedAt != null) 'updatedAt': updatedAt,
+      if (lastSync != null) 'lastSync': lastSync,
+      if (syncStatus != null) 'syncStatus': syncStatus,
+    });
+  }
+
+  RunningJobMachinesCompanion copyWith({
+    Value<int>? uid,
+    Value<String>? recId,
+    Value<String?>? documentId,
+    Value<String?>? machineNo,
+    Value<String?>? registerDateTime,
+    Value<String?>? registerUser,
+    Value<int>? status,
+    Value<String?>? updatedAt,
+    Value<String?>? lastSync,
+    Value<int>? syncStatus,
+  }) {
+    return RunningJobMachinesCompanion(
+      uid: uid ?? this.uid,
+      recId: recId ?? this.recId,
+      documentId: documentId ?? this.documentId,
+      machineNo: machineNo ?? this.machineNo,
+      registerDateTime: registerDateTime ?? this.registerDateTime,
+      registerUser: registerUser ?? this.registerUser,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastSync: lastSync ?? this.lastSync,
+      syncStatus: syncStatus ?? this.syncStatus,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (recId.present) {
+      map['recID'] = Variable<String>(recId.value);
+    }
+    if (documentId.present) {
+      map['documentId'] = Variable<String>(documentId.value);
+    }
+    if (machineNo.present) {
+      map['MachineNo'] = Variable<String>(machineNo.value);
+    }
+    if (registerDateTime.present) {
+      map['registerDateTime'] = Variable<String>(registerDateTime.value);
+    }
+    if (registerUser.present) {
+      map['registerUser'] = Variable<String>(registerUser.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (updatedAt.present) {
+      map['updatedAt'] = Variable<String>(updatedAt.value);
+    }
+    if (lastSync.present) {
+      map['lastSync'] = Variable<String>(lastSync.value);
+    }
+    if (syncStatus.present) {
+      map['syncStatus'] = Variable<int>(syncStatus.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RunningJobMachinesCompanion(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('documentId: $documentId, ')
+          ..write('machineNo: $machineNo, ')
+          ..write('registerDateTime: $registerDateTime, ')
+          ..write('registerUser: $registerUser, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $JobWorkingTimesTable extends JobWorkingTimes
+    with TableInfo<$JobWorkingTimesTable, DbJobWorkingTime> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobWorkingTimesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'documentId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'UserId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activityIdMeta = const VerificationMeta(
+    'activityId',
+  );
+  @override
+  late final GeneratedColumn<String> activityId = GeneratedColumn<String>(
+    'ActivityID',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startTimeMeta = const VerificationMeta(
+    'startTime',
+  );
+  @override
+  late final GeneratedColumn<String> startTime = GeneratedColumn<String>(
+    'StartTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _endTimeMeta = const VerificationMeta(
+    'endTime',
+  );
+  @override
+  late final GeneratedColumn<String> endTime = GeneratedColumn<String>(
+    'EndTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updatedAt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSyncMeta = const VerificationMeta(
+    'lastSync',
+  );
+  @override
+  late final GeneratedColumn<String> lastSync = GeneratedColumn<String>(
+    'lastSync',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
+    'syncStatus',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    documentId,
+    userId,
+    activityId,
+    startTime,
+    endTime,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'job_working_times';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbJobWorkingTime> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('documentId')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['documentId']!, _documentIdMeta),
+      );
+    }
+    if (data.containsKey('UserId')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['UserId']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('ActivityID')) {
+      context.handle(
+        _activityIdMeta,
+        activityId.isAcceptableOrUnknown(data['ActivityID']!, _activityIdMeta),
+      );
+    }
+    if (data.containsKey('StartTime')) {
+      context.handle(
+        _startTimeMeta,
+        startTime.isAcceptableOrUnknown(data['StartTime']!, _startTimeMeta),
+      );
+    }
+    if (data.containsKey('EndTime')) {
+      context.handle(
+        _endTimeMeta,
+        endTime.isAcceptableOrUnknown(data['EndTime']!, _endTimeMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('updatedAt')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('lastSync')) {
+      context.handle(
+        _lastSyncMeta,
+        lastSync.isAcceptableOrUnknown(data['lastSync']!, _lastSyncMeta),
+      );
+    }
+    if (data.containsKey('syncStatus')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbJobWorkingTime map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbJobWorkingTime(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}documentId'],
+      ),
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}UserId'],
+      ),
+      activityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ActivityID'],
+      ),
+      startTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}StartTime'],
+      ),
+      endTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}EndTime'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updatedAt'],
+      ),
+      lastSync: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lastSync'],
+      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}syncStatus'],
+      )!,
+    );
+  }
+
+  @override
+  $JobWorkingTimesTable createAlias(String alias) {
+    return $JobWorkingTimesTable(attachedDatabase, alias);
+  }
+}
+
+class DbJobWorkingTime extends DataClass
+    implements Insertable<DbJobWorkingTime> {
+  final int uid;
+  final String? documentId;
+  final String? userId;
+  final String? activityId;
+  final String? startTime;
+  final String? endTime;
+  final int status;
+  final String? updatedAt;
+  final String? lastSync;
+  final int syncStatus;
+  const DbJobWorkingTime({
+    required this.uid,
+    this.documentId,
+    this.userId,
+    this.activityId,
+    this.startTime,
+    this.endTime,
+    required this.status,
+    this.updatedAt,
+    this.lastSync,
+    required this.syncStatus,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || documentId != null) {
+      map['documentId'] = Variable<String>(documentId);
+    }
+    if (!nullToAbsent || userId != null) {
+      map['UserId'] = Variable<String>(userId);
+    }
+    if (!nullToAbsent || activityId != null) {
+      map['ActivityID'] = Variable<String>(activityId);
+    }
+    if (!nullToAbsent || startTime != null) {
+      map['StartTime'] = Variable<String>(startTime);
+    }
+    if (!nullToAbsent || endTime != null) {
+      map['EndTime'] = Variable<String>(endTime);
+    }
+    map['status'] = Variable<int>(status);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updatedAt'] = Variable<String>(updatedAt);
+    }
+    if (!nullToAbsent || lastSync != null) {
+      map['lastSync'] = Variable<String>(lastSync);
+    }
+    map['syncStatus'] = Variable<int>(syncStatus);
+    return map;
+  }
+
+  JobWorkingTimesCompanion toCompanion(bool nullToAbsent) {
+    return JobWorkingTimesCompanion(
+      uid: Value(uid),
+      documentId: documentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(documentId),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
+      activityId: activityId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activityId),
+      startTime: startTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startTime),
+      endTime: endTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endTime),
+      status: Value(status),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      lastSync: lastSync == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSync),
+      syncStatus: Value(syncStatus),
+    );
+  }
+
+  factory DbJobWorkingTime.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbJobWorkingTime(
+      uid: serializer.fromJson<int>(json['uid']),
+      documentId: serializer.fromJson<String?>(json['documentId']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      activityId: serializer.fromJson<String?>(json['activityId']),
+      startTime: serializer.fromJson<String?>(json['startTime']),
+      endTime: serializer.fromJson<String?>(json['endTime']),
+      status: serializer.fromJson<int>(json['status']),
+      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+      lastSync: serializer.fromJson<String?>(json['lastSync']),
+      syncStatus: serializer.fromJson<int>(json['syncStatus']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'documentId': serializer.toJson<String?>(documentId),
+      'userId': serializer.toJson<String?>(userId),
+      'activityId': serializer.toJson<String?>(activityId),
+      'startTime': serializer.toJson<String?>(startTime),
+      'endTime': serializer.toJson<String?>(endTime),
+      'status': serializer.toJson<int>(status),
+      'updatedAt': serializer.toJson<String?>(updatedAt),
+      'lastSync': serializer.toJson<String?>(lastSync),
+      'syncStatus': serializer.toJson<int>(syncStatus),
+    };
+  }
+
+  DbJobWorkingTime copyWith({
+    int? uid,
+    Value<String?> documentId = const Value.absent(),
+    Value<String?> userId = const Value.absent(),
+    Value<String?> activityId = const Value.absent(),
+    Value<String?> startTime = const Value.absent(),
+    Value<String?> endTime = const Value.absent(),
+    int? status,
+    Value<String?> updatedAt = const Value.absent(),
+    Value<String?> lastSync = const Value.absent(),
+    int? syncStatus,
+  }) => DbJobWorkingTime(
+    uid: uid ?? this.uid,
+    documentId: documentId.present ? documentId.value : this.documentId,
+    userId: userId.present ? userId.value : this.userId,
+    activityId: activityId.present ? activityId.value : this.activityId,
+    startTime: startTime.present ? startTime.value : this.startTime,
+    endTime: endTime.present ? endTime.value : this.endTime,
+    status: status ?? this.status,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    lastSync: lastSync.present ? lastSync.value : this.lastSync,
+    syncStatus: syncStatus ?? this.syncStatus,
+  );
+  DbJobWorkingTime copyWithCompanion(JobWorkingTimesCompanion data) {
+    return DbJobWorkingTime(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      activityId: data.activityId.present
+          ? data.activityId.value
+          : this.activityId,
+      startTime: data.startTime.present ? data.startTime.value : this.startTime,
+      endTime: data.endTime.present ? data.endTime.value : this.endTime,
+      status: data.status.present ? data.status.value : this.status,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbJobWorkingTime(')
+          ..write('uid: $uid, ')
+          ..write('documentId: $documentId, ')
+          ..write('userId: $userId, ')
+          ..write('activityId: $activityId, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    documentId,
+    userId,
+    activityId,
+    startTime,
+    endTime,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbJobWorkingTime &&
+          other.uid == this.uid &&
+          other.documentId == this.documentId &&
+          other.userId == this.userId &&
+          other.activityId == this.activityId &&
+          other.startTime == this.startTime &&
+          other.endTime == this.endTime &&
+          other.status == this.status &&
+          other.updatedAt == this.updatedAt &&
+          other.lastSync == this.lastSync &&
+          other.syncStatus == this.syncStatus);
+}
+
+class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
+  final Value<int> uid;
+  final Value<String?> documentId;
+  final Value<String?> userId;
+  final Value<String?> activityId;
+  final Value<String?> startTime;
+  final Value<String?> endTime;
+  final Value<int> status;
+  final Value<String?> updatedAt;
+  final Value<String?> lastSync;
+  final Value<int> syncStatus;
+  const JobWorkingTimesCompanion({
+    this.uid = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.activityId = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  });
+  JobWorkingTimesCompanion.insert({
+    this.uid = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.activityId = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  });
+  static Insertable<DbJobWorkingTime> custom({
+    Expression<int>? uid,
+    Expression<String>? documentId,
+    Expression<String>? userId,
+    Expression<String>? activityId,
+    Expression<String>? startTime,
+    Expression<String>? endTime,
+    Expression<int>? status,
+    Expression<String>? updatedAt,
+    Expression<String>? lastSync,
+    Expression<int>? syncStatus,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (documentId != null) 'documentId': documentId,
+      if (userId != null) 'UserId': userId,
+      if (activityId != null) 'ActivityID': activityId,
+      if (startTime != null) 'StartTime': startTime,
+      if (endTime != null) 'EndTime': endTime,
+      if (status != null) 'status': status,
+      if (updatedAt != null) 'updatedAt': updatedAt,
+      if (lastSync != null) 'lastSync': lastSync,
+      if (syncStatus != null) 'syncStatus': syncStatus,
+    });
+  }
+
+  JobWorkingTimesCompanion copyWith({
+    Value<int>? uid,
+    Value<String?>? documentId,
+    Value<String?>? userId,
+    Value<String?>? activityId,
+    Value<String?>? startTime,
+    Value<String?>? endTime,
+    Value<int>? status,
+    Value<String?>? updatedAt,
+    Value<String?>? lastSync,
+    Value<int>? syncStatus,
+  }) {
+    return JobWorkingTimesCompanion(
+      uid: uid ?? this.uid,
+      documentId: documentId ?? this.documentId,
+      userId: userId ?? this.userId,
+      activityId: activityId ?? this.activityId,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastSync: lastSync ?? this.lastSync,
+      syncStatus: syncStatus ?? this.syncStatus,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (documentId.present) {
+      map['documentId'] = Variable<String>(documentId.value);
+    }
+    if (userId.present) {
+      map['UserId'] = Variable<String>(userId.value);
+    }
+    if (activityId.present) {
+      map['ActivityID'] = Variable<String>(activityId.value);
+    }
+    if (startTime.present) {
+      map['StartTime'] = Variable<String>(startTime.value);
+    }
+    if (endTime.present) {
+      map['EndTime'] = Variable<String>(endTime.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (updatedAt.present) {
+      map['updatedAt'] = Variable<String>(updatedAt.value);
+    }
+    if (lastSync.present) {
+      map['lastSync'] = Variable<String>(lastSync.value);
+    }
+    if (syncStatus.present) {
+      map['syncStatus'] = Variable<int>(syncStatus.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobWorkingTimesCompanion(')
+          ..write('uid: $uid, ')
+          ..write('documentId: $documentId, ')
+          ..write('userId: $userId, ')
+          ..write('activityId: $activityId, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $JobMachineEventLogsTable extends JobMachineEventLogs
+    with TableInfo<$JobMachineEventLogsTable, DbJobMachineEventLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobMachineEventLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _jobMachineRecIdMeta = const VerificationMeta(
+    'jobMachineRecId',
+  );
+  @override
+  late final GeneratedColumn<String> jobMachineRecId = GeneratedColumn<String>(
+    'JobMachineRef',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startTimeMeta = const VerificationMeta(
+    'startTime',
+  );
+  @override
+  late final GeneratedColumn<String> startTime = GeneratedColumn<String>(
+    'StartTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _endTimeMeta = const VerificationMeta(
+    'endTime',
+  );
+  @override
+  late final GeneratedColumn<String> endTime = GeneratedColumn<String>(
+    'EndTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updatedAt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSyncMeta = const VerificationMeta(
+    'lastSync',
+  );
+  @override
+  late final GeneratedColumn<String> lastSync = GeneratedColumn<String>(
+    'lastSync',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
+    'syncStatus',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    jobMachineRecId,
+    startTime,
+    endTime,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'job_machine_event_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbJobMachineEventLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('JobMachineRef')) {
+      context.handle(
+        _jobMachineRecIdMeta,
+        jobMachineRecId.isAcceptableOrUnknown(
+          data['JobMachineRef']!,
+          _jobMachineRecIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('StartTime')) {
+      context.handle(
+        _startTimeMeta,
+        startTime.isAcceptableOrUnknown(data['StartTime']!, _startTimeMeta),
+      );
+    }
+    if (data.containsKey('EndTime')) {
+      context.handle(
+        _endTimeMeta,
+        endTime.isAcceptableOrUnknown(data['EndTime']!, _endTimeMeta),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('updatedAt')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('lastSync')) {
+      context.handle(
+        _lastSyncMeta,
+        lastSync.isAcceptableOrUnknown(data['lastSync']!, _lastSyncMeta),
+      );
+    }
+    if (data.containsKey('syncStatus')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbJobMachineEventLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbJobMachineEventLog(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      jobMachineRecId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}JobMachineRef'],
+      ),
+      startTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}StartTime'],
+      ),
+      endTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}EndTime'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updatedAt'],
+      ),
+      lastSync: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lastSync'],
+      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}syncStatus'],
+      )!,
+    );
+  }
+
+  @override
+  $JobMachineEventLogsTable createAlias(String alias) {
+    return $JobMachineEventLogsTable(attachedDatabase, alias);
+  }
+}
+
+class DbJobMachineEventLog extends DataClass
+    implements Insertable<DbJobMachineEventLog> {
+  final int uid;
+  final String? jobMachineRecId;
+  final String? startTime;
+  final String? endTime;
+  final int status;
+  final String? updatedAt;
+  final String? lastSync;
+  final int syncStatus;
+  const DbJobMachineEventLog({
+    required this.uid,
+    this.jobMachineRecId,
+    this.startTime,
+    this.endTime,
+    required this.status,
+    this.updatedAt,
+    this.lastSync,
+    required this.syncStatus,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || jobMachineRecId != null) {
+      map['JobMachineRef'] = Variable<String>(jobMachineRecId);
+    }
+    if (!nullToAbsent || startTime != null) {
+      map['StartTime'] = Variable<String>(startTime);
+    }
+    if (!nullToAbsent || endTime != null) {
+      map['EndTime'] = Variable<String>(endTime);
+    }
+    map['status'] = Variable<int>(status);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updatedAt'] = Variable<String>(updatedAt);
+    }
+    if (!nullToAbsent || lastSync != null) {
+      map['lastSync'] = Variable<String>(lastSync);
+    }
+    map['syncStatus'] = Variable<int>(syncStatus);
+    return map;
+  }
+
+  JobMachineEventLogsCompanion toCompanion(bool nullToAbsent) {
+    return JobMachineEventLogsCompanion(
+      uid: Value(uid),
+      jobMachineRecId: jobMachineRecId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobMachineRecId),
+      startTime: startTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startTime),
+      endTime: endTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endTime),
+      status: Value(status),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      lastSync: lastSync == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSync),
+      syncStatus: Value(syncStatus),
+    );
+  }
+
+  factory DbJobMachineEventLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbJobMachineEventLog(
+      uid: serializer.fromJson<int>(json['uid']),
+      jobMachineRecId: serializer.fromJson<String?>(json['jobMachineRecId']),
+      startTime: serializer.fromJson<String?>(json['startTime']),
+      endTime: serializer.fromJson<String?>(json['endTime']),
+      status: serializer.fromJson<int>(json['status']),
+      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+      lastSync: serializer.fromJson<String?>(json['lastSync']),
+      syncStatus: serializer.fromJson<int>(json['syncStatus']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'jobMachineRecId': serializer.toJson<String?>(jobMachineRecId),
+      'startTime': serializer.toJson<String?>(startTime),
+      'endTime': serializer.toJson<String?>(endTime),
+      'status': serializer.toJson<int>(status),
+      'updatedAt': serializer.toJson<String?>(updatedAt),
+      'lastSync': serializer.toJson<String?>(lastSync),
+      'syncStatus': serializer.toJson<int>(syncStatus),
+    };
+  }
+
+  DbJobMachineEventLog copyWith({
+    int? uid,
+    Value<String?> jobMachineRecId = const Value.absent(),
+    Value<String?> startTime = const Value.absent(),
+    Value<String?> endTime = const Value.absent(),
+    int? status,
+    Value<String?> updatedAt = const Value.absent(),
+    Value<String?> lastSync = const Value.absent(),
+    int? syncStatus,
+  }) => DbJobMachineEventLog(
+    uid: uid ?? this.uid,
+    jobMachineRecId: jobMachineRecId.present
+        ? jobMachineRecId.value
+        : this.jobMachineRecId,
+    startTime: startTime.present ? startTime.value : this.startTime,
+    endTime: endTime.present ? endTime.value : this.endTime,
+    status: status ?? this.status,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    lastSync: lastSync.present ? lastSync.value : this.lastSync,
+    syncStatus: syncStatus ?? this.syncStatus,
+  );
+  DbJobMachineEventLog copyWithCompanion(JobMachineEventLogsCompanion data) {
+    return DbJobMachineEventLog(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      jobMachineRecId: data.jobMachineRecId.present
+          ? data.jobMachineRecId.value
+          : this.jobMachineRecId,
+      startTime: data.startTime.present ? data.startTime.value : this.startTime,
+      endTime: data.endTime.present ? data.endTime.value : this.endTime,
+      status: data.status.present ? data.status.value : this.status,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbJobMachineEventLog(')
+          ..write('uid: $uid, ')
+          ..write('jobMachineRecId: $jobMachineRecId, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    jobMachineRecId,
+    startTime,
+    endTime,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbJobMachineEventLog &&
+          other.uid == this.uid &&
+          other.jobMachineRecId == this.jobMachineRecId &&
+          other.startTime == this.startTime &&
+          other.endTime == this.endTime &&
+          other.status == this.status &&
+          other.updatedAt == this.updatedAt &&
+          other.lastSync == this.lastSync &&
+          other.syncStatus == this.syncStatus);
+}
+
+class JobMachineEventLogsCompanion
+    extends UpdateCompanion<DbJobMachineEventLog> {
+  final Value<int> uid;
+  final Value<String?> jobMachineRecId;
+  final Value<String?> startTime;
+  final Value<String?> endTime;
+  final Value<int> status;
+  final Value<String?> updatedAt;
+  final Value<String?> lastSync;
+  final Value<int> syncStatus;
+  const JobMachineEventLogsCompanion({
+    this.uid = const Value.absent(),
+    this.jobMachineRecId = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  });
+  JobMachineEventLogsCompanion.insert({
+    this.uid = const Value.absent(),
+    this.jobMachineRecId = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  });
+  static Insertable<DbJobMachineEventLog> custom({
+    Expression<int>? uid,
+    Expression<String>? jobMachineRecId,
+    Expression<String>? startTime,
+    Expression<String>? endTime,
+    Expression<int>? status,
+    Expression<String>? updatedAt,
+    Expression<String>? lastSync,
+    Expression<int>? syncStatus,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (jobMachineRecId != null) 'JobMachineRef': jobMachineRecId,
+      if (startTime != null) 'StartTime': startTime,
+      if (endTime != null) 'EndTime': endTime,
+      if (status != null) 'status': status,
+      if (updatedAt != null) 'updatedAt': updatedAt,
+      if (lastSync != null) 'lastSync': lastSync,
+      if (syncStatus != null) 'syncStatus': syncStatus,
+    });
+  }
+
+  JobMachineEventLogsCompanion copyWith({
+    Value<int>? uid,
+    Value<String?>? jobMachineRecId,
+    Value<String?>? startTime,
+    Value<String?>? endTime,
+    Value<int>? status,
+    Value<String?>? updatedAt,
+    Value<String?>? lastSync,
+    Value<int>? syncStatus,
+  }) {
+    return JobMachineEventLogsCompanion(
+      uid: uid ?? this.uid,
+      jobMachineRecId: jobMachineRecId ?? this.jobMachineRecId,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastSync: lastSync ?? this.lastSync,
+      syncStatus: syncStatus ?? this.syncStatus,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (jobMachineRecId.present) {
+      map['JobMachineRef'] = Variable<String>(jobMachineRecId.value);
+    }
+    if (startTime.present) {
+      map['StartTime'] = Variable<String>(startTime.value);
+    }
+    if (endTime.present) {
+      map['EndTime'] = Variable<String>(endTime.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (updatedAt.present) {
+      map['updatedAt'] = Variable<String>(updatedAt.value);
+    }
+    if (lastSync.present) {
+      map['lastSync'] = Variable<String>(lastSync.value);
+    }
+    if (syncStatus.present) {
+      map['syncStatus'] = Variable<int>(syncStatus.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobMachineEventLogsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('jobMachineRecId: $jobMachineRecId, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $JobMachineItemsTable extends JobMachineItems
+    with TableInfo<$JobMachineItemsTable, DbJobMachineItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobMachineItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'recID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'documentId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _jobTestSetRecIdMeta = const VerificationMeta(
+    'jobTestSetRecId',
+  );
+  @override
+  late final GeneratedColumn<String> jobTestSetRecId = GeneratedColumn<String>(
+    'JobTestSetRef',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _jobMachineRecIdMeta = const VerificationMeta(
+    'jobMachineRecId',
+  );
+  @override
+  late final GeneratedColumn<String> jobMachineRecId = GeneratedColumn<String>(
+    'JobMachineRef',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _registerDateTimeMeta = const VerificationMeta(
+    'registerDateTime',
+  );
+  @override
+  late final GeneratedColumn<String> registerDateTime = GeneratedColumn<String>(
+    'registerDateTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _registerUserMeta = const VerificationMeta(
+    'registerUser',
+  );
+  @override
+  late final GeneratedColumn<String> registerUser = GeneratedColumn<String>(
+    'registerUser',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updatedAt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSyncMeta = const VerificationMeta(
+    'lastSync',
+  );
+  @override
+  late final GeneratedColumn<String> lastSync = GeneratedColumn<String>(
+    'lastSync',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
+    'syncStatus',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    recId,
+    documentId,
+    jobTestSetRecId,
+    jobMachineRecId,
+    registerDateTime,
+    registerUser,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'job_machine_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbJobMachineItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('recID')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['recID']!, _recIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recIdMeta);
+    }
+    if (data.containsKey('documentId')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['documentId']!, _documentIdMeta),
+      );
+    }
+    if (data.containsKey('JobTestSetRef')) {
+      context.handle(
+        _jobTestSetRecIdMeta,
+        jobTestSetRecId.isAcceptableOrUnknown(
+          data['JobTestSetRef']!,
+          _jobTestSetRecIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('JobMachineRef')) {
+      context.handle(
+        _jobMachineRecIdMeta,
+        jobMachineRecId.isAcceptableOrUnknown(
+          data['JobMachineRef']!,
+          _jobMachineRecIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('registerDateTime')) {
+      context.handle(
+        _registerDateTimeMeta,
+        registerDateTime.isAcceptableOrUnknown(
+          data['registerDateTime']!,
+          _registerDateTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('registerUser')) {
+      context.handle(
+        _registerUserMeta,
+        registerUser.isAcceptableOrUnknown(
+          data['registerUser']!,
+          _registerUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('updatedAt')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('lastSync')) {
+      context.handle(
+        _lastSyncMeta,
+        lastSync.isAcceptableOrUnknown(data['lastSync']!, _lastSyncMeta),
+      );
+    }
+    if (data.containsKey('syncStatus')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbJobMachineItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbJobMachineItem(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recID'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}documentId'],
+      ),
+      jobTestSetRecId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}JobTestSetRef'],
+      ),
+      jobMachineRecId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}JobMachineRef'],
+      ),
+      registerDateTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}registerDateTime'],
+      ),
+      registerUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}registerUser'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}status'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updatedAt'],
+      ),
+      lastSync: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lastSync'],
+      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}syncStatus'],
+      )!,
+    );
+  }
+
+  @override
+  $JobMachineItemsTable createAlias(String alias) {
+    return $JobMachineItemsTable(attachedDatabase, alias);
+  }
+}
+
+class DbJobMachineItem extends DataClass
+    implements Insertable<DbJobMachineItem> {
+  final int uid;
+  final String recId;
+  final String? documentId;
+  final String? jobTestSetRecId;
+  final String? jobMachineRecId;
+  final String? registerDateTime;
+  final String? registerUser;
+  final int status;
+  final String? updatedAt;
+  final String? lastSync;
+  final int syncStatus;
+  const DbJobMachineItem({
+    required this.uid,
+    required this.recId,
+    this.documentId,
+    this.jobTestSetRecId,
+    this.jobMachineRecId,
+    this.registerDateTime,
+    this.registerUser,
+    required this.status,
+    this.updatedAt,
+    this.lastSync,
+    required this.syncStatus,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    map['recID'] = Variable<String>(recId);
+    if (!nullToAbsent || documentId != null) {
+      map['documentId'] = Variable<String>(documentId);
+    }
+    if (!nullToAbsent || jobTestSetRecId != null) {
+      map['JobTestSetRef'] = Variable<String>(jobTestSetRecId);
+    }
+    if (!nullToAbsent || jobMachineRecId != null) {
+      map['JobMachineRef'] = Variable<String>(jobMachineRecId);
+    }
+    if (!nullToAbsent || registerDateTime != null) {
+      map['registerDateTime'] = Variable<String>(registerDateTime);
+    }
+    if (!nullToAbsent || registerUser != null) {
+      map['registerUser'] = Variable<String>(registerUser);
+    }
+    map['status'] = Variable<int>(status);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updatedAt'] = Variable<String>(updatedAt);
+    }
+    if (!nullToAbsent || lastSync != null) {
+      map['lastSync'] = Variable<String>(lastSync);
+    }
+    map['syncStatus'] = Variable<int>(syncStatus);
+    return map;
+  }
+
+  JobMachineItemsCompanion toCompanion(bool nullToAbsent) {
+    return JobMachineItemsCompanion(
+      uid: Value(uid),
+      recId: Value(recId),
+      documentId: documentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(documentId),
+      jobTestSetRecId: jobTestSetRecId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobTestSetRecId),
+      jobMachineRecId: jobMachineRecId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobMachineRecId),
+      registerDateTime: registerDateTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registerDateTime),
+      registerUser: registerUser == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registerUser),
+      status: Value(status),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      lastSync: lastSync == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSync),
+      syncStatus: Value(syncStatus),
+    );
+  }
+
+  factory DbJobMachineItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbJobMachineItem(
+      uid: serializer.fromJson<int>(json['uid']),
+      recId: serializer.fromJson<String>(json['recId']),
+      documentId: serializer.fromJson<String?>(json['documentId']),
+      jobTestSetRecId: serializer.fromJson<String?>(json['jobTestSetRecId']),
+      jobMachineRecId: serializer.fromJson<String?>(json['jobMachineRecId']),
+      registerDateTime: serializer.fromJson<String?>(json['registerDateTime']),
+      registerUser: serializer.fromJson<String?>(json['registerUser']),
+      status: serializer.fromJson<int>(json['status']),
+      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+      lastSync: serializer.fromJson<String?>(json['lastSync']),
+      syncStatus: serializer.fromJson<int>(json['syncStatus']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'recId': serializer.toJson<String>(recId),
+      'documentId': serializer.toJson<String?>(documentId),
+      'jobTestSetRecId': serializer.toJson<String?>(jobTestSetRecId),
+      'jobMachineRecId': serializer.toJson<String?>(jobMachineRecId),
+      'registerDateTime': serializer.toJson<String?>(registerDateTime),
+      'registerUser': serializer.toJson<String?>(registerUser),
+      'status': serializer.toJson<int>(status),
+      'updatedAt': serializer.toJson<String?>(updatedAt),
+      'lastSync': serializer.toJson<String?>(lastSync),
+      'syncStatus': serializer.toJson<int>(syncStatus),
+    };
+  }
+
+  DbJobMachineItem copyWith({
+    int? uid,
+    String? recId,
+    Value<String?> documentId = const Value.absent(),
+    Value<String?> jobTestSetRecId = const Value.absent(),
+    Value<String?> jobMachineRecId = const Value.absent(),
+    Value<String?> registerDateTime = const Value.absent(),
+    Value<String?> registerUser = const Value.absent(),
+    int? status,
+    Value<String?> updatedAt = const Value.absent(),
+    Value<String?> lastSync = const Value.absent(),
+    int? syncStatus,
+  }) => DbJobMachineItem(
+    uid: uid ?? this.uid,
+    recId: recId ?? this.recId,
+    documentId: documentId.present ? documentId.value : this.documentId,
+    jobTestSetRecId: jobTestSetRecId.present
+        ? jobTestSetRecId.value
+        : this.jobTestSetRecId,
+    jobMachineRecId: jobMachineRecId.present
+        ? jobMachineRecId.value
+        : this.jobMachineRecId,
+    registerDateTime: registerDateTime.present
+        ? registerDateTime.value
+        : this.registerDateTime,
+    registerUser: registerUser.present ? registerUser.value : this.registerUser,
+    status: status ?? this.status,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    lastSync: lastSync.present ? lastSync.value : this.lastSync,
+    syncStatus: syncStatus ?? this.syncStatus,
+  );
+  DbJobMachineItem copyWithCompanion(JobMachineItemsCompanion data) {
+    return DbJobMachineItem(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      recId: data.recId.present ? data.recId.value : this.recId,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      jobTestSetRecId: data.jobTestSetRecId.present
+          ? data.jobTestSetRecId.value
+          : this.jobTestSetRecId,
+      jobMachineRecId: data.jobMachineRecId.present
+          ? data.jobMachineRecId.value
+          : this.jobMachineRecId,
+      registerDateTime: data.registerDateTime.present
+          ? data.registerDateTime.value
+          : this.registerDateTime,
+      registerUser: data.registerUser.present
+          ? data.registerUser.value
+          : this.registerUser,
+      status: data.status.present ? data.status.value : this.status,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbJobMachineItem(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('documentId: $documentId, ')
+          ..write('jobTestSetRecId: $jobTestSetRecId, ')
+          ..write('jobMachineRecId: $jobMachineRecId, ')
+          ..write('registerDateTime: $registerDateTime, ')
+          ..write('registerUser: $registerUser, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    recId,
+    documentId,
+    jobTestSetRecId,
+    jobMachineRecId,
+    registerDateTime,
+    registerUser,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbJobMachineItem &&
+          other.uid == this.uid &&
+          other.recId == this.recId &&
+          other.documentId == this.documentId &&
+          other.jobTestSetRecId == this.jobTestSetRecId &&
+          other.jobMachineRecId == this.jobMachineRecId &&
+          other.registerDateTime == this.registerDateTime &&
+          other.registerUser == this.registerUser &&
+          other.status == this.status &&
+          other.updatedAt == this.updatedAt &&
+          other.lastSync == this.lastSync &&
+          other.syncStatus == this.syncStatus);
+}
+
+class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
+  final Value<int> uid;
+  final Value<String> recId;
+  final Value<String?> documentId;
+  final Value<String?> jobTestSetRecId;
+  final Value<String?> jobMachineRecId;
+  final Value<String?> registerDateTime;
+  final Value<String?> registerUser;
+  final Value<int> status;
+  final Value<String?> updatedAt;
+  final Value<String?> lastSync;
+  final Value<int> syncStatus;
+  const JobMachineItemsCompanion({
+    this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.jobTestSetRecId = const Value.absent(),
+    this.jobMachineRecId = const Value.absent(),
+    this.registerDateTime = const Value.absent(),
+    this.registerUser = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  });
+  JobMachineItemsCompanion.insert({
+    this.uid = const Value.absent(),
+    required String recId,
+    this.documentId = const Value.absent(),
+    this.jobTestSetRecId = const Value.absent(),
+    this.jobMachineRecId = const Value.absent(),
+    this.registerDateTime = const Value.absent(),
+    this.registerUser = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+  }) : recId = Value(recId);
+  static Insertable<DbJobMachineItem> custom({
+    Expression<int>? uid,
+    Expression<String>? recId,
+    Expression<String>? documentId,
+    Expression<String>? jobTestSetRecId,
+    Expression<String>? jobMachineRecId,
+    Expression<String>? registerDateTime,
+    Expression<String>? registerUser,
+    Expression<int>? status,
+    Expression<String>? updatedAt,
+    Expression<String>? lastSync,
+    Expression<int>? syncStatus,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (recId != null) 'recID': recId,
+      if (documentId != null) 'documentId': documentId,
+      if (jobTestSetRecId != null) 'JobTestSetRef': jobTestSetRecId,
+      if (jobMachineRecId != null) 'JobMachineRef': jobMachineRecId,
+      if (registerDateTime != null) 'registerDateTime': registerDateTime,
+      if (registerUser != null) 'registerUser': registerUser,
+      if (status != null) 'status': status,
+      if (updatedAt != null) 'updatedAt': updatedAt,
+      if (lastSync != null) 'lastSync': lastSync,
+      if (syncStatus != null) 'syncStatus': syncStatus,
+    });
+  }
+
+  JobMachineItemsCompanion copyWith({
+    Value<int>? uid,
+    Value<String>? recId,
+    Value<String?>? documentId,
+    Value<String?>? jobTestSetRecId,
+    Value<String?>? jobMachineRecId,
+    Value<String?>? registerDateTime,
+    Value<String?>? registerUser,
+    Value<int>? status,
+    Value<String?>? updatedAt,
+    Value<String?>? lastSync,
+    Value<int>? syncStatus,
+  }) {
+    return JobMachineItemsCompanion(
+      uid: uid ?? this.uid,
+      recId: recId ?? this.recId,
+      documentId: documentId ?? this.documentId,
+      jobTestSetRecId: jobTestSetRecId ?? this.jobTestSetRecId,
+      jobMachineRecId: jobMachineRecId ?? this.jobMachineRecId,
+      registerDateTime: registerDateTime ?? this.registerDateTime,
+      registerUser: registerUser ?? this.registerUser,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastSync: lastSync ?? this.lastSync,
+      syncStatus: syncStatus ?? this.syncStatus,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (recId.present) {
+      map['recID'] = Variable<String>(recId.value);
+    }
+    if (documentId.present) {
+      map['documentId'] = Variable<String>(documentId.value);
+    }
+    if (jobTestSetRecId.present) {
+      map['JobTestSetRef'] = Variable<String>(jobTestSetRecId.value);
+    }
+    if (jobMachineRecId.present) {
+      map['JobMachineRef'] = Variable<String>(jobMachineRecId.value);
+    }
+    if (registerDateTime.present) {
+      map['registerDateTime'] = Variable<String>(registerDateTime.value);
+    }
+    if (registerUser.present) {
+      map['registerUser'] = Variable<String>(registerUser.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<int>(status.value);
+    }
+    if (updatedAt.present) {
+      map['updatedAt'] = Variable<String>(updatedAt.value);
+    }
+    if (lastSync.present) {
+      map['lastSync'] = Variable<String>(lastSync.value);
+    }
+    if (syncStatus.present) {
+      map['syncStatus'] = Variable<int>(syncStatus.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobMachineItemsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('documentId: $documentId, ')
+          ..write('jobTestSetRecId: $jobTestSetRecId, ')
+          ..write('jobMachineRecId: $jobMachineRecId, ')
+          ..write('registerDateTime: $registerDateTime, ')
+          ..write('registerUser: $registerUser, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PauseReasonsTable extends PauseReasons
+    with TableInfo<$PauseReasonsTable, DbPauseReason> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PauseReasonsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _reasonCodeMeta = const VerificationMeta(
+    'reasonCode',
+  );
+  @override
+  late final GeneratedColumn<String> reasonCode = GeneratedColumn<String>(
+    'ReasonCode',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reasonNameMeta = const VerificationMeta(
+    'reasonName',
+  );
+  @override
+  late final GeneratedColumn<String> reasonName = GeneratedColumn<String>(
+    'ReasonName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'Status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [uid, reasonCode, reasonName, status];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'pause_reasons';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbPauseReason> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('ReasonCode')) {
+      context.handle(
+        _reasonCodeMeta,
+        reasonCode.isAcceptableOrUnknown(data['ReasonCode']!, _reasonCodeMeta),
+      );
+    }
+    if (data.containsKey('ReasonName')) {
+      context.handle(
+        _reasonNameMeta,
+        reasonName.isAcceptableOrUnknown(data['ReasonName']!, _reasonNameMeta),
+      );
+    }
+    if (data.containsKey('Status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['Status']!, _statusMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbPauseReason map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbPauseReason(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      reasonCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ReasonCode'],
+      ),
+      reasonName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ReasonName'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}Status'],
+      )!,
+    );
+  }
+
+  @override
+  $PauseReasonsTable createAlias(String alias) {
+    return $PauseReasonsTable(attachedDatabase, alias);
+  }
+}
+
+class DbPauseReason extends DataClass implements Insertable<DbPauseReason> {
+  final int uid;
+  final String? reasonCode;
+  final String? reasonName;
+  final int status;
+  const DbPauseReason({
+    required this.uid,
+    this.reasonCode,
+    this.reasonName,
+    required this.status,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || reasonCode != null) {
+      map['ReasonCode'] = Variable<String>(reasonCode);
+    }
+    if (!nullToAbsent || reasonName != null) {
+      map['ReasonName'] = Variable<String>(reasonName);
+    }
+    map['Status'] = Variable<int>(status);
+    return map;
+  }
+
+  PauseReasonsCompanion toCompanion(bool nullToAbsent) {
+    return PauseReasonsCompanion(
+      uid: Value(uid),
+      reasonCode: reasonCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reasonCode),
+      reasonName: reasonName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reasonName),
+      status: Value(status),
+    );
+  }
+
+  factory DbPauseReason.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbPauseReason(
+      uid: serializer.fromJson<int>(json['uid']),
+      reasonCode: serializer.fromJson<String?>(json['reasonCode']),
+      reasonName: serializer.fromJson<String?>(json['reasonName']),
+      status: serializer.fromJson<int>(json['status']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'reasonCode': serializer.toJson<String?>(reasonCode),
+      'reasonName': serializer.toJson<String?>(reasonName),
+      'status': serializer.toJson<int>(status),
+    };
+  }
+
+  DbPauseReason copyWith({
+    int? uid,
+    Value<String?> reasonCode = const Value.absent(),
+    Value<String?> reasonName = const Value.absent(),
+    int? status,
+  }) => DbPauseReason(
+    uid: uid ?? this.uid,
+    reasonCode: reasonCode.present ? reasonCode.value : this.reasonCode,
+    reasonName: reasonName.present ? reasonName.value : this.reasonName,
+    status: status ?? this.status,
+  );
+  DbPauseReason copyWithCompanion(PauseReasonsCompanion data) {
+    return DbPauseReason(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      reasonCode: data.reasonCode.present
+          ? data.reasonCode.value
+          : this.reasonCode,
+      reasonName: data.reasonName.present
+          ? data.reasonName.value
+          : this.reasonName,
+      status: data.status.present ? data.status.value : this.status,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbPauseReason(')
+          ..write('uid: $uid, ')
+          ..write('reasonCode: $reasonCode, ')
+          ..write('reasonName: $reasonName, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(uid, reasonCode, reasonName, status);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbPauseReason &&
+          other.uid == this.uid &&
+          other.reasonCode == this.reasonCode &&
+          other.reasonName == this.reasonName &&
+          other.status == this.status);
+}
+
+class PauseReasonsCompanion extends UpdateCompanion<DbPauseReason> {
+  final Value<int> uid;
+  final Value<String?> reasonCode;
+  final Value<String?> reasonName;
+  final Value<int> status;
+  const PauseReasonsCompanion({
+    this.uid = const Value.absent(),
+    this.reasonCode = const Value.absent(),
+    this.reasonName = const Value.absent(),
+    this.status = const Value.absent(),
+  });
+  PauseReasonsCompanion.insert({
+    this.uid = const Value.absent(),
+    this.reasonCode = const Value.absent(),
+    this.reasonName = const Value.absent(),
+    this.status = const Value.absent(),
+  });
+  static Insertable<DbPauseReason> custom({
+    Expression<int>? uid,
+    Expression<String>? reasonCode,
+    Expression<String>? reasonName,
+    Expression<int>? status,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (reasonCode != null) 'ReasonCode': reasonCode,
+      if (reasonName != null) 'ReasonName': reasonName,
+      if (status != null) 'Status': status,
+    });
+  }
+
+  PauseReasonsCompanion copyWith({
+    Value<int>? uid,
+    Value<String?>? reasonCode,
+    Value<String?>? reasonName,
+    Value<int>? status,
+  }) {
+    return PauseReasonsCompanion(
+      uid: uid ?? this.uid,
+      reasonCode: reasonCode ?? this.reasonCode,
+      reasonName: reasonName ?? this.reasonName,
+      status: status ?? this.status,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (reasonCode.present) {
+      map['ReasonCode'] = Variable<String>(reasonCode.value);
+    }
+    if (reasonName.present) {
+      map['ReasonName'] = Variable<String>(reasonName.value);
+    }
+    if (status.present) {
+      map['Status'] = Variable<int>(status.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PauseReasonsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('reasonCode: $reasonCode, ')
+          ..write('reasonName: $reasonName, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -9955,6 +13656,21 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ImagesTable images = $ImagesTable(this);
   late final $CheckSheetMasterImagesTable checkSheetMasterImages =
       $CheckSheetMasterImagesTable(this);
+  late final $DocumentTimeLogsTable documentTimeLogs = $DocumentTimeLogsTable(
+    this,
+  );
+  late final $JobTestSetsTable jobTestSets = $JobTestSetsTable(this);
+  late final $RunningJobMachinesTable runningJobMachines =
+      $RunningJobMachinesTable(this);
+  late final $JobWorkingTimesTable jobWorkingTimes = $JobWorkingTimesTable(
+    this,
+  );
+  late final $JobMachineEventLogsTable jobMachineEventLogs =
+      $JobMachineEventLogsTable(this);
+  late final $JobMachineItemsTable jobMachineItems = $JobMachineItemsTable(
+    this,
+  );
+  late final $PauseReasonsTable pauseReasons = $PauseReasonsTable(this);
   late final JobDao jobDao = JobDao(this as AppDatabase);
   late final DocumentDao documentDao = DocumentDao(this as AppDatabase);
   late final DocumentMachineDao documentMachineDao = DocumentMachineDao(
@@ -9971,6 +13687,15 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final ImageDao imageDao = ImageDao(this as AppDatabase);
   late final ChecksheetMasterImageDao checksheetMasterImageDao =
       ChecksheetMasterImageDao(this as AppDatabase);
+  late final DocumentTimeLogDao documentTimeLogDao = DocumentTimeLogDao(
+    this as AppDatabase,
+  );
+  late final RunningJobDetailsDao runningJobDetailsDao = RunningJobDetailsDao(
+    this as AppDatabase,
+  );
+  late final PauseReasonDao pauseReasonDao = PauseReasonDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -9987,6 +13712,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     users,
     images,
     checkSheetMasterImages,
+    documentTimeLogs,
+    jobTestSets,
+    runningJobMachines,
+    jobWorkingTimes,
+    jobMachineEventLogs,
+    jobMachineItems,
+    pauseReasons,
   ];
 }
 
@@ -14485,6 +18217,1896 @@ typedef $$CheckSheetMasterImagesTableProcessedTableManager =
       DbCheckSheetMasterImage,
       PrefetchHooks Function()
     >;
+typedef $$DocumentTimeLogsTableCreateCompanionBuilder =
+    DocumentTimeLogsCompanion Function({
+      Value<int> uid,
+      Value<String?> documentId,
+      Value<int> logType,
+      Value<String?> logTime,
+      Value<String?> remark,
+    });
+typedef $$DocumentTimeLogsTableUpdateCompanionBuilder =
+    DocumentTimeLogsCompanion Function({
+      Value<int> uid,
+      Value<String?> documentId,
+      Value<int> logType,
+      Value<String?> logTime,
+      Value<String?> remark,
+    });
+
+class $$DocumentTimeLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $DocumentTimeLogsTable> {
+  $$DocumentTimeLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get logType => $composableBuilder(
+    column: $table.logType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get logTime => $composableBuilder(
+    column: $table.logTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remark => $composableBuilder(
+    column: $table.remark,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$DocumentTimeLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $DocumentTimeLogsTable> {
+  $$DocumentTimeLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get logType => $composableBuilder(
+    column: $table.logType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get logTime => $composableBuilder(
+    column: $table.logTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remark => $composableBuilder(
+    column: $table.remark,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$DocumentTimeLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $DocumentTimeLogsTable> {
+  $$DocumentTimeLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get logType =>
+      $composableBuilder(column: $table.logType, builder: (column) => column);
+
+  GeneratedColumn<String> get logTime =>
+      $composableBuilder(column: $table.logTime, builder: (column) => column);
+
+  GeneratedColumn<String> get remark =>
+      $composableBuilder(column: $table.remark, builder: (column) => column);
+}
+
+class $$DocumentTimeLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $DocumentTimeLogsTable,
+          DbDocumentTimeLog,
+          $$DocumentTimeLogsTableFilterComposer,
+          $$DocumentTimeLogsTableOrderingComposer,
+          $$DocumentTimeLogsTableAnnotationComposer,
+          $$DocumentTimeLogsTableCreateCompanionBuilder,
+          $$DocumentTimeLogsTableUpdateCompanionBuilder,
+          (
+            DbDocumentTimeLog,
+            BaseReferences<
+              _$AppDatabase,
+              $DocumentTimeLogsTable,
+              DbDocumentTimeLog
+            >,
+          ),
+          DbDocumentTimeLog,
+          PrefetchHooks Function()
+        > {
+  $$DocumentTimeLogsTableTableManager(
+    _$AppDatabase db,
+    $DocumentTimeLogsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$DocumentTimeLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$DocumentTimeLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$DocumentTimeLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<int> logType = const Value.absent(),
+                Value<String?> logTime = const Value.absent(),
+                Value<String?> remark = const Value.absent(),
+              }) => DocumentTimeLogsCompanion(
+                uid: uid,
+                documentId: documentId,
+                logType: logType,
+                logTime: logTime,
+                remark: remark,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<int> logType = const Value.absent(),
+                Value<String?> logTime = const Value.absent(),
+                Value<String?> remark = const Value.absent(),
+              }) => DocumentTimeLogsCompanion.insert(
+                uid: uid,
+                documentId: documentId,
+                logType: logType,
+                logTime: logTime,
+                remark: remark,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$DocumentTimeLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $DocumentTimeLogsTable,
+      DbDocumentTimeLog,
+      $$DocumentTimeLogsTableFilterComposer,
+      $$DocumentTimeLogsTableOrderingComposer,
+      $$DocumentTimeLogsTableAnnotationComposer,
+      $$DocumentTimeLogsTableCreateCompanionBuilder,
+      $$DocumentTimeLogsTableUpdateCompanionBuilder,
+      (
+        DbDocumentTimeLog,
+        BaseReferences<
+          _$AppDatabase,
+          $DocumentTimeLogsTable,
+          DbDocumentTimeLog
+        >,
+      ),
+      DbDocumentTimeLog,
+      PrefetchHooks Function()
+    >;
+typedef $$JobTestSetsTableCreateCompanionBuilder =
+    JobTestSetsCompanion Function({
+      Value<int> uid,
+      required String recId,
+      Value<String?> documentId,
+      Value<String?> setItemNo,
+      Value<String?> registerDateTime,
+      Value<String?> registerUser,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+typedef $$JobTestSetsTableUpdateCompanionBuilder =
+    JobTestSetsCompanion Function({
+      Value<int> uid,
+      Value<String> recId,
+      Value<String?> documentId,
+      Value<String?> setItemNo,
+      Value<String?> registerDateTime,
+      Value<String?> registerUser,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+
+class $$JobTestSetsTableFilterComposer
+    extends Composer<_$AppDatabase, $JobTestSetsTable> {
+  $$JobTestSetsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get setItemNo => $composableBuilder(
+    column: $table.setItemNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$JobTestSetsTableOrderingComposer
+    extends Composer<_$AppDatabase, $JobTestSetsTable> {
+  $$JobTestSetsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get setItemNo => $composableBuilder(
+    column: $table.setItemNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$JobTestSetsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JobTestSetsTable> {
+  $$JobTestSetsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
+
+  GeneratedColumn<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get setItemNo =>
+      $composableBuilder(column: $table.setItemNo, builder: (column) => column);
+
+  GeneratedColumn<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get lastSync =>
+      $composableBuilder(column: $table.lastSync, builder: (column) => column);
+
+  GeneratedColumn<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+}
+
+class $$JobTestSetsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $JobTestSetsTable,
+          DbJobTestSet,
+          $$JobTestSetsTableFilterComposer,
+          $$JobTestSetsTableOrderingComposer,
+          $$JobTestSetsTableAnnotationComposer,
+          $$JobTestSetsTableCreateCompanionBuilder,
+          $$JobTestSetsTableUpdateCompanionBuilder,
+          (
+            DbJobTestSet,
+            BaseReferences<_$AppDatabase, $JobTestSetsTable, DbJobTestSet>,
+          ),
+          DbJobTestSet,
+          PrefetchHooks Function()
+        > {
+  $$JobTestSetsTableTableManager(_$AppDatabase db, $JobTestSetsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JobTestSetsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JobTestSetsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JobTestSetsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String> recId = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> setItemNo = const Value.absent(),
+                Value<String?> registerDateTime = const Value.absent(),
+                Value<String?> registerUser = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => JobTestSetsCompanion(
+                uid: uid,
+                recId: recId,
+                documentId: documentId,
+                setItemNo: setItemNo,
+                registerDateTime: registerDateTime,
+                registerUser: registerUser,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                required String recId,
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> setItemNo = const Value.absent(),
+                Value<String?> registerDateTime = const Value.absent(),
+                Value<String?> registerUser = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => JobTestSetsCompanion.insert(
+                uid: uid,
+                recId: recId,
+                documentId: documentId,
+                setItemNo: setItemNo,
+                registerDateTime: registerDateTime,
+                registerUser: registerUser,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$JobTestSetsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $JobTestSetsTable,
+      DbJobTestSet,
+      $$JobTestSetsTableFilterComposer,
+      $$JobTestSetsTableOrderingComposer,
+      $$JobTestSetsTableAnnotationComposer,
+      $$JobTestSetsTableCreateCompanionBuilder,
+      $$JobTestSetsTableUpdateCompanionBuilder,
+      (
+        DbJobTestSet,
+        BaseReferences<_$AppDatabase, $JobTestSetsTable, DbJobTestSet>,
+      ),
+      DbJobTestSet,
+      PrefetchHooks Function()
+    >;
+typedef $$RunningJobMachinesTableCreateCompanionBuilder =
+    RunningJobMachinesCompanion Function({
+      Value<int> uid,
+      required String recId,
+      Value<String?> documentId,
+      Value<String?> machineNo,
+      Value<String?> registerDateTime,
+      Value<String?> registerUser,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+typedef $$RunningJobMachinesTableUpdateCompanionBuilder =
+    RunningJobMachinesCompanion Function({
+      Value<int> uid,
+      Value<String> recId,
+      Value<String?> documentId,
+      Value<String?> machineNo,
+      Value<String?> registerDateTime,
+      Value<String?> registerUser,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+
+class $$RunningJobMachinesTableFilterComposer
+    extends Composer<_$AppDatabase, $RunningJobMachinesTable> {
+  $$RunningJobMachinesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get machineNo => $composableBuilder(
+    column: $table.machineNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$RunningJobMachinesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RunningJobMachinesTable> {
+  $$RunningJobMachinesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get machineNo => $composableBuilder(
+    column: $table.machineNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$RunningJobMachinesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RunningJobMachinesTable> {
+  $$RunningJobMachinesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
+
+  GeneratedColumn<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get machineNo =>
+      $composableBuilder(column: $table.machineNo, builder: (column) => column);
+
+  GeneratedColumn<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get lastSync =>
+      $composableBuilder(column: $table.lastSync, builder: (column) => column);
+
+  GeneratedColumn<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+}
+
+class $$RunningJobMachinesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RunningJobMachinesTable,
+          DbRunningJobMachine,
+          $$RunningJobMachinesTableFilterComposer,
+          $$RunningJobMachinesTableOrderingComposer,
+          $$RunningJobMachinesTableAnnotationComposer,
+          $$RunningJobMachinesTableCreateCompanionBuilder,
+          $$RunningJobMachinesTableUpdateCompanionBuilder,
+          (
+            DbRunningJobMachine,
+            BaseReferences<
+              _$AppDatabase,
+              $RunningJobMachinesTable,
+              DbRunningJobMachine
+            >,
+          ),
+          DbRunningJobMachine,
+          PrefetchHooks Function()
+        > {
+  $$RunningJobMachinesTableTableManager(
+    _$AppDatabase db,
+    $RunningJobMachinesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RunningJobMachinesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RunningJobMachinesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RunningJobMachinesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String> recId = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> machineNo = const Value.absent(),
+                Value<String?> registerDateTime = const Value.absent(),
+                Value<String?> registerUser = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => RunningJobMachinesCompanion(
+                uid: uid,
+                recId: recId,
+                documentId: documentId,
+                machineNo: machineNo,
+                registerDateTime: registerDateTime,
+                registerUser: registerUser,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                required String recId,
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> machineNo = const Value.absent(),
+                Value<String?> registerDateTime = const Value.absent(),
+                Value<String?> registerUser = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => RunningJobMachinesCompanion.insert(
+                uid: uid,
+                recId: recId,
+                documentId: documentId,
+                machineNo: machineNo,
+                registerDateTime: registerDateTime,
+                registerUser: registerUser,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$RunningJobMachinesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RunningJobMachinesTable,
+      DbRunningJobMachine,
+      $$RunningJobMachinesTableFilterComposer,
+      $$RunningJobMachinesTableOrderingComposer,
+      $$RunningJobMachinesTableAnnotationComposer,
+      $$RunningJobMachinesTableCreateCompanionBuilder,
+      $$RunningJobMachinesTableUpdateCompanionBuilder,
+      (
+        DbRunningJobMachine,
+        BaseReferences<
+          _$AppDatabase,
+          $RunningJobMachinesTable,
+          DbRunningJobMachine
+        >,
+      ),
+      DbRunningJobMachine,
+      PrefetchHooks Function()
+    >;
+typedef $$JobWorkingTimesTableCreateCompanionBuilder =
+    JobWorkingTimesCompanion Function({
+      Value<int> uid,
+      Value<String?> documentId,
+      Value<String?> userId,
+      Value<String?> activityId,
+      Value<String?> startTime,
+      Value<String?> endTime,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+typedef $$JobWorkingTimesTableUpdateCompanionBuilder =
+    JobWorkingTimesCompanion Function({
+      Value<int> uid,
+      Value<String?> documentId,
+      Value<String?> userId,
+      Value<String?> activityId,
+      Value<String?> startTime,
+      Value<String?> endTime,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+
+class $$JobWorkingTimesTableFilterComposer
+    extends Composer<_$AppDatabase, $JobWorkingTimesTable> {
+  $$JobWorkingTimesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activityId => $composableBuilder(
+    column: $table.activityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$JobWorkingTimesTableOrderingComposer
+    extends Composer<_$AppDatabase, $JobWorkingTimesTable> {
+  $$JobWorkingTimesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activityId => $composableBuilder(
+    column: $table.activityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$JobWorkingTimesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JobWorkingTimesTable> {
+  $$JobWorkingTimesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get activityId => $composableBuilder(
+    column: $table.activityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get startTime =>
+      $composableBuilder(column: $table.startTime, builder: (column) => column);
+
+  GeneratedColumn<String> get endTime =>
+      $composableBuilder(column: $table.endTime, builder: (column) => column);
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get lastSync =>
+      $composableBuilder(column: $table.lastSync, builder: (column) => column);
+
+  GeneratedColumn<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+}
+
+class $$JobWorkingTimesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $JobWorkingTimesTable,
+          DbJobWorkingTime,
+          $$JobWorkingTimesTableFilterComposer,
+          $$JobWorkingTimesTableOrderingComposer,
+          $$JobWorkingTimesTableAnnotationComposer,
+          $$JobWorkingTimesTableCreateCompanionBuilder,
+          $$JobWorkingTimesTableUpdateCompanionBuilder,
+          (
+            DbJobWorkingTime,
+            BaseReferences<
+              _$AppDatabase,
+              $JobWorkingTimesTable,
+              DbJobWorkingTime
+            >,
+          ),
+          DbJobWorkingTime,
+          PrefetchHooks Function()
+        > {
+  $$JobWorkingTimesTableTableManager(
+    _$AppDatabase db,
+    $JobWorkingTimesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JobWorkingTimesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JobWorkingTimesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JobWorkingTimesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String?> activityId = const Value.absent(),
+                Value<String?> startTime = const Value.absent(),
+                Value<String?> endTime = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => JobWorkingTimesCompanion(
+                uid: uid,
+                documentId: documentId,
+                userId: userId,
+                activityId: activityId,
+                startTime: startTime,
+                endTime: endTime,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String?> activityId = const Value.absent(),
+                Value<String?> startTime = const Value.absent(),
+                Value<String?> endTime = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => JobWorkingTimesCompanion.insert(
+                uid: uid,
+                documentId: documentId,
+                userId: userId,
+                activityId: activityId,
+                startTime: startTime,
+                endTime: endTime,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$JobWorkingTimesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $JobWorkingTimesTable,
+      DbJobWorkingTime,
+      $$JobWorkingTimesTableFilterComposer,
+      $$JobWorkingTimesTableOrderingComposer,
+      $$JobWorkingTimesTableAnnotationComposer,
+      $$JobWorkingTimesTableCreateCompanionBuilder,
+      $$JobWorkingTimesTableUpdateCompanionBuilder,
+      (
+        DbJobWorkingTime,
+        BaseReferences<_$AppDatabase, $JobWorkingTimesTable, DbJobWorkingTime>,
+      ),
+      DbJobWorkingTime,
+      PrefetchHooks Function()
+    >;
+typedef $$JobMachineEventLogsTableCreateCompanionBuilder =
+    JobMachineEventLogsCompanion Function({
+      Value<int> uid,
+      Value<String?> jobMachineRecId,
+      Value<String?> startTime,
+      Value<String?> endTime,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+typedef $$JobMachineEventLogsTableUpdateCompanionBuilder =
+    JobMachineEventLogsCompanion Function({
+      Value<int> uid,
+      Value<String?> jobMachineRecId,
+      Value<String?> startTime,
+      Value<String?> endTime,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+
+class $$JobMachineEventLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $JobMachineEventLogsTable> {
+  $$JobMachineEventLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobMachineRecId => $composableBuilder(
+    column: $table.jobMachineRecId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$JobMachineEventLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $JobMachineEventLogsTable> {
+  $$JobMachineEventLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jobMachineRecId => $composableBuilder(
+    column: $table.jobMachineRecId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$JobMachineEventLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JobMachineEventLogsTable> {
+  $$JobMachineEventLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get jobMachineRecId => $composableBuilder(
+    column: $table.jobMachineRecId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get startTime =>
+      $composableBuilder(column: $table.startTime, builder: (column) => column);
+
+  GeneratedColumn<String> get endTime =>
+      $composableBuilder(column: $table.endTime, builder: (column) => column);
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get lastSync =>
+      $composableBuilder(column: $table.lastSync, builder: (column) => column);
+
+  GeneratedColumn<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+}
+
+class $$JobMachineEventLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $JobMachineEventLogsTable,
+          DbJobMachineEventLog,
+          $$JobMachineEventLogsTableFilterComposer,
+          $$JobMachineEventLogsTableOrderingComposer,
+          $$JobMachineEventLogsTableAnnotationComposer,
+          $$JobMachineEventLogsTableCreateCompanionBuilder,
+          $$JobMachineEventLogsTableUpdateCompanionBuilder,
+          (
+            DbJobMachineEventLog,
+            BaseReferences<
+              _$AppDatabase,
+              $JobMachineEventLogsTable,
+              DbJobMachineEventLog
+            >,
+          ),
+          DbJobMachineEventLog,
+          PrefetchHooks Function()
+        > {
+  $$JobMachineEventLogsTableTableManager(
+    _$AppDatabase db,
+    $JobMachineEventLogsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JobMachineEventLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JobMachineEventLogsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$JobMachineEventLogsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> jobMachineRecId = const Value.absent(),
+                Value<String?> startTime = const Value.absent(),
+                Value<String?> endTime = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => JobMachineEventLogsCompanion(
+                uid: uid,
+                jobMachineRecId: jobMachineRecId,
+                startTime: startTime,
+                endTime: endTime,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> jobMachineRecId = const Value.absent(),
+                Value<String?> startTime = const Value.absent(),
+                Value<String?> endTime = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => JobMachineEventLogsCompanion.insert(
+                uid: uid,
+                jobMachineRecId: jobMachineRecId,
+                startTime: startTime,
+                endTime: endTime,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$JobMachineEventLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $JobMachineEventLogsTable,
+      DbJobMachineEventLog,
+      $$JobMachineEventLogsTableFilterComposer,
+      $$JobMachineEventLogsTableOrderingComposer,
+      $$JobMachineEventLogsTableAnnotationComposer,
+      $$JobMachineEventLogsTableCreateCompanionBuilder,
+      $$JobMachineEventLogsTableUpdateCompanionBuilder,
+      (
+        DbJobMachineEventLog,
+        BaseReferences<
+          _$AppDatabase,
+          $JobMachineEventLogsTable,
+          DbJobMachineEventLog
+        >,
+      ),
+      DbJobMachineEventLog,
+      PrefetchHooks Function()
+    >;
+typedef $$JobMachineItemsTableCreateCompanionBuilder =
+    JobMachineItemsCompanion Function({
+      Value<int> uid,
+      required String recId,
+      Value<String?> documentId,
+      Value<String?> jobTestSetRecId,
+      Value<String?> jobMachineRecId,
+      Value<String?> registerDateTime,
+      Value<String?> registerUser,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+typedef $$JobMachineItemsTableUpdateCompanionBuilder =
+    JobMachineItemsCompanion Function({
+      Value<int> uid,
+      Value<String> recId,
+      Value<String?> documentId,
+      Value<String?> jobTestSetRecId,
+      Value<String?> jobMachineRecId,
+      Value<String?> registerDateTime,
+      Value<String?> registerUser,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+    });
+
+class $$JobMachineItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $JobMachineItemsTable> {
+  $$JobMachineItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobMachineRecId => $composableBuilder(
+    column: $table.jobMachineRecId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$JobMachineItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $JobMachineItemsTable> {
+  $$JobMachineItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jobMachineRecId => $composableBuilder(
+    column: $table.jobMachineRecId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$JobMachineItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JobMachineItemsTable> {
+  $$JobMachineItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
+
+  GeneratedColumn<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get jobMachineRecId => $composableBuilder(
+    column: $table.jobMachineRecId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get lastSync =>
+      $composableBuilder(column: $table.lastSync, builder: (column) => column);
+
+  GeneratedColumn<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+}
+
+class $$JobMachineItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $JobMachineItemsTable,
+          DbJobMachineItem,
+          $$JobMachineItemsTableFilterComposer,
+          $$JobMachineItemsTableOrderingComposer,
+          $$JobMachineItemsTableAnnotationComposer,
+          $$JobMachineItemsTableCreateCompanionBuilder,
+          $$JobMachineItemsTableUpdateCompanionBuilder,
+          (
+            DbJobMachineItem,
+            BaseReferences<
+              _$AppDatabase,
+              $JobMachineItemsTable,
+              DbJobMachineItem
+            >,
+          ),
+          DbJobMachineItem,
+          PrefetchHooks Function()
+        > {
+  $$JobMachineItemsTableTableManager(
+    _$AppDatabase db,
+    $JobMachineItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JobMachineItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JobMachineItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JobMachineItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String> recId = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> jobTestSetRecId = const Value.absent(),
+                Value<String?> jobMachineRecId = const Value.absent(),
+                Value<String?> registerDateTime = const Value.absent(),
+                Value<String?> registerUser = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => JobMachineItemsCompanion(
+                uid: uid,
+                recId: recId,
+                documentId: documentId,
+                jobTestSetRecId: jobTestSetRecId,
+                jobMachineRecId: jobMachineRecId,
+                registerDateTime: registerDateTime,
+                registerUser: registerUser,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                required String recId,
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> jobTestSetRecId = const Value.absent(),
+                Value<String?> jobMachineRecId = const Value.absent(),
+                Value<String?> registerDateTime = const Value.absent(),
+                Value<String?> registerUser = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+              }) => JobMachineItemsCompanion.insert(
+                uid: uid,
+                recId: recId,
+                documentId: documentId,
+                jobTestSetRecId: jobTestSetRecId,
+                jobMachineRecId: jobMachineRecId,
+                registerDateTime: registerDateTime,
+                registerUser: registerUser,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$JobMachineItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $JobMachineItemsTable,
+      DbJobMachineItem,
+      $$JobMachineItemsTableFilterComposer,
+      $$JobMachineItemsTableOrderingComposer,
+      $$JobMachineItemsTableAnnotationComposer,
+      $$JobMachineItemsTableCreateCompanionBuilder,
+      $$JobMachineItemsTableUpdateCompanionBuilder,
+      (
+        DbJobMachineItem,
+        BaseReferences<_$AppDatabase, $JobMachineItemsTable, DbJobMachineItem>,
+      ),
+      DbJobMachineItem,
+      PrefetchHooks Function()
+    >;
+typedef $$PauseReasonsTableCreateCompanionBuilder =
+    PauseReasonsCompanion Function({
+      Value<int> uid,
+      Value<String?> reasonCode,
+      Value<String?> reasonName,
+      Value<int> status,
+    });
+typedef $$PauseReasonsTableUpdateCompanionBuilder =
+    PauseReasonsCompanion Function({
+      Value<int> uid,
+      Value<String?> reasonCode,
+      Value<String?> reasonName,
+      Value<int> status,
+    });
+
+class $$PauseReasonsTableFilterComposer
+    extends Composer<_$AppDatabase, $PauseReasonsTable> {
+  $$PauseReasonsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reasonCode => $composableBuilder(
+    column: $table.reasonCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reasonName => $composableBuilder(
+    column: $table.reasonName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PauseReasonsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PauseReasonsTable> {
+  $$PauseReasonsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reasonCode => $composableBuilder(
+    column: $table.reasonCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get reasonName => $composableBuilder(
+    column: $table.reasonName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PauseReasonsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PauseReasonsTable> {
+  $$PauseReasonsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get reasonCode => $composableBuilder(
+    column: $table.reasonCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get reasonName => $composableBuilder(
+    column: $table.reasonName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+}
+
+class $$PauseReasonsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PauseReasonsTable,
+          DbPauseReason,
+          $$PauseReasonsTableFilterComposer,
+          $$PauseReasonsTableOrderingComposer,
+          $$PauseReasonsTableAnnotationComposer,
+          $$PauseReasonsTableCreateCompanionBuilder,
+          $$PauseReasonsTableUpdateCompanionBuilder,
+          (
+            DbPauseReason,
+            BaseReferences<_$AppDatabase, $PauseReasonsTable, DbPauseReason>,
+          ),
+          DbPauseReason,
+          PrefetchHooks Function()
+        > {
+  $$PauseReasonsTableTableManager(_$AppDatabase db, $PauseReasonsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PauseReasonsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PauseReasonsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PauseReasonsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> reasonCode = const Value.absent(),
+                Value<String?> reasonName = const Value.absent(),
+                Value<int> status = const Value.absent(),
+              }) => PauseReasonsCompanion(
+                uid: uid,
+                reasonCode: reasonCode,
+                reasonName: reasonName,
+                status: status,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> reasonCode = const Value.absent(),
+                Value<String?> reasonName = const Value.absent(),
+                Value<int> status = const Value.absent(),
+              }) => PauseReasonsCompanion.insert(
+                uid: uid,
+                reasonCode: reasonCode,
+                reasonName: reasonName,
+                status: status,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PauseReasonsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PauseReasonsTable,
+      DbPauseReason,
+      $$PauseReasonsTableFilterComposer,
+      $$PauseReasonsTableOrderingComposer,
+      $$PauseReasonsTableAnnotationComposer,
+      $$PauseReasonsTableCreateCompanionBuilder,
+      $$PauseReasonsTableUpdateCompanionBuilder,
+      (
+        DbPauseReason,
+        BaseReferences<_$AppDatabase, $PauseReasonsTable, DbPauseReason>,
+      ),
+      DbPauseReason,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -14513,4 +20135,18 @@ class $AppDatabaseManager {
         _db,
         _db.checkSheetMasterImages,
       );
+  $$DocumentTimeLogsTableTableManager get documentTimeLogs =>
+      $$DocumentTimeLogsTableTableManager(_db, _db.documentTimeLogs);
+  $$JobTestSetsTableTableManager get jobTestSets =>
+      $$JobTestSetsTableTableManager(_db, _db.jobTestSets);
+  $$RunningJobMachinesTableTableManager get runningJobMachines =>
+      $$RunningJobMachinesTableTableManager(_db, _db.runningJobMachines);
+  $$JobWorkingTimesTableTableManager get jobWorkingTimes =>
+      $$JobWorkingTimesTableTableManager(_db, _db.jobWorkingTimes);
+  $$JobMachineEventLogsTableTableManager get jobMachineEventLogs =>
+      $$JobMachineEventLogsTableTableManager(_db, _db.jobMachineEventLogs);
+  $$JobMachineItemsTableTableManager get jobMachineItems =>
+      $$JobMachineItemsTableTableManager(_db, _db.jobMachineItems);
+  $$PauseReasonsTableTableManager get pauseReasons =>
+      $$PauseReasonsTableTableManager(_db, _db.pauseReasons);
 }

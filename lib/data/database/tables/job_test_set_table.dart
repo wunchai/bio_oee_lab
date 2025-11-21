@@ -1,0 +1,24 @@
+import 'package:drift/drift.dart';
+
+@DataClassName('DbJobTestSet')
+class JobTestSets extends Table {
+  IntColumn get uid => integer().autoIncrement().named('uid')();
+
+  // PK หลักสำหรับเชื่อมโยง (GUID)
+  TextColumn get recId => text().named('recID').unique()();
+
+  // เชื่อมกับ Running Job (Document)
+  TextColumn get documentId => text().named('documentId').nullable()();
+
+  TextColumn get setItemNo => text().named('setItemNo').nullable()();
+  TextColumn get registerDateTime =>
+      text().named('registerDateTime').nullable()();
+  TextColumn get registerUser => text().named('registerUser').nullable()();
+
+  IntColumn get status =>
+      integer().named('status').withDefault(const Constant(0))();
+  TextColumn get updatedAt => text().named('updatedAt').nullable()();
+  TextColumn get lastSync => text().named('lastSync').nullable()();
+  IntColumn get syncStatus =>
+      integer().named('syncStatus').withDefault(const Constant(0))();
+}

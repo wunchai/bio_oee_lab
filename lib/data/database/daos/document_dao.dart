@@ -10,6 +10,35 @@ class DocumentDao extends DatabaseAccessor<AppDatabase>
     with _$DocumentDaoMixin {
   DocumentDao(AppDatabase db) : super(db);
 
+  /// ดึงรายการเอกสารที่ "Active" (0=Draft, 1=Running, 2=End) ของ User นี้
+  Stream<List<DbDocument>> watchActiveDocuments(
+    String userId, {
+    String? query,
+  }) {
+    final queryStr = query ?? '';
+
+    return (select(documents)
+          ..where((tbl) {
+            // เงื่อนไขหลัก: User คนนี้ และสถานะเป็น 0, 1, 2
+            final baseFilter =
+                tbl.userId.equals(userId) & tbl.status.isIn([0, 1, 2]);
+
+            // ถ้ามีคำค้นหา ให้กรองเพิ่ม (ชื่อเอกสาร หรือ รหัสงาน)
+            if (queryStr.isNotEmpty) {
+              return baseFilter &
+                  (tbl.documentName.contains(queryStr) |
+                      tbl.jobId.contains(queryStr));
+            } else {
+              return baseFilter;
+            }
+          })
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.createDate, mode: OrderingMode.desc),
+          ]))
+        .watch();
+  }
+
   // Equivalent to suspend fun insertDocument(document: DbDocument) in DaoDocument.kt
   Future<int> insertDocument(DocumentsCompanion entry) =>
       into(documents).insert(entry);
@@ -84,5 +113,12 @@ class DocumentDao extends DatabaseAccessor<AppDatabase>
         ))
         .watch()
         .map((list) => list.length);
+  }
+
+  // ⬇️ เพิ่มฟังก์ชันนี้สำหรับ StreamBuilder (Real-time)
+  Stream<DbDocument?> watchDocumentById(String documentId) {
+    return (select(
+      documents,
+    )..where((tbl) => tbl.documentId.equals(documentId))).watchSingleOrNull();
   }
 }

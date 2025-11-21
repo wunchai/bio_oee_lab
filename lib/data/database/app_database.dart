@@ -19,7 +19,13 @@ import 'package:bio_oee_lab/data/database/tables/sync_table.dart';
 import 'package:bio_oee_lab/data/database/tables/user_table.dart';
 import 'package:bio_oee_lab/data/database/tables/image_table.dart'; // <<< NEW: Import Image table
 import 'package:bio_oee_lab/data/database/tables/checksheet_master_image_table.dart';
-
+import 'package:bio_oee_lab/data/database/tables/document_timelog_table.dart'; // Import
+import 'package:bio_oee_lab/data/database/tables/job_test_set_table.dart';
+import 'package:bio_oee_lab/data/database/tables/running_job_machine_table.dart';
+import 'package:bio_oee_lab/data/database/tables/job_working_time_table.dart';
+import 'package:bio_oee_lab/data/database/tables/job_machine_event_log_table.dart';
+import 'package:bio_oee_lab/data/database/tables/job_machine_item_table.dart';
+import 'package:bio_oee_lab/data/database/tables/pause_reason_table.dart';
 // Import DAO definitions
 import 'package:bio_oee_lab/data/database/daos/job_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
@@ -32,7 +38,9 @@ import 'package:bio_oee_lab/data/database/daos/sync_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/user_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/image_dao.dart'; // <<< NEW: Import ImageDao
 import 'package:bio_oee_lab/data/database/daos/checksheet_master_image_dao.dart'; // <<< NEW: Import ImageDao
-
+import 'package:bio_oee_lab/data/database/daos/document_timelog_dao.dart'; // Import
+import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart';
 // This line tells drift to generate a file named app_database.g.dart
 part 'app_database.g.dart';
 
@@ -49,6 +57,13 @@ part 'app_database.g.dart';
     Users,
     Images, // <<< NEW: Add Images table
     CheckSheetMasterImages,
+    DocumentTimeLogs,
+    JobTestSets,
+    RunningJobMachines,
+    JobWorkingTimes,
+    JobMachineEventLogs,
+    JobMachineItems,
+    PauseReasons,
   ],
   daos: [
     JobDao,
@@ -61,7 +76,10 @@ part 'app_database.g.dart';
     SyncDao,
     UserDao,
     ImageDao,
-    ChecksheetMasterImageDao, // <<< NEW: Add ImageDao
+    ChecksheetMasterImageDao,
+    DocumentTimeLogDao,
+    RunningJobDetailsDao,
+    PauseReasonDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {

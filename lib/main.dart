@@ -28,10 +28,12 @@ Future<void> main() async {
 
   // (ทางเลือก) ทำให้ System Bar โปร่งใส
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.transparent,
-    statusBarColor: Colors.transparent,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.transparent,
+      statusBarColor: Colors.transparent,
+    ),
+  );
 
   // --- 1. เริ่มต้นการเชื่อมต่อ Database ---
   // สร้าง Instance ของ AppDatabase (Singleton)

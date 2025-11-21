@@ -12,6 +12,8 @@ import 'package:bio_oee_lab/data/repositories/sync_repository.dart';
 import 'package:bio_oee_lab/data/network/job_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/job_repository.dart';
 import 'package:bio_oee_lab/data/repositories/document_repository.dart';
+import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart';
 
 // ฟังก์ชันนี้จะเตรียม Provider ทั้งหมดที่แอปต้องใช้
 Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
@@ -25,6 +27,9 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   // สร้าง Instance ของ Database (เราได้รับมาจาก main.dart)
   final dbProvider = Provider<AppDatabase>.value(value: appDatabase);
 
+  final documentTimeLogDao = appDatabase.documentTimeLogDao;
+  final runningJobDetailsDao = appDatabase.runningJobDetailsDao;
+  final pauseReasonDao = appDatabase.pauseReasonDao;
   // --- ⚠️ สร้าง Repository Providers (จะทะยอยเปิดใช้) ---
 
   // สร้าง LoginRepository (ตัวนี้ใช้ ChangeNotifier)
@@ -56,7 +61,9 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
 
     // 2. Service Providers (เผื่อหน้าอื่นอยากใช้ DeviceInfo)
     Provider<DeviceInfoService>.value(value: deviceInfoService),
-
+    Provider.value(value: documentTimeLogDao),
+    Provider.value(value: runningJobDetailsDao),
+    Provider.value(value: pauseReasonDao),
     // 3. Repository Providers (ที่ใช้ ChangeNotifier)
     ChangeNotifierProvider<LoginRepository>(
       create: (context) => loginRepository,
