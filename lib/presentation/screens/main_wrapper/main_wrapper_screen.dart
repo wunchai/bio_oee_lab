@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:bio_oee_lab/presentation/screens/job/job_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/running_job/running_job_screen.dart';
+import 'package:bio_oee_lab/presentation/screens/checkin/check_in_screen.dart';
+import 'package:bio_oee_lab/presentation/screens/activity/activity_screen.dart';
 
 // --- Placeholder Screens (หน้าชั่วคราว ระหว่างรอคุณอธิบายรายละเอียด) ---
 class JobScreenPlaceholder extends StatelessWidget {
@@ -55,8 +57,8 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
   final List<Widget> _pages = const [
     JobScreen(),
     RunningJobScreen(),
-    CheckInScreenPlaceholder(),
-    ActivityScreenPlaceholder(),
+    CheckInScreen(),
+    ActivityScreen(),
     MachineScreenPlaceholder(),
   ];
 

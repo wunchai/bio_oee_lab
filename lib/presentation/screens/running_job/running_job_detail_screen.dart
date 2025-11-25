@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
+import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
 
 class RunningJobDetailScreen extends StatefulWidget {
   final String documentId;
@@ -64,6 +65,80 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
           SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
+    }
+  }
+
+  // ✅ 1. Helper Function: บันทึกลง Database (ใช้ร่วมกันทั้ง Scan และ Manual)
+  Future<void> _saveTestSet(String code) async {
+    try {
+      final repo = context.read<DocumentRepository>();
+      final loginRepo = context.read<LoginRepository>();
+      final userId = loginRepo.loggedInUser?.userId ?? 'Unknown';
+
+      await repo.addTestSetByQrCode(
+        documentId: widget.documentId,
+        qrCode: code,
+        userId: userId,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Test Set Added: $code')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  // ✅ 2. ฟังก์ชัน Scan QR (ปรับปรุงให้เรียก _saveTestSet)
+  Future<void> _handleScanTestSet() async {
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (context) => const ScannerScreen()),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      await _saveTestSet(result);
+    }
+  }
+
+  // ✅ 3. ฟังก์ชัน Manual Input (ใหม่! ⭐)
+  Future<void> _handleManualInputTestSet() async {
+    final controller = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Add Test Set (Manual)'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Test Set No.',
+            hintText: 'Type ID here...',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.keyboard),
+          ),
+          autofocus: true, // ให้เด้งคีย์บอร์ดขึ้นมาเลย
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      await _saveTestSet(result);
     }
   }
 
@@ -504,66 +579,304 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     );
   }
 
-  // --- Tab 2: Test Sets ---
+  // --- Tab 2: Test Sets (Updated with Manual Input) ---
   Widget _buildTestSetsTab(AppDatabase db) {
-    return StreamBuilder<List<DbJobTestSet>>(
-      stream: db.runningJobDetailsDao.watchTestSetsByDocId(widget.documentId),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return const Center(child: CircularProgressIndicator());
-        final items = snapshot.data!;
-        if (items.isEmpty)
-          return const Center(child: Text('No Test Sets for this job.'));
-
-        return ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: ListTile(
-                leading: const Icon(Icons.science, color: Colors.blue),
-                title: Text('Set Item No: ${item.setItemNo ?? '-'}'),
-                subtitle: Text('Status: ${item.status}'),
-                trailing: const Icon(Icons.chevron_right),
+    return Column(
+      children: [
+        // แถวปุ่มควบคุม
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              // ปุ่ม Scan QR
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _handleScanTestSet,
+                  icon: const Icon(Icons.qr_code_scanner),
+                  label: const Text('Scan QR'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
               ),
-            );
-          },
-        );
-      },
+              const SizedBox(width: 12),
+              // ปุ่ม Manual Input (ใหม่! ⭐)
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _handleManualInputTestSet,
+                  icon: const Icon(Icons.keyboard),
+                  label: const Text('Manual Input'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    side: const BorderSide(color: Colors.blue),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // รายการ Test Sets (เหมือนเดิม)
+        Expanded(
+          child: StreamBuilder<List<DbJobTestSet>>(
+            stream: db.runningJobDetailsDao.watchTestSetsByDocId(
+              widget.documentId,
+            ),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData)
+                return const Center(child: CircularProgressIndicator());
+              final items = snapshot.data!;
+
+              if (items.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No Test Sets added.\nScan QR or enter manually to start.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: items.length,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 4,
+                    ),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.blue.shade50,
+                        child: const Icon(
+                          Icons.science,
+                          color: Colors.blue,
+                          size: 20,
+                        ),
+                      ),
+                      title: Text(
+                        item.setItemNo ?? 'Unknown Code',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        'Registered by: ${item.registerUser ?? '-'}',
+                      ),
+                      trailing: item.syncStatus == 0
+                          ? const Icon(
+                              Icons.cloud_upload_outlined,
+                              color: Colors.grey,
+                            )
+                          : const Icon(Icons.check_circle, color: Colors.green),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
   // --- Tab 3: Machines ---
+  // --- Tab 3: Machines (Updated) ---
   Widget _buildMachinesTab(AppDatabase db) {
-    return StreamBuilder<List<DbRunningJobMachine>>(
-      stream: db.runningJobDetailsDao.watchMachinesByDocId(widget.documentId),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return const Center(child: CircularProgressIndicator());
-        final items = snapshot.data!;
-        if (items.isEmpty)
-          return const Center(child: Text('No Machines for this job.'));
-
-        return ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              child: ListTile(
-                leading: const Icon(
-                  Icons.precision_manufacturing,
-                  color: Colors.purple,
+    return Column(
+      children: [
+        // 1. แถวปุ่มควบคุม (Scan & Manual)
+        Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              // ปุ่ม Scan QR
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _handleScanMachine,
+                  icon: const Icon(Icons.qr_code_scanner),
+                  label: const Text('Scan Machine'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple, // ใช้สีม่วงแยกความแตกต่าง
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
                 ),
-                title: Text('Machine No: ${item.machineNo ?? '-'}'),
-                subtitle: Text('Status: ${item.status}'),
-                trailing: const Icon(Icons.chevron_right),
               ),
-            );
-          },
-        );
-      },
+              const SizedBox(width: 12),
+              // ปุ่ม Manual Input
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _handleManualInputMachine,
+                  icon: const Icon(Icons.keyboard),
+                  label: const Text('Manual Input'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    side: const BorderSide(color: Colors.purple),
+                    foregroundColor: Colors.purple,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // 2. รายการ Machines
+        Expanded(
+          child: StreamBuilder<List<DbRunningJobMachine>>(
+            // เรียก watchMachinesByDocId จาก DAO
+            stream: db.runningJobDetailsDao.watchMachinesByDocId(
+              widget.documentId,
+            ),
+            builder: (context, snapshot) {
+              if (!snapshot.hasData)
+                return const Center(child: CircularProgressIndicator());
+              final items = snapshot.data!;
+
+              if (items.isEmpty) {
+                return const Center(
+                  child: Text(
+                    'No Machines added.\nScan QR or enter manually to start.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                );
+              }
+
+              return ListView.builder(
+                itemCount: items.length,
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return Card(
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(
+                      vertical: 4,
+                      horizontal: 4,
+                    ),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.purple.shade50,
+                        child: const Icon(
+                          Icons.precision_manufacturing,
+                          color: Colors.purple,
+                          size: 20,
+                        ),
+                      ),
+                      title: Text(
+                        item.machineNo ?? 'Unknown Machine',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(
+                        'Registered by: ${item.registerUser ?? '-'}',
+                      ),
+                      trailing: item.syncStatus == 0
+                          ? const Icon(
+                              Icons.cloud_upload_outlined,
+                              color: Colors.grey,
+                            )
+                          : const Icon(Icons.check_circle, color: Colors.green),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
+  }
+
+  // -------------------------------------------------------
+  // ⚙️ Machine Actions (Scan & Manual)
+  // -------------------------------------------------------
+
+  // 1. Helper Function: บันทึก Machine ลง Database
+  Future<void> _saveMachine(String code) async {
+    try {
+      final repo = context.read<DocumentRepository>();
+      final loginRepo = context.read<LoginRepository>();
+      final userId = loginRepo.loggedInUser?.userId ?? 'Unknown';
+
+      await repo.addMachineByQrCode(
+        documentId: widget.documentId,
+        qrCode: code,
+        userId: userId,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Machine Added: $code')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  // 2. ฟังก์ชัน Scan Machine QR
+  Future<void> _handleScanMachine() async {
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (context) => const ScannerScreen()),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      await _saveMachine(result);
+    }
+  }
+
+  // 3. ฟังก์ชัน Manual Input Machine
+  Future<void> _handleManualInputMachine() async {
+    final controller = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Add Machine (Manual)'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Machine No.',
+            hintText: 'Type Machine ID here...',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.precision_manufacturing),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      await _saveMachine(result);
+    }
   }
 }

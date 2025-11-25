@@ -26,6 +26,8 @@ import 'package:bio_oee_lab/data/database/tables/job_working_time_table.dart';
 import 'package:bio_oee_lab/data/database/tables/job_machine_event_log_table.dart';
 import 'package:bio_oee_lab/data/database/tables/job_machine_item_table.dart';
 import 'package:bio_oee_lab/data/database/tables/pause_reason_table.dart';
+import 'package:bio_oee_lab/data/database/tables/check_in_table.dart';
+import 'package:bio_oee_lab/data/database/tables/activity_log_table.dart';
 // Import DAO definitions
 import 'package:bio_oee_lab/data/database/daos/job_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
@@ -41,6 +43,8 @@ import 'package:bio_oee_lab/data/database/daos/checksheet_master_image_dao.dart'
 import 'package:bio_oee_lab/data/database/daos/document_timelog_dao.dart'; // Import
 import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/check_in_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
 // This line tells drift to generate a file named app_database.g.dart
 part 'app_database.g.dart';
 
@@ -64,6 +68,9 @@ part 'app_database.g.dart';
     JobMachineEventLogs,
     JobMachineItems,
     PauseReasons,
+    CheckInActivities,
+    CheckInLogs,
+    ActivityLogs,
   ],
   daos: [
     JobDao,
@@ -80,6 +87,8 @@ part 'app_database.g.dart';
     DocumentTimeLogDao,
     RunningJobDetailsDao,
     PauseReasonDao,
+    CheckInDao,
+    ActivityLogDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {

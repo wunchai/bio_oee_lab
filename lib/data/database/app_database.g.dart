@@ -13637,6 +13637,1544 @@ class PauseReasonsCompanion extends UpdateCompanion<DbPauseReason> {
   }
 }
 
+class $CheckInActivitiesTable extends CheckInActivities
+    with TableInfo<$CheckInActivitiesTable, DbCheckInActivity> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CheckInActivitiesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _activityNameMeta = const VerificationMeta(
+    'activityName',
+  );
+  @override
+  late final GeneratedColumn<String> activityName = GeneratedColumn<String>(
+    'ActivityName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'Status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [uid, activityName, status];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'check_in_activities';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbCheckInActivity> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('ActivityName')) {
+      context.handle(
+        _activityNameMeta,
+        activityName.isAcceptableOrUnknown(
+          data['ActivityName']!,
+          _activityNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('Status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['Status']!, _statusMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbCheckInActivity map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbCheckInActivity(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      activityName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ActivityName'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}Status'],
+      )!,
+    );
+  }
+
+  @override
+  $CheckInActivitiesTable createAlias(String alias) {
+    return $CheckInActivitiesTable(attachedDatabase, alias);
+  }
+}
+
+class DbCheckInActivity extends DataClass
+    implements Insertable<DbCheckInActivity> {
+  final int uid;
+  final String? activityName;
+  final int status;
+  const DbCheckInActivity({
+    required this.uid,
+    this.activityName,
+    required this.status,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || activityName != null) {
+      map['ActivityName'] = Variable<String>(activityName);
+    }
+    map['Status'] = Variable<int>(status);
+    return map;
+  }
+
+  CheckInActivitiesCompanion toCompanion(bool nullToAbsent) {
+    return CheckInActivitiesCompanion(
+      uid: Value(uid),
+      activityName: activityName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activityName),
+      status: Value(status),
+    );
+  }
+
+  factory DbCheckInActivity.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbCheckInActivity(
+      uid: serializer.fromJson<int>(json['uid']),
+      activityName: serializer.fromJson<String?>(json['activityName']),
+      status: serializer.fromJson<int>(json['status']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'activityName': serializer.toJson<String?>(activityName),
+      'status': serializer.toJson<int>(status),
+    };
+  }
+
+  DbCheckInActivity copyWith({
+    int? uid,
+    Value<String?> activityName = const Value.absent(),
+    int? status,
+  }) => DbCheckInActivity(
+    uid: uid ?? this.uid,
+    activityName: activityName.present ? activityName.value : this.activityName,
+    status: status ?? this.status,
+  );
+  DbCheckInActivity copyWithCompanion(CheckInActivitiesCompanion data) {
+    return DbCheckInActivity(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      activityName: data.activityName.present
+          ? data.activityName.value
+          : this.activityName,
+      status: data.status.present ? data.status.value : this.status,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbCheckInActivity(')
+          ..write('uid: $uid, ')
+          ..write('activityName: $activityName, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(uid, activityName, status);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbCheckInActivity &&
+          other.uid == this.uid &&
+          other.activityName == this.activityName &&
+          other.status == this.status);
+}
+
+class CheckInActivitiesCompanion extends UpdateCompanion<DbCheckInActivity> {
+  final Value<int> uid;
+  final Value<String?> activityName;
+  final Value<int> status;
+  const CheckInActivitiesCompanion({
+    this.uid = const Value.absent(),
+    this.activityName = const Value.absent(),
+    this.status = const Value.absent(),
+  });
+  CheckInActivitiesCompanion.insert({
+    this.uid = const Value.absent(),
+    this.activityName = const Value.absent(),
+    this.status = const Value.absent(),
+  });
+  static Insertable<DbCheckInActivity> custom({
+    Expression<int>? uid,
+    Expression<String>? activityName,
+    Expression<int>? status,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (activityName != null) 'ActivityName': activityName,
+      if (status != null) 'Status': status,
+    });
+  }
+
+  CheckInActivitiesCompanion copyWith({
+    Value<int>? uid,
+    Value<String?>? activityName,
+    Value<int>? status,
+  }) {
+    return CheckInActivitiesCompanion(
+      uid: uid ?? this.uid,
+      activityName: activityName ?? this.activityName,
+      status: status ?? this.status,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (activityName.present) {
+      map['ActivityName'] = Variable<String>(activityName.value);
+    }
+    if (status.present) {
+      map['Status'] = Variable<int>(status.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CheckInActivitiesCompanion(')
+          ..write('uid: $uid, ')
+          ..write('activityName: $activityName, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CheckInLogsTable extends CheckInLogs
+    with TableInfo<$CheckInLogsTable, DbCheckInLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CheckInLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _locationCodeMeta = const VerificationMeta(
+    'locationCode',
+  );
+  @override
+  late final GeneratedColumn<String> locationCode = GeneratedColumn<String>(
+    'LocationCode',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'UserId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activityNameMeta = const VerificationMeta(
+    'activityName',
+  );
+  @override
+  late final GeneratedColumn<String> activityName = GeneratedColumn<String>(
+    'ActivityName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _remarkMeta = const VerificationMeta('remark');
+  @override
+  late final GeneratedColumn<String> remark = GeneratedColumn<String>(
+    'Remark',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _checkInTimeMeta = const VerificationMeta(
+    'checkInTime',
+  );
+  @override
+  late final GeneratedColumn<String> checkInTime = GeneratedColumn<String>(
+    'CheckInTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _checkOutTimeMeta = const VerificationMeta(
+    'checkOutTime',
+  );
+  @override
+  late final GeneratedColumn<String> checkOutTime = GeneratedColumn<String>(
+    'CheckOutTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'Status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
+    'SyncStatus',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastSyncMeta = const VerificationMeta(
+    'lastSync',
+  );
+  @override
+  late final GeneratedColumn<String> lastSync = GeneratedColumn<String>(
+    'LastSync',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    locationCode,
+    userId,
+    activityName,
+    remark,
+    checkInTime,
+    checkOutTime,
+    status,
+    syncStatus,
+    lastSync,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'check_in_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbCheckInLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('LocationCode')) {
+      context.handle(
+        _locationCodeMeta,
+        locationCode.isAcceptableOrUnknown(
+          data['LocationCode']!,
+          _locationCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('UserId')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['UserId']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('ActivityName')) {
+      context.handle(
+        _activityNameMeta,
+        activityName.isAcceptableOrUnknown(
+          data['ActivityName']!,
+          _activityNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('Remark')) {
+      context.handle(
+        _remarkMeta,
+        remark.isAcceptableOrUnknown(data['Remark']!, _remarkMeta),
+      );
+    }
+    if (data.containsKey('CheckInTime')) {
+      context.handle(
+        _checkInTimeMeta,
+        checkInTime.isAcceptableOrUnknown(
+          data['CheckInTime']!,
+          _checkInTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('CheckOutTime')) {
+      context.handle(
+        _checkOutTimeMeta,
+        checkOutTime.isAcceptableOrUnknown(
+          data['CheckOutTime']!,
+          _checkOutTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('Status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['Status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('SyncStatus')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['SyncStatus']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('LastSync')) {
+      context.handle(
+        _lastSyncMeta,
+        lastSync.isAcceptableOrUnknown(data['LastSync']!, _lastSyncMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbCheckInLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbCheckInLog(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      locationCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}LocationCode'],
+      ),
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}UserId'],
+      ),
+      activityName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ActivityName'],
+      ),
+      remark: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}Remark'],
+      ),
+      checkInTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}CheckInTime'],
+      ),
+      checkOutTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}CheckOutTime'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}Status'],
+      )!,
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}SyncStatus'],
+      )!,
+      lastSync: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}LastSync'],
+      ),
+    );
+  }
+
+  @override
+  $CheckInLogsTable createAlias(String alias) {
+    return $CheckInLogsTable(attachedDatabase, alias);
+  }
+}
+
+class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
+  final int uid;
+  final String? locationCode;
+  final String? userId;
+  final String? activityName;
+  final String? remark;
+  final String? checkInTime;
+  final String? checkOutTime;
+  final int status;
+  final int syncStatus;
+  final String? lastSync;
+  const DbCheckInLog({
+    required this.uid,
+    this.locationCode,
+    this.userId,
+    this.activityName,
+    this.remark,
+    this.checkInTime,
+    this.checkOutTime,
+    required this.status,
+    required this.syncStatus,
+    this.lastSync,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || locationCode != null) {
+      map['LocationCode'] = Variable<String>(locationCode);
+    }
+    if (!nullToAbsent || userId != null) {
+      map['UserId'] = Variable<String>(userId);
+    }
+    if (!nullToAbsent || activityName != null) {
+      map['ActivityName'] = Variable<String>(activityName);
+    }
+    if (!nullToAbsent || remark != null) {
+      map['Remark'] = Variable<String>(remark);
+    }
+    if (!nullToAbsent || checkInTime != null) {
+      map['CheckInTime'] = Variable<String>(checkInTime);
+    }
+    if (!nullToAbsent || checkOutTime != null) {
+      map['CheckOutTime'] = Variable<String>(checkOutTime);
+    }
+    map['Status'] = Variable<int>(status);
+    map['SyncStatus'] = Variable<int>(syncStatus);
+    if (!nullToAbsent || lastSync != null) {
+      map['LastSync'] = Variable<String>(lastSync);
+    }
+    return map;
+  }
+
+  CheckInLogsCompanion toCompanion(bool nullToAbsent) {
+    return CheckInLogsCompanion(
+      uid: Value(uid),
+      locationCode: locationCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(locationCode),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
+      activityName: activityName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activityName),
+      remark: remark == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remark),
+      checkInTime: checkInTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(checkInTime),
+      checkOutTime: checkOutTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(checkOutTime),
+      status: Value(status),
+      syncStatus: Value(syncStatus),
+      lastSync: lastSync == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSync),
+    );
+  }
+
+  factory DbCheckInLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbCheckInLog(
+      uid: serializer.fromJson<int>(json['uid']),
+      locationCode: serializer.fromJson<String?>(json['locationCode']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      activityName: serializer.fromJson<String?>(json['activityName']),
+      remark: serializer.fromJson<String?>(json['remark']),
+      checkInTime: serializer.fromJson<String?>(json['checkInTime']),
+      checkOutTime: serializer.fromJson<String?>(json['checkOutTime']),
+      status: serializer.fromJson<int>(json['status']),
+      syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      lastSync: serializer.fromJson<String?>(json['lastSync']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'locationCode': serializer.toJson<String?>(locationCode),
+      'userId': serializer.toJson<String?>(userId),
+      'activityName': serializer.toJson<String?>(activityName),
+      'remark': serializer.toJson<String?>(remark),
+      'checkInTime': serializer.toJson<String?>(checkInTime),
+      'checkOutTime': serializer.toJson<String?>(checkOutTime),
+      'status': serializer.toJson<int>(status),
+      'syncStatus': serializer.toJson<int>(syncStatus),
+      'lastSync': serializer.toJson<String?>(lastSync),
+    };
+  }
+
+  DbCheckInLog copyWith({
+    int? uid,
+    Value<String?> locationCode = const Value.absent(),
+    Value<String?> userId = const Value.absent(),
+    Value<String?> activityName = const Value.absent(),
+    Value<String?> remark = const Value.absent(),
+    Value<String?> checkInTime = const Value.absent(),
+    Value<String?> checkOutTime = const Value.absent(),
+    int? status,
+    int? syncStatus,
+    Value<String?> lastSync = const Value.absent(),
+  }) => DbCheckInLog(
+    uid: uid ?? this.uid,
+    locationCode: locationCode.present ? locationCode.value : this.locationCode,
+    userId: userId.present ? userId.value : this.userId,
+    activityName: activityName.present ? activityName.value : this.activityName,
+    remark: remark.present ? remark.value : this.remark,
+    checkInTime: checkInTime.present ? checkInTime.value : this.checkInTime,
+    checkOutTime: checkOutTime.present ? checkOutTime.value : this.checkOutTime,
+    status: status ?? this.status,
+    syncStatus: syncStatus ?? this.syncStatus,
+    lastSync: lastSync.present ? lastSync.value : this.lastSync,
+  );
+  DbCheckInLog copyWithCompanion(CheckInLogsCompanion data) {
+    return DbCheckInLog(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      locationCode: data.locationCode.present
+          ? data.locationCode.value
+          : this.locationCode,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      activityName: data.activityName.present
+          ? data.activityName.value
+          : this.activityName,
+      remark: data.remark.present ? data.remark.value : this.remark,
+      checkInTime: data.checkInTime.present
+          ? data.checkInTime.value
+          : this.checkInTime,
+      checkOutTime: data.checkOutTime.present
+          ? data.checkOutTime.value
+          : this.checkOutTime,
+      status: data.status.present ? data.status.value : this.status,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbCheckInLog(')
+          ..write('uid: $uid, ')
+          ..write('locationCode: $locationCode, ')
+          ..write('userId: $userId, ')
+          ..write('activityName: $activityName, ')
+          ..write('remark: $remark, ')
+          ..write('checkInTime: $checkInTime, ')
+          ..write('checkOutTime: $checkOutTime, ')
+          ..write('status: $status, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSync: $lastSync')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    locationCode,
+    userId,
+    activityName,
+    remark,
+    checkInTime,
+    checkOutTime,
+    status,
+    syncStatus,
+    lastSync,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbCheckInLog &&
+          other.uid == this.uid &&
+          other.locationCode == this.locationCode &&
+          other.userId == this.userId &&
+          other.activityName == this.activityName &&
+          other.remark == this.remark &&
+          other.checkInTime == this.checkInTime &&
+          other.checkOutTime == this.checkOutTime &&
+          other.status == this.status &&
+          other.syncStatus == this.syncStatus &&
+          other.lastSync == this.lastSync);
+}
+
+class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
+  final Value<int> uid;
+  final Value<String?> locationCode;
+  final Value<String?> userId;
+  final Value<String?> activityName;
+  final Value<String?> remark;
+  final Value<String?> checkInTime;
+  final Value<String?> checkOutTime;
+  final Value<int> status;
+  final Value<int> syncStatus;
+  final Value<String?> lastSync;
+  const CheckInLogsCompanion({
+    this.uid = const Value.absent(),
+    this.locationCode = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.activityName = const Value.absent(),
+    this.remark = const Value.absent(),
+    this.checkInTime = const Value.absent(),
+    this.checkOutTime = const Value.absent(),
+    this.status = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSync = const Value.absent(),
+  });
+  CheckInLogsCompanion.insert({
+    this.uid = const Value.absent(),
+    this.locationCode = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.activityName = const Value.absent(),
+    this.remark = const Value.absent(),
+    this.checkInTime = const Value.absent(),
+    this.checkOutTime = const Value.absent(),
+    this.status = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSync = const Value.absent(),
+  });
+  static Insertable<DbCheckInLog> custom({
+    Expression<int>? uid,
+    Expression<String>? locationCode,
+    Expression<String>? userId,
+    Expression<String>? activityName,
+    Expression<String>? remark,
+    Expression<String>? checkInTime,
+    Expression<String>? checkOutTime,
+    Expression<int>? status,
+    Expression<int>? syncStatus,
+    Expression<String>? lastSync,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (locationCode != null) 'LocationCode': locationCode,
+      if (userId != null) 'UserId': userId,
+      if (activityName != null) 'ActivityName': activityName,
+      if (remark != null) 'Remark': remark,
+      if (checkInTime != null) 'CheckInTime': checkInTime,
+      if (checkOutTime != null) 'CheckOutTime': checkOutTime,
+      if (status != null) 'Status': status,
+      if (syncStatus != null) 'SyncStatus': syncStatus,
+      if (lastSync != null) 'LastSync': lastSync,
+    });
+  }
+
+  CheckInLogsCompanion copyWith({
+    Value<int>? uid,
+    Value<String?>? locationCode,
+    Value<String?>? userId,
+    Value<String?>? activityName,
+    Value<String?>? remark,
+    Value<String?>? checkInTime,
+    Value<String?>? checkOutTime,
+    Value<int>? status,
+    Value<int>? syncStatus,
+    Value<String?>? lastSync,
+  }) {
+    return CheckInLogsCompanion(
+      uid: uid ?? this.uid,
+      locationCode: locationCode ?? this.locationCode,
+      userId: userId ?? this.userId,
+      activityName: activityName ?? this.activityName,
+      remark: remark ?? this.remark,
+      checkInTime: checkInTime ?? this.checkInTime,
+      checkOutTime: checkOutTime ?? this.checkOutTime,
+      status: status ?? this.status,
+      syncStatus: syncStatus ?? this.syncStatus,
+      lastSync: lastSync ?? this.lastSync,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (locationCode.present) {
+      map['LocationCode'] = Variable<String>(locationCode.value);
+    }
+    if (userId.present) {
+      map['UserId'] = Variable<String>(userId.value);
+    }
+    if (activityName.present) {
+      map['ActivityName'] = Variable<String>(activityName.value);
+    }
+    if (remark.present) {
+      map['Remark'] = Variable<String>(remark.value);
+    }
+    if (checkInTime.present) {
+      map['CheckInTime'] = Variable<String>(checkInTime.value);
+    }
+    if (checkOutTime.present) {
+      map['CheckOutTime'] = Variable<String>(checkOutTime.value);
+    }
+    if (status.present) {
+      map['Status'] = Variable<int>(status.value);
+    }
+    if (syncStatus.present) {
+      map['SyncStatus'] = Variable<int>(syncStatus.value);
+    }
+    if (lastSync.present) {
+      map['LastSync'] = Variable<String>(lastSync.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CheckInLogsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('locationCode: $locationCode, ')
+          ..write('userId: $userId, ')
+          ..write('activityName: $activityName, ')
+          ..write('remark: $remark, ')
+          ..write('checkInTime: $checkInTime, ')
+          ..write('checkOutTime: $checkOutTime, ')
+          ..write('status: $status, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSync: $lastSync')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ActivityLogsTable extends ActivityLogs
+    with TableInfo<$ActivityLogsTable, DbActivityLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ActivityLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'recID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _machineNoMeta = const VerificationMeta(
+    'machineNo',
+  );
+  @override
+  late final GeneratedColumn<String> machineNo = GeneratedColumn<String>(
+    'MachineNo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activityTypeMeta = const VerificationMeta(
+    'activityType',
+  );
+  @override
+  late final GeneratedColumn<String> activityType = GeneratedColumn<String>(
+    'ActivityType',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _operatorIdMeta = const VerificationMeta(
+    'operatorId',
+  );
+  @override
+  late final GeneratedColumn<String> operatorId = GeneratedColumn<String>(
+    'OperatorId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startTimeMeta = const VerificationMeta(
+    'startTime',
+  );
+  @override
+  late final GeneratedColumn<String> startTime = GeneratedColumn<String>(
+    'StartTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _endTimeMeta = const VerificationMeta(
+    'endTime',
+  );
+  @override
+  late final GeneratedColumn<String> endTime = GeneratedColumn<String>(
+    'EndTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'Status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _remarkMeta = const VerificationMeta('remark');
+  @override
+  late final GeneratedColumn<String> remark = GeneratedColumn<String>(
+    'Remark',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
+    'SyncStatus',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _lastSyncMeta = const VerificationMeta(
+    'lastSync',
+  );
+  @override
+  late final GeneratedColumn<String> lastSync = GeneratedColumn<String>(
+    'LastSync',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    recId,
+    machineNo,
+    activityType,
+    operatorId,
+    startTime,
+    endTime,
+    status,
+    remark,
+    syncStatus,
+    lastSync,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'activity_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbActivityLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('recID')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['recID']!, _recIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recIdMeta);
+    }
+    if (data.containsKey('MachineNo')) {
+      context.handle(
+        _machineNoMeta,
+        machineNo.isAcceptableOrUnknown(data['MachineNo']!, _machineNoMeta),
+      );
+    }
+    if (data.containsKey('ActivityType')) {
+      context.handle(
+        _activityTypeMeta,
+        activityType.isAcceptableOrUnknown(
+          data['ActivityType']!,
+          _activityTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('OperatorId')) {
+      context.handle(
+        _operatorIdMeta,
+        operatorId.isAcceptableOrUnknown(data['OperatorId']!, _operatorIdMeta),
+      );
+    }
+    if (data.containsKey('StartTime')) {
+      context.handle(
+        _startTimeMeta,
+        startTime.isAcceptableOrUnknown(data['StartTime']!, _startTimeMeta),
+      );
+    }
+    if (data.containsKey('EndTime')) {
+      context.handle(
+        _endTimeMeta,
+        endTime.isAcceptableOrUnknown(data['EndTime']!, _endTimeMeta),
+      );
+    }
+    if (data.containsKey('Status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['Status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('Remark')) {
+      context.handle(
+        _remarkMeta,
+        remark.isAcceptableOrUnknown(data['Remark']!, _remarkMeta),
+      );
+    }
+    if (data.containsKey('SyncStatus')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['SyncStatus']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('LastSync')) {
+      context.handle(
+        _lastSyncMeta,
+        lastSync.isAcceptableOrUnknown(data['LastSync']!, _lastSyncMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbActivityLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbActivityLog(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recID'],
+      )!,
+      machineNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}MachineNo'],
+      ),
+      activityType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ActivityType'],
+      ),
+      operatorId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}OperatorId'],
+      ),
+      startTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}StartTime'],
+      ),
+      endTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}EndTime'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}Status'],
+      )!,
+      remark: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}Remark'],
+      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}SyncStatus'],
+      )!,
+      lastSync: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}LastSync'],
+      ),
+    );
+  }
+
+  @override
+  $ActivityLogsTable createAlias(String alias) {
+    return $ActivityLogsTable(attachedDatabase, alias);
+  }
+}
+
+class DbActivityLog extends DataClass implements Insertable<DbActivityLog> {
+  final int uid;
+  final String recId;
+  final String? machineNo;
+  final String? activityType;
+  final String? operatorId;
+  final String? startTime;
+  final String? endTime;
+  final int status;
+  final String? remark;
+  final int syncStatus;
+  final String? lastSync;
+  const DbActivityLog({
+    required this.uid,
+    required this.recId,
+    this.machineNo,
+    this.activityType,
+    this.operatorId,
+    this.startTime,
+    this.endTime,
+    required this.status,
+    this.remark,
+    required this.syncStatus,
+    this.lastSync,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    map['recID'] = Variable<String>(recId);
+    if (!nullToAbsent || machineNo != null) {
+      map['MachineNo'] = Variable<String>(machineNo);
+    }
+    if (!nullToAbsent || activityType != null) {
+      map['ActivityType'] = Variable<String>(activityType);
+    }
+    if (!nullToAbsent || operatorId != null) {
+      map['OperatorId'] = Variable<String>(operatorId);
+    }
+    if (!nullToAbsent || startTime != null) {
+      map['StartTime'] = Variable<String>(startTime);
+    }
+    if (!nullToAbsent || endTime != null) {
+      map['EndTime'] = Variable<String>(endTime);
+    }
+    map['Status'] = Variable<int>(status);
+    if (!nullToAbsent || remark != null) {
+      map['Remark'] = Variable<String>(remark);
+    }
+    map['SyncStatus'] = Variable<int>(syncStatus);
+    if (!nullToAbsent || lastSync != null) {
+      map['LastSync'] = Variable<String>(lastSync);
+    }
+    return map;
+  }
+
+  ActivityLogsCompanion toCompanion(bool nullToAbsent) {
+    return ActivityLogsCompanion(
+      uid: Value(uid),
+      recId: Value(recId),
+      machineNo: machineNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(machineNo),
+      activityType: activityType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activityType),
+      operatorId: operatorId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(operatorId),
+      startTime: startTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startTime),
+      endTime: endTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endTime),
+      status: Value(status),
+      remark: remark == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remark),
+      syncStatus: Value(syncStatus),
+      lastSync: lastSync == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSync),
+    );
+  }
+
+  factory DbActivityLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbActivityLog(
+      uid: serializer.fromJson<int>(json['uid']),
+      recId: serializer.fromJson<String>(json['recId']),
+      machineNo: serializer.fromJson<String?>(json['machineNo']),
+      activityType: serializer.fromJson<String?>(json['activityType']),
+      operatorId: serializer.fromJson<String?>(json['operatorId']),
+      startTime: serializer.fromJson<String?>(json['startTime']),
+      endTime: serializer.fromJson<String?>(json['endTime']),
+      status: serializer.fromJson<int>(json['status']),
+      remark: serializer.fromJson<String?>(json['remark']),
+      syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      lastSync: serializer.fromJson<String?>(json['lastSync']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'recId': serializer.toJson<String>(recId),
+      'machineNo': serializer.toJson<String?>(machineNo),
+      'activityType': serializer.toJson<String?>(activityType),
+      'operatorId': serializer.toJson<String?>(operatorId),
+      'startTime': serializer.toJson<String?>(startTime),
+      'endTime': serializer.toJson<String?>(endTime),
+      'status': serializer.toJson<int>(status),
+      'remark': serializer.toJson<String?>(remark),
+      'syncStatus': serializer.toJson<int>(syncStatus),
+      'lastSync': serializer.toJson<String?>(lastSync),
+    };
+  }
+
+  DbActivityLog copyWith({
+    int? uid,
+    String? recId,
+    Value<String?> machineNo = const Value.absent(),
+    Value<String?> activityType = const Value.absent(),
+    Value<String?> operatorId = const Value.absent(),
+    Value<String?> startTime = const Value.absent(),
+    Value<String?> endTime = const Value.absent(),
+    int? status,
+    Value<String?> remark = const Value.absent(),
+    int? syncStatus,
+    Value<String?> lastSync = const Value.absent(),
+  }) => DbActivityLog(
+    uid: uid ?? this.uid,
+    recId: recId ?? this.recId,
+    machineNo: machineNo.present ? machineNo.value : this.machineNo,
+    activityType: activityType.present ? activityType.value : this.activityType,
+    operatorId: operatorId.present ? operatorId.value : this.operatorId,
+    startTime: startTime.present ? startTime.value : this.startTime,
+    endTime: endTime.present ? endTime.value : this.endTime,
+    status: status ?? this.status,
+    remark: remark.present ? remark.value : this.remark,
+    syncStatus: syncStatus ?? this.syncStatus,
+    lastSync: lastSync.present ? lastSync.value : this.lastSync,
+  );
+  DbActivityLog copyWithCompanion(ActivityLogsCompanion data) {
+    return DbActivityLog(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      recId: data.recId.present ? data.recId.value : this.recId,
+      machineNo: data.machineNo.present ? data.machineNo.value : this.machineNo,
+      activityType: data.activityType.present
+          ? data.activityType.value
+          : this.activityType,
+      operatorId: data.operatorId.present
+          ? data.operatorId.value
+          : this.operatorId,
+      startTime: data.startTime.present ? data.startTime.value : this.startTime,
+      endTime: data.endTime.present ? data.endTime.value : this.endTime,
+      status: data.status.present ? data.status.value : this.status,
+      remark: data.remark.present ? data.remark.value : this.remark,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbActivityLog(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('machineNo: $machineNo, ')
+          ..write('activityType: $activityType, ')
+          ..write('operatorId: $operatorId, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('status: $status, ')
+          ..write('remark: $remark, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSync: $lastSync')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    recId,
+    machineNo,
+    activityType,
+    operatorId,
+    startTime,
+    endTime,
+    status,
+    remark,
+    syncStatus,
+    lastSync,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbActivityLog &&
+          other.uid == this.uid &&
+          other.recId == this.recId &&
+          other.machineNo == this.machineNo &&
+          other.activityType == this.activityType &&
+          other.operatorId == this.operatorId &&
+          other.startTime == this.startTime &&
+          other.endTime == this.endTime &&
+          other.status == this.status &&
+          other.remark == this.remark &&
+          other.syncStatus == this.syncStatus &&
+          other.lastSync == this.lastSync);
+}
+
+class ActivityLogsCompanion extends UpdateCompanion<DbActivityLog> {
+  final Value<int> uid;
+  final Value<String> recId;
+  final Value<String?> machineNo;
+  final Value<String?> activityType;
+  final Value<String?> operatorId;
+  final Value<String?> startTime;
+  final Value<String?> endTime;
+  final Value<int> status;
+  final Value<String?> remark;
+  final Value<int> syncStatus;
+  final Value<String?> lastSync;
+  const ActivityLogsCompanion({
+    this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
+    this.machineNo = const Value.absent(),
+    this.activityType = const Value.absent(),
+    this.operatorId = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.status = const Value.absent(),
+    this.remark = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSync = const Value.absent(),
+  });
+  ActivityLogsCompanion.insert({
+    this.uid = const Value.absent(),
+    required String recId,
+    this.machineNo = const Value.absent(),
+    this.activityType = const Value.absent(),
+    this.operatorId = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.status = const Value.absent(),
+    this.remark = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.lastSync = const Value.absent(),
+  }) : recId = Value(recId);
+  static Insertable<DbActivityLog> custom({
+    Expression<int>? uid,
+    Expression<String>? recId,
+    Expression<String>? machineNo,
+    Expression<String>? activityType,
+    Expression<String>? operatorId,
+    Expression<String>? startTime,
+    Expression<String>? endTime,
+    Expression<int>? status,
+    Expression<String>? remark,
+    Expression<int>? syncStatus,
+    Expression<String>? lastSync,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (recId != null) 'recID': recId,
+      if (machineNo != null) 'MachineNo': machineNo,
+      if (activityType != null) 'ActivityType': activityType,
+      if (operatorId != null) 'OperatorId': operatorId,
+      if (startTime != null) 'StartTime': startTime,
+      if (endTime != null) 'EndTime': endTime,
+      if (status != null) 'Status': status,
+      if (remark != null) 'Remark': remark,
+      if (syncStatus != null) 'SyncStatus': syncStatus,
+      if (lastSync != null) 'LastSync': lastSync,
+    });
+  }
+
+  ActivityLogsCompanion copyWith({
+    Value<int>? uid,
+    Value<String>? recId,
+    Value<String?>? machineNo,
+    Value<String?>? activityType,
+    Value<String?>? operatorId,
+    Value<String?>? startTime,
+    Value<String?>? endTime,
+    Value<int>? status,
+    Value<String?>? remark,
+    Value<int>? syncStatus,
+    Value<String?>? lastSync,
+  }) {
+    return ActivityLogsCompanion(
+      uid: uid ?? this.uid,
+      recId: recId ?? this.recId,
+      machineNo: machineNo ?? this.machineNo,
+      activityType: activityType ?? this.activityType,
+      operatorId: operatorId ?? this.operatorId,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      status: status ?? this.status,
+      remark: remark ?? this.remark,
+      syncStatus: syncStatus ?? this.syncStatus,
+      lastSync: lastSync ?? this.lastSync,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (recId.present) {
+      map['recID'] = Variable<String>(recId.value);
+    }
+    if (machineNo.present) {
+      map['MachineNo'] = Variable<String>(machineNo.value);
+    }
+    if (activityType.present) {
+      map['ActivityType'] = Variable<String>(activityType.value);
+    }
+    if (operatorId.present) {
+      map['OperatorId'] = Variable<String>(operatorId.value);
+    }
+    if (startTime.present) {
+      map['StartTime'] = Variable<String>(startTime.value);
+    }
+    if (endTime.present) {
+      map['EndTime'] = Variable<String>(endTime.value);
+    }
+    if (status.present) {
+      map['Status'] = Variable<int>(status.value);
+    }
+    if (remark.present) {
+      map['Remark'] = Variable<String>(remark.value);
+    }
+    if (syncStatus.present) {
+      map['SyncStatus'] = Variable<int>(syncStatus.value);
+    }
+    if (lastSync.present) {
+      map['LastSync'] = Variable<String>(lastSync.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ActivityLogsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('machineNo: $machineNo, ')
+          ..write('activityType: $activityType, ')
+          ..write('operatorId: $operatorId, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('status: $status, ')
+          ..write('remark: $remark, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('lastSync: $lastSync')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -13671,6 +15209,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $PauseReasonsTable pauseReasons = $PauseReasonsTable(this);
+  late final $CheckInActivitiesTable checkInActivities =
+      $CheckInActivitiesTable(this);
+  late final $CheckInLogsTable checkInLogs = $CheckInLogsTable(this);
+  late final $ActivityLogsTable activityLogs = $ActivityLogsTable(this);
   late final JobDao jobDao = JobDao(this as AppDatabase);
   late final DocumentDao documentDao = DocumentDao(this as AppDatabase);
   late final DocumentMachineDao documentMachineDao = DocumentMachineDao(
@@ -13696,6 +15238,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final PauseReasonDao pauseReasonDao = PauseReasonDao(
     this as AppDatabase,
   );
+  late final CheckInDao checkInDao = CheckInDao(this as AppDatabase);
+  late final ActivityLogDao activityLogDao = ActivityLogDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -13719,6 +15265,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     jobMachineEventLogs,
     jobMachineItems,
     pauseReasons,
+    checkInActivities,
+    checkInLogs,
+    activityLogs,
   ];
 }
 
@@ -20107,6 +21656,790 @@ typedef $$PauseReasonsTableProcessedTableManager =
       DbPauseReason,
       PrefetchHooks Function()
     >;
+typedef $$CheckInActivitiesTableCreateCompanionBuilder =
+    CheckInActivitiesCompanion Function({
+      Value<int> uid,
+      Value<String?> activityName,
+      Value<int> status,
+    });
+typedef $$CheckInActivitiesTableUpdateCompanionBuilder =
+    CheckInActivitiesCompanion Function({
+      Value<int> uid,
+      Value<String?> activityName,
+      Value<int> status,
+    });
+
+class $$CheckInActivitiesTableFilterComposer
+    extends Composer<_$AppDatabase, $CheckInActivitiesTable> {
+  $$CheckInActivitiesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CheckInActivitiesTableOrderingComposer
+    extends Composer<_$AppDatabase, $CheckInActivitiesTable> {
+  $$CheckInActivitiesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CheckInActivitiesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CheckInActivitiesTable> {
+  $$CheckInActivitiesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+}
+
+class $$CheckInActivitiesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CheckInActivitiesTable,
+          DbCheckInActivity,
+          $$CheckInActivitiesTableFilterComposer,
+          $$CheckInActivitiesTableOrderingComposer,
+          $$CheckInActivitiesTableAnnotationComposer,
+          $$CheckInActivitiesTableCreateCompanionBuilder,
+          $$CheckInActivitiesTableUpdateCompanionBuilder,
+          (
+            DbCheckInActivity,
+            BaseReferences<
+              _$AppDatabase,
+              $CheckInActivitiesTable,
+              DbCheckInActivity
+            >,
+          ),
+          DbCheckInActivity,
+          PrefetchHooks Function()
+        > {
+  $$CheckInActivitiesTableTableManager(
+    _$AppDatabase db,
+    $CheckInActivitiesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CheckInActivitiesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CheckInActivitiesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CheckInActivitiesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
+                Value<int> status = const Value.absent(),
+              }) => CheckInActivitiesCompanion(
+                uid: uid,
+                activityName: activityName,
+                status: status,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
+                Value<int> status = const Value.absent(),
+              }) => CheckInActivitiesCompanion.insert(
+                uid: uid,
+                activityName: activityName,
+                status: status,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CheckInActivitiesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CheckInActivitiesTable,
+      DbCheckInActivity,
+      $$CheckInActivitiesTableFilterComposer,
+      $$CheckInActivitiesTableOrderingComposer,
+      $$CheckInActivitiesTableAnnotationComposer,
+      $$CheckInActivitiesTableCreateCompanionBuilder,
+      $$CheckInActivitiesTableUpdateCompanionBuilder,
+      (
+        DbCheckInActivity,
+        BaseReferences<
+          _$AppDatabase,
+          $CheckInActivitiesTable,
+          DbCheckInActivity
+        >,
+      ),
+      DbCheckInActivity,
+      PrefetchHooks Function()
+    >;
+typedef $$CheckInLogsTableCreateCompanionBuilder =
+    CheckInLogsCompanion Function({
+      Value<int> uid,
+      Value<String?> locationCode,
+      Value<String?> userId,
+      Value<String?> activityName,
+      Value<String?> remark,
+      Value<String?> checkInTime,
+      Value<String?> checkOutTime,
+      Value<int> status,
+      Value<int> syncStatus,
+      Value<String?> lastSync,
+    });
+typedef $$CheckInLogsTableUpdateCompanionBuilder =
+    CheckInLogsCompanion Function({
+      Value<int> uid,
+      Value<String?> locationCode,
+      Value<String?> userId,
+      Value<String?> activityName,
+      Value<String?> remark,
+      Value<String?> checkInTime,
+      Value<String?> checkOutTime,
+      Value<int> status,
+      Value<int> syncStatus,
+      Value<String?> lastSync,
+    });
+
+class $$CheckInLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $CheckInLogsTable> {
+  $$CheckInLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get locationCode => $composableBuilder(
+    column: $table.locationCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remark => $composableBuilder(
+    column: $table.remark,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get checkInTime => $composableBuilder(
+    column: $table.checkInTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get checkOutTime => $composableBuilder(
+    column: $table.checkOutTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$CheckInLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $CheckInLogsTable> {
+  $$CheckInLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get locationCode => $composableBuilder(
+    column: $table.locationCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remark => $composableBuilder(
+    column: $table.remark,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get checkInTime => $composableBuilder(
+    column: $table.checkInTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get checkOutTime => $composableBuilder(
+    column: $table.checkOutTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$CheckInLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $CheckInLogsTable> {
+  $$CheckInLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get locationCode => $composableBuilder(
+    column: $table.locationCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get remark =>
+      $composableBuilder(column: $table.remark, builder: (column) => column);
+
+  GeneratedColumn<String> get checkInTime => $composableBuilder(
+    column: $table.checkInTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get checkOutTime => $composableBuilder(
+    column: $table.checkOutTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSync =>
+      $composableBuilder(column: $table.lastSync, builder: (column) => column);
+}
+
+class $$CheckInLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CheckInLogsTable,
+          DbCheckInLog,
+          $$CheckInLogsTableFilterComposer,
+          $$CheckInLogsTableOrderingComposer,
+          $$CheckInLogsTableAnnotationComposer,
+          $$CheckInLogsTableCreateCompanionBuilder,
+          $$CheckInLogsTableUpdateCompanionBuilder,
+          (
+            DbCheckInLog,
+            BaseReferences<_$AppDatabase, $CheckInLogsTable, DbCheckInLog>,
+          ),
+          DbCheckInLog,
+          PrefetchHooks Function()
+        > {
+  $$CheckInLogsTableTableManager(_$AppDatabase db, $CheckInLogsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$CheckInLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$CheckInLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$CheckInLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> locationCode = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
+                Value<String?> remark = const Value.absent(),
+                Value<String?> checkInTime = const Value.absent(),
+                Value<String?> checkOutTime = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+              }) => CheckInLogsCompanion(
+                uid: uid,
+                locationCode: locationCode,
+                userId: userId,
+                activityName: activityName,
+                remark: remark,
+                checkInTime: checkInTime,
+                checkOutTime: checkOutTime,
+                status: status,
+                syncStatus: syncStatus,
+                lastSync: lastSync,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> locationCode = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
+                Value<String?> remark = const Value.absent(),
+                Value<String?> checkInTime = const Value.absent(),
+                Value<String?> checkOutTime = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+              }) => CheckInLogsCompanion.insert(
+                uid: uid,
+                locationCode: locationCode,
+                userId: userId,
+                activityName: activityName,
+                remark: remark,
+                checkInTime: checkInTime,
+                checkOutTime: checkOutTime,
+                status: status,
+                syncStatus: syncStatus,
+                lastSync: lastSync,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$CheckInLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CheckInLogsTable,
+      DbCheckInLog,
+      $$CheckInLogsTableFilterComposer,
+      $$CheckInLogsTableOrderingComposer,
+      $$CheckInLogsTableAnnotationComposer,
+      $$CheckInLogsTableCreateCompanionBuilder,
+      $$CheckInLogsTableUpdateCompanionBuilder,
+      (
+        DbCheckInLog,
+        BaseReferences<_$AppDatabase, $CheckInLogsTable, DbCheckInLog>,
+      ),
+      DbCheckInLog,
+      PrefetchHooks Function()
+    >;
+typedef $$ActivityLogsTableCreateCompanionBuilder =
+    ActivityLogsCompanion Function({
+      Value<int> uid,
+      required String recId,
+      Value<String?> machineNo,
+      Value<String?> activityType,
+      Value<String?> operatorId,
+      Value<String?> startTime,
+      Value<String?> endTime,
+      Value<int> status,
+      Value<String?> remark,
+      Value<int> syncStatus,
+      Value<String?> lastSync,
+    });
+typedef $$ActivityLogsTableUpdateCompanionBuilder =
+    ActivityLogsCompanion Function({
+      Value<int> uid,
+      Value<String> recId,
+      Value<String?> machineNo,
+      Value<String?> activityType,
+      Value<String?> operatorId,
+      Value<String?> startTime,
+      Value<String?> endTime,
+      Value<int> status,
+      Value<String?> remark,
+      Value<int> syncStatus,
+      Value<String?> lastSync,
+    });
+
+class $$ActivityLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $ActivityLogsTable> {
+  $$ActivityLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get machineNo => $composableBuilder(
+    column: $table.machineNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activityType => $composableBuilder(
+    column: $table.activityType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get operatorId => $composableBuilder(
+    column: $table.operatorId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remark => $composableBuilder(
+    column: $table.remark,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ActivityLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $ActivityLogsTable> {
+  $$ActivityLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get machineNo => $composableBuilder(
+    column: $table.machineNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activityType => $composableBuilder(
+    column: $table.activityType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get operatorId => $composableBuilder(
+    column: $table.operatorId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remark => $composableBuilder(
+    column: $table.remark,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ActivityLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ActivityLogsTable> {
+  $$ActivityLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
+
+  GeneratedColumn<String> get machineNo =>
+      $composableBuilder(column: $table.machineNo, builder: (column) => column);
+
+  GeneratedColumn<String> get activityType => $composableBuilder(
+    column: $table.activityType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get operatorId => $composableBuilder(
+    column: $table.operatorId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get startTime =>
+      $composableBuilder(column: $table.startTime, builder: (column) => column);
+
+  GeneratedColumn<String> get endTime =>
+      $composableBuilder(column: $table.endTime, builder: (column) => column);
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get remark =>
+      $composableBuilder(column: $table.remark, builder: (column) => column);
+
+  GeneratedColumn<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lastSync =>
+      $composableBuilder(column: $table.lastSync, builder: (column) => column);
+}
+
+class $$ActivityLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ActivityLogsTable,
+          DbActivityLog,
+          $$ActivityLogsTableFilterComposer,
+          $$ActivityLogsTableOrderingComposer,
+          $$ActivityLogsTableAnnotationComposer,
+          $$ActivityLogsTableCreateCompanionBuilder,
+          $$ActivityLogsTableUpdateCompanionBuilder,
+          (
+            DbActivityLog,
+            BaseReferences<_$AppDatabase, $ActivityLogsTable, DbActivityLog>,
+          ),
+          DbActivityLog,
+          PrefetchHooks Function()
+        > {
+  $$ActivityLogsTableTableManager(_$AppDatabase db, $ActivityLogsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ActivityLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ActivityLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ActivityLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String> recId = const Value.absent(),
+                Value<String?> machineNo = const Value.absent(),
+                Value<String?> activityType = const Value.absent(),
+                Value<String?> operatorId = const Value.absent(),
+                Value<String?> startTime = const Value.absent(),
+                Value<String?> endTime = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> remark = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+              }) => ActivityLogsCompanion(
+                uid: uid,
+                recId: recId,
+                machineNo: machineNo,
+                activityType: activityType,
+                operatorId: operatorId,
+                startTime: startTime,
+                endTime: endTime,
+                status: status,
+                remark: remark,
+                syncStatus: syncStatus,
+                lastSync: lastSync,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                required String recId,
+                Value<String?> machineNo = const Value.absent(),
+                Value<String?> activityType = const Value.absent(),
+                Value<String?> operatorId = const Value.absent(),
+                Value<String?> startTime = const Value.absent(),
+                Value<String?> endTime = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> remark = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+              }) => ActivityLogsCompanion.insert(
+                uid: uid,
+                recId: recId,
+                machineNo: machineNo,
+                activityType: activityType,
+                operatorId: operatorId,
+                startTime: startTime,
+                endTime: endTime,
+                status: status,
+                remark: remark,
+                syncStatus: syncStatus,
+                lastSync: lastSync,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ActivityLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ActivityLogsTable,
+      DbActivityLog,
+      $$ActivityLogsTableFilterComposer,
+      $$ActivityLogsTableOrderingComposer,
+      $$ActivityLogsTableAnnotationComposer,
+      $$ActivityLogsTableCreateCompanionBuilder,
+      $$ActivityLogsTableUpdateCompanionBuilder,
+      (
+        DbActivityLog,
+        BaseReferences<_$AppDatabase, $ActivityLogsTable, DbActivityLog>,
+      ),
+      DbActivityLog,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -20149,4 +22482,10 @@ class $AppDatabaseManager {
       $$JobMachineItemsTableTableManager(_db, _db.jobMachineItems);
   $$PauseReasonsTableTableManager get pauseReasons =>
       $$PauseReasonsTableTableManager(_db, _db.pauseReasons);
+  $$CheckInActivitiesTableTableManager get checkInActivities =>
+      $$CheckInActivitiesTableTableManager(_db, _db.checkInActivities);
+  $$CheckInLogsTableTableManager get checkInLogs =>
+      $$CheckInLogsTableTableManager(_db, _db.checkInLogs);
+  $$ActivityLogsTableTableManager get activityLogs =>
+      $$ActivityLogsTableTableManager(_db, _db.activityLogs);
 }

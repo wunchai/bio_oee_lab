@@ -7,6 +7,8 @@ import 'package:bio_oee_lab/data/database/daos/document_record_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/document_timelog_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
 import 'package:bio_oee_lab/data/database/tables/job_working_time_table.dart';
+import 'package:bio_oee_lab/data/database/tables/job_test_set_table.dart';
+import 'package:bio_oee_lab/data/database/tables/running_job_machine_table.dart';
 
 /// Repository for managing document data.
 class DocumentRepository {
@@ -18,6 +20,70 @@ class DocumentRepository {
     : _documentDao = appDatabase.documentDao,
       _documentRecordDao = appDatabase.documentRecordDao,
       _runningJobDetailsDao = appDatabase.runningJobDetailsDao;
+
+  /// ฟังก์ชัน: เพิ่ม Machine จากการสแกน QR Code หรือ Manual Input
+  Future<void> addMachineByQrCode({
+    required String documentId,
+    required String qrCode,
+    required String userId,
+  }) async {
+    try {
+      final now = DateTime.now().toIso8601String();
+      final newRecId = const Uuid().v4(); // สร้าง ID ใหม่
+
+      final entry = RunningJobMachinesCompanion(
+        recId: drift.Value(newRecId),
+        documentId: drift.Value(documentId),
+        machineNo: drift.Value(qrCode), // เก็บค่า QR Code (Machine No)
+        registerDateTime: drift.Value(now),
+        registerUser: drift.Value(userId),
+        status: const drift.Value(0), // 0 = Active
+        syncStatus: const drift.Value(0), // 0 = รอ Sync
+      );
+
+      // บันทึกลง Database
+      await _runningJobDetailsDao.insertMachine(entry);
+
+      if (kDebugMode) {
+        print('Added Machine: $qrCode for Doc: $documentId');
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error adding machine: $e');
+      rethrow;
+    }
+  }
+
+  /// ฟังก์ชัน: เพิ่ม Test Set จากการสแกน QR Code
+  Future<void> addTestSetByQrCode({
+    required String documentId,
+    required String qrCode,
+    required String userId,
+  }) async {
+    try {
+      final now = DateTime.now().toIso8601String();
+      final newRecId = const Uuid().v4(); // สร้าง ID ใหม่
+
+      final entry = JobTestSetsCompanion(
+        recId: drift.Value(newRecId),
+        documentId: drift.Value(documentId),
+        setItemNo: drift.Value(qrCode), // เก็บค่า QR Code ที่อ่านได้
+        registerDateTime: drift.Value(now),
+        registerUser: drift.Value(userId),
+        status: const drift.Value(0), // 0 = Active
+        syncStatus: const drift.Value(0), // 0 = รอ Sync
+      );
+
+      // บันทึกลง Database
+      await _runningJobDetailsDao.insertTestSet(entry);
+
+      if (kDebugMode) {
+        print('Added Test Set: $qrCode for Doc: $documentId');
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error adding test set: $e');
+      rethrow;
+    }
+  }
 
   // -----------------------------------------------------------------------------
   // 🟢 ส่วนจัดการสถานะและเวลา (Running Job Logic)

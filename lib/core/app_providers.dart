@@ -14,6 +14,10 @@ import 'package:bio_oee_lab/data/repositories/job_repository.dart';
 import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/check_in_dao.dart';
+import 'package:bio_oee_lab/data/repositories/check_in_repository.dart';
+import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
+import 'package:bio_oee_lab/data/repositories/activity_repository.dart';
 
 // ฟังก์ชันนี้จะเตรียม Provider ทั้งหมดที่แอปต้องใช้
 Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
@@ -30,6 +34,9 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final documentTimeLogDao = appDatabase.documentTimeLogDao;
   final runningJobDetailsDao = appDatabase.runningJobDetailsDao;
   final pauseReasonDao = appDatabase.pauseReasonDao;
+  final checkInDao = appDatabase.checkInDao;
+  final activityLogDao = appDatabase.activityLogDao;
+
   // --- ⚠️ สร้าง Repository Providers (จะทะยอยเปิดใช้) ---
 
   // สร้าง LoginRepository (ตัวนี้ใช้ ChangeNotifier)
@@ -53,7 +60,9 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final documentRepository = DocumentRepository(
     appDatabase: appDatabase, // ส่ง database เข้าไป
   );
+  final checkInRepository = CheckInRepository(appDatabase: appDatabase);
 
+  final activityRepository = ActivityRepository(appDatabase: appDatabase);
   // --- คืนค่า List ของ Providers ทั้งหมด ---
   return [
     // 1. Database Provider
@@ -64,6 +73,10 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     Provider.value(value: documentTimeLogDao),
     Provider.value(value: runningJobDetailsDao),
     Provider.value(value: pauseReasonDao),
+    Provider.value(value: checkInDao), // Add Provider DAO
+    Provider.value(value: checkInRepository), // Add Provider Repo
+    Provider.value(value: activityLogDao),
+    Provider.value(value: activityRepository),
     // 3. Repository Providers (ที่ใช้ ChangeNotifier)
     ChangeNotifierProvider<LoginRepository>(
       create: (context) => loginRepository,
