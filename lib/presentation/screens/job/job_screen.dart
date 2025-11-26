@@ -206,7 +206,15 @@ class _JobScreenState extends State<JobScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: _buildSearchBar(), // ใช้ Search Bar ที่อัปเดตแล้ว
+        title: const Text('All Jobs'), // Restore Title
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: _buildSearchBar(),
+          ),
+        ),
         actions: [
           IconButton(
             icon: isSyncing
@@ -457,6 +465,7 @@ class _JobScreenState extends State<JobScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'job_screen_fab', // <<< Fix: Add unique tag
         onPressed: _handleClaimJob,
         label: const Text('Claim Job'),
         icon: const Icon(Icons.add_task),

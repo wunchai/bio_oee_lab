@@ -5,6 +5,7 @@ import 'package:bio_oee_lab/presentation/screens/job/job_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/running_job/running_job_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/checkin/check_in_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/activity/activity_screen.dart';
+import 'package:bio_oee_lab/presentation/screens/machine/machine_screen.dart'; // <<< NEW
 
 // --- Placeholder Screens (หน้าชั่วคราว ระหว่างรอคุณอธิบายรายละเอียด) ---
 class JobScreenPlaceholder extends StatelessWidget {
@@ -35,12 +36,12 @@ class ActivityScreenPlaceholder extends StatelessWidget {
       const Center(child: Text('Page 4: Activity Recording'));
 }
 
-class MachineScreenPlaceholder extends StatelessWidget {
-  const MachineScreenPlaceholder({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Page 5: Machine Status'));
-}
+// class MachineScreenPlaceholder extends StatelessWidget {
+//   const MachineScreenPlaceholder({super.key});
+//   @override
+//   Widget build(BuildContext context) =>
+//       const Center(child: Text('Page 5: Machine Status'));
+// }
 
 // --- Main Wrapper (ตัวจัดการ Tab) ---
 class MainWrapperScreen extends StatefulWidget {
@@ -59,35 +60,12 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
     RunningJobScreen(),
     CheckInScreen(),
     ActivityScreen(),
-    MachineScreenPlaceholder(),
-  ];
-
-  // รายการชื่อ Tab สำหรับ AppBar (ถ้าต้องการเปลี่ยนชื่อตาม Tab)
-  final List<String> _titles = const [
-    'All Jobs',
-    'Running Job',
-    'Check-In / Out',
-    'Activity',
-    'Machines',
+    MachineScreen(), // <<< NEW: Use actual screen
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_titles[_currentIndex]),
-        centerTitle: true,
-        actions: [
-          // ปุ่ม Logout ชั่วคราว (เผื่อไว้ test)
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              // TODO: ใส่ Logic Logout ที่นี่
-              Navigator.of(context).pushReplacementNamed('/login');
-            },
-          ),
-        ],
-      ),
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,

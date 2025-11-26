@@ -177,7 +177,15 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: _buildSearchBar(), // 1. Search Bar ที่มีปุ่ม QR
+        title: const Text('Running Jobs'), // Restore Title
+        centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: _buildSearchBar(),
+          ),
+        ),
         actions: [
           // 2. ปุ่ม Upload
           IconButton(

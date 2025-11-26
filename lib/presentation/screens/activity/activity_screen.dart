@@ -301,6 +301,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        heroTag: 'activity_screen_fab', // <<< Fix: Add unique tag
         onPressed: _showAddOptions,
         icon: const Icon(Icons.add),
         label: const Text('Activity'),

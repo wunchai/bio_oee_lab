@@ -1,6 +1,6 @@
 // lib/main.dart
 import 'dart:async';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -13,14 +13,12 @@ import 'package:bio_oee_lab/core/app_providers.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 
 // (เรายังไม่ได้สร้าง LoginRepository, จะ import ในภายหลัง)
-// import 'package:bio_oee_lab/data/repositories/login_repository.dart';
+import 'package:bio_oee_lab/data/repositories/login_repository.dart';
+import 'package:bio_oee_lab/data/network/user_api_service.dart';
+import 'package:bio_oee_lab/data/services/device_info_service.dart';
 
 // (เรายังไม่ได้คัดลอก BackgroundTasks, จะ import ในภายหลัง)
 // import 'package:bio_oee_lab/data/services/background_tasks.dart';
-
-import 'package:workmanager/workmanager.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 
 Future<void> main() async {
   // ตรวจสอบให้แน่ใจว่า Flutter Engine พร้อมทำงานแล้ว
@@ -39,12 +37,22 @@ Future<void> main() async {
   // สร้าง Instance ของ AppDatabase (Singleton)
   final appDatabase = await AppDatabase.instance();
 
-  // --- 2. (ยังไม่เริ่มต้น LoginRepository) ---
-  // (เราจะทำในขั้นตอนถัดไปเมื่อสร้างหน้า Login)
-  // await LoginRepository.initialize(appDatabase);
-  // final loginRepository = LoginRepository();
-  // await loginRepository.getLoggedInUserFromLocal();
-  const bool isLoggedIn = false; // <<< บังคับให้เป็น false เพื่อไปหน้า Login
+  // --- 2. เริ่มต้น LoginRepository ---
+  // สร้าง dependencies ที่จำเป็น
+  final userApiService = UserApiService();
+  final deviceInfoService = DeviceInfoService();
+  // รอให้โหลดข้อมูลเครื่องเสร็จก่อน
+  await deviceInfoService.loadInfo();
+
+  final loginRepository = LoginRepository(
+    userDao: appDatabase.userDao,
+    userApiService: userApiService,
+    deviceInfoService: deviceInfoService,
+  );
+
+  // ตรวจสอบว่ามี User Login ค้างไว้หรือไม่
+  await loginRepository.getLoggedInUserFromLocal();
+  final bool isLoggedIn = loginRepository.isLoggedIn;
 
   // --- 3. โหลด Providers ทั้งหมด ---
   // (appProviders จะดึง database ไปสร้าง dependencies อื่นๆ)

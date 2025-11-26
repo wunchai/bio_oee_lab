@@ -15175,6 +15175,478 @@ class ActivityLogsCompanion extends UpdateCompanion<DbActivityLog> {
   }
 }
 
+class $MachinesTable extends Machines
+    with TableInfo<$MachinesTable, DbMachine> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MachinesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _machineIdMeta = const VerificationMeta(
+    'machineId',
+  );
+  @override
+  late final GeneratedColumn<String> machineId = GeneratedColumn<String>(
+    'machineId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _barcodeGuidMeta = const VerificationMeta(
+    'barcodeGuid',
+  );
+  @override
+  late final GeneratedColumn<String> barcodeGuid = GeneratedColumn<String>(
+    'barcodeGuid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _machineNoMeta = const VerificationMeta(
+    'machineNo',
+  );
+  @override
+  late final GeneratedColumn<String> machineNo = GeneratedColumn<String>(
+    'machineNo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _machineNameMeta = const VerificationMeta(
+    'machineName',
+  );
+  @override
+  late final GeneratedColumn<String> machineName = GeneratedColumn<String>(
+    'machineName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updatedAt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    machineId,
+    barcodeGuid,
+    machineNo,
+    machineName,
+    status,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'machines';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbMachine> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('machineId')) {
+      context.handle(
+        _machineIdMeta,
+        machineId.isAcceptableOrUnknown(data['machineId']!, _machineIdMeta),
+      );
+    }
+    if (data.containsKey('barcodeGuid')) {
+      context.handle(
+        _barcodeGuidMeta,
+        barcodeGuid.isAcceptableOrUnknown(
+          data['barcodeGuid']!,
+          _barcodeGuidMeta,
+        ),
+      );
+    }
+    if (data.containsKey('machineNo')) {
+      context.handle(
+        _machineNoMeta,
+        machineNo.isAcceptableOrUnknown(data['machineNo']!, _machineNoMeta),
+      );
+    }
+    if (data.containsKey('machineName')) {
+      context.handle(
+        _machineNameMeta,
+        machineName.isAcceptableOrUnknown(
+          data['machineName']!,
+          _machineNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('updatedAt')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbMachine map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbMachine(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      machineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}machineId'],
+      ),
+      barcodeGuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}barcodeGuid'],
+      ),
+      machineNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}machineNo'],
+      ),
+      machineName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}machineName'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updatedAt'],
+      ),
+    );
+  }
+
+  @override
+  $MachinesTable createAlias(String alias) {
+    return $MachinesTable(attachedDatabase, alias);
+  }
+}
+
+class DbMachine extends DataClass implements Insertable<DbMachine> {
+  final int uid;
+  final String? machineId;
+  final String? barcodeGuid;
+  final String? machineNo;
+  final String? machineName;
+  final String? status;
+  final String? updatedAt;
+  const DbMachine({
+    required this.uid,
+    this.machineId,
+    this.barcodeGuid,
+    this.machineNo,
+    this.machineName,
+    this.status,
+    this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || machineId != null) {
+      map['machineId'] = Variable<String>(machineId);
+    }
+    if (!nullToAbsent || barcodeGuid != null) {
+      map['barcodeGuid'] = Variable<String>(barcodeGuid);
+    }
+    if (!nullToAbsent || machineNo != null) {
+      map['machineNo'] = Variable<String>(machineNo);
+    }
+    if (!nullToAbsent || machineName != null) {
+      map['machineName'] = Variable<String>(machineName);
+    }
+    if (!nullToAbsent || status != null) {
+      map['status'] = Variable<String>(status);
+    }
+    if (!nullToAbsent || updatedAt != null) {
+      map['updatedAt'] = Variable<String>(updatedAt);
+    }
+    return map;
+  }
+
+  MachinesCompanion toCompanion(bool nullToAbsent) {
+    return MachinesCompanion(
+      uid: Value(uid),
+      machineId: machineId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(machineId),
+      barcodeGuid: barcodeGuid == null && nullToAbsent
+          ? const Value.absent()
+          : Value(barcodeGuid),
+      machineNo: machineNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(machineNo),
+      machineName: machineName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(machineName),
+      status: status == null && nullToAbsent
+          ? const Value.absent()
+          : Value(status),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+    );
+  }
+
+  factory DbMachine.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbMachine(
+      uid: serializer.fromJson<int>(json['uid']),
+      machineId: serializer.fromJson<String?>(json['machineId']),
+      barcodeGuid: serializer.fromJson<String?>(json['barcodeGuid']),
+      machineNo: serializer.fromJson<String?>(json['machineNo']),
+      machineName: serializer.fromJson<String?>(json['machineName']),
+      status: serializer.fromJson<String?>(json['status']),
+      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'machineId': serializer.toJson<String?>(machineId),
+      'barcodeGuid': serializer.toJson<String?>(barcodeGuid),
+      'machineNo': serializer.toJson<String?>(machineNo),
+      'machineName': serializer.toJson<String?>(machineName),
+      'status': serializer.toJson<String?>(status),
+      'updatedAt': serializer.toJson<String?>(updatedAt),
+    };
+  }
+
+  DbMachine copyWith({
+    int? uid,
+    Value<String?> machineId = const Value.absent(),
+    Value<String?> barcodeGuid = const Value.absent(),
+    Value<String?> machineNo = const Value.absent(),
+    Value<String?> machineName = const Value.absent(),
+    Value<String?> status = const Value.absent(),
+    Value<String?> updatedAt = const Value.absent(),
+  }) => DbMachine(
+    uid: uid ?? this.uid,
+    machineId: machineId.present ? machineId.value : this.machineId,
+    barcodeGuid: barcodeGuid.present ? barcodeGuid.value : this.barcodeGuid,
+    machineNo: machineNo.present ? machineNo.value : this.machineNo,
+    machineName: machineName.present ? machineName.value : this.machineName,
+    status: status.present ? status.value : this.status,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
+  DbMachine copyWithCompanion(MachinesCompanion data) {
+    return DbMachine(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      machineId: data.machineId.present ? data.machineId.value : this.machineId,
+      barcodeGuid: data.barcodeGuid.present
+          ? data.barcodeGuid.value
+          : this.barcodeGuid,
+      machineNo: data.machineNo.present ? data.machineNo.value : this.machineNo,
+      machineName: data.machineName.present
+          ? data.machineName.value
+          : this.machineName,
+      status: data.status.present ? data.status.value : this.status,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbMachine(')
+          ..write('uid: $uid, ')
+          ..write('machineId: $machineId, ')
+          ..write('barcodeGuid: $barcodeGuid, ')
+          ..write('machineNo: $machineNo, ')
+          ..write('machineName: $machineName, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    machineId,
+    barcodeGuid,
+    machineNo,
+    machineName,
+    status,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbMachine &&
+          other.uid == this.uid &&
+          other.machineId == this.machineId &&
+          other.barcodeGuid == this.barcodeGuid &&
+          other.machineNo == this.machineNo &&
+          other.machineName == this.machineName &&
+          other.status == this.status &&
+          other.updatedAt == this.updatedAt);
+}
+
+class MachinesCompanion extends UpdateCompanion<DbMachine> {
+  final Value<int> uid;
+  final Value<String?> machineId;
+  final Value<String?> barcodeGuid;
+  final Value<String?> machineNo;
+  final Value<String?> machineName;
+  final Value<String?> status;
+  final Value<String?> updatedAt;
+  const MachinesCompanion({
+    this.uid = const Value.absent(),
+    this.machineId = const Value.absent(),
+    this.barcodeGuid = const Value.absent(),
+    this.machineNo = const Value.absent(),
+    this.machineName = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  MachinesCompanion.insert({
+    this.uid = const Value.absent(),
+    this.machineId = const Value.absent(),
+    this.barcodeGuid = const Value.absent(),
+    this.machineNo = const Value.absent(),
+    this.machineName = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  static Insertable<DbMachine> custom({
+    Expression<int>? uid,
+    Expression<String>? machineId,
+    Expression<String>? barcodeGuid,
+    Expression<String>? machineNo,
+    Expression<String>? machineName,
+    Expression<String>? status,
+    Expression<String>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (machineId != null) 'machineId': machineId,
+      if (barcodeGuid != null) 'barcodeGuid': barcodeGuid,
+      if (machineNo != null) 'machineNo': machineNo,
+      if (machineName != null) 'machineName': machineName,
+      if (status != null) 'status': status,
+      if (updatedAt != null) 'updatedAt': updatedAt,
+    });
+  }
+
+  MachinesCompanion copyWith({
+    Value<int>? uid,
+    Value<String?>? machineId,
+    Value<String?>? barcodeGuid,
+    Value<String?>? machineNo,
+    Value<String?>? machineName,
+    Value<String?>? status,
+    Value<String?>? updatedAt,
+  }) {
+    return MachinesCompanion(
+      uid: uid ?? this.uid,
+      machineId: machineId ?? this.machineId,
+      barcodeGuid: barcodeGuid ?? this.barcodeGuid,
+      machineNo: machineNo ?? this.machineNo,
+      machineName: machineName ?? this.machineName,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (machineId.present) {
+      map['machineId'] = Variable<String>(machineId.value);
+    }
+    if (barcodeGuid.present) {
+      map['barcodeGuid'] = Variable<String>(barcodeGuid.value);
+    }
+    if (machineNo.present) {
+      map['machineNo'] = Variable<String>(machineNo.value);
+    }
+    if (machineName.present) {
+      map['machineName'] = Variable<String>(machineName.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (updatedAt.present) {
+      map['updatedAt'] = Variable<String>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MachinesCompanion(')
+          ..write('uid: $uid, ')
+          ..write('machineId: $machineId, ')
+          ..write('barcodeGuid: $barcodeGuid, ')
+          ..write('machineNo: $machineNo, ')
+          ..write('machineName: $machineName, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -15213,6 +15685,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $CheckInActivitiesTable(this);
   late final $CheckInLogsTable checkInLogs = $CheckInLogsTable(this);
   late final $ActivityLogsTable activityLogs = $ActivityLogsTable(this);
+  late final $MachinesTable machines = $MachinesTable(this);
   late final JobDao jobDao = JobDao(this as AppDatabase);
   late final DocumentDao documentDao = DocumentDao(this as AppDatabase);
   late final DocumentMachineDao documentMachineDao = DocumentMachineDao(
@@ -15242,6 +15715,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final ActivityLogDao activityLogDao = ActivityLogDao(
     this as AppDatabase,
   );
+  late final MachineDao machineDao = MachineDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -15268,6 +15742,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     checkInActivities,
     checkInLogs,
     activityLogs,
+    machines,
   ];
 }
 
@@ -22440,6 +22915,236 @@ typedef $$ActivityLogsTableProcessedTableManager =
       DbActivityLog,
       PrefetchHooks Function()
     >;
+typedef $$MachinesTableCreateCompanionBuilder =
+    MachinesCompanion Function({
+      Value<int> uid,
+      Value<String?> machineId,
+      Value<String?> barcodeGuid,
+      Value<String?> machineNo,
+      Value<String?> machineName,
+      Value<String?> status,
+      Value<String?> updatedAt,
+    });
+typedef $$MachinesTableUpdateCompanionBuilder =
+    MachinesCompanion Function({
+      Value<int> uid,
+      Value<String?> machineId,
+      Value<String?> barcodeGuid,
+      Value<String?> machineNo,
+      Value<String?> machineName,
+      Value<String?> status,
+      Value<String?> updatedAt,
+    });
+
+class $$MachinesTableFilterComposer
+    extends Composer<_$AppDatabase, $MachinesTable> {
+  $$MachinesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get machineId => $composableBuilder(
+    column: $table.machineId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get barcodeGuid => $composableBuilder(
+    column: $table.barcodeGuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get machineNo => $composableBuilder(
+    column: $table.machineNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get machineName => $composableBuilder(
+    column: $table.machineName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MachinesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MachinesTable> {
+  $$MachinesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get machineId => $composableBuilder(
+    column: $table.machineId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get barcodeGuid => $composableBuilder(
+    column: $table.barcodeGuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get machineNo => $composableBuilder(
+    column: $table.machineNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get machineName => $composableBuilder(
+    column: $table.machineName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MachinesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MachinesTable> {
+  $$MachinesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get machineId =>
+      $composableBuilder(column: $table.machineId, builder: (column) => column);
+
+  GeneratedColumn<String> get barcodeGuid => $composableBuilder(
+    column: $table.barcodeGuid,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get machineNo =>
+      $composableBuilder(column: $table.machineNo, builder: (column) => column);
+
+  GeneratedColumn<String> get machineName => $composableBuilder(
+    column: $table.machineName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$MachinesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MachinesTable,
+          DbMachine,
+          $$MachinesTableFilterComposer,
+          $$MachinesTableOrderingComposer,
+          $$MachinesTableAnnotationComposer,
+          $$MachinesTableCreateCompanionBuilder,
+          $$MachinesTableUpdateCompanionBuilder,
+          (DbMachine, BaseReferences<_$AppDatabase, $MachinesTable, DbMachine>),
+          DbMachine,
+          PrefetchHooks Function()
+        > {
+  $$MachinesTableTableManager(_$AppDatabase db, $MachinesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MachinesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MachinesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MachinesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> machineId = const Value.absent(),
+                Value<String?> barcodeGuid = const Value.absent(),
+                Value<String?> machineNo = const Value.absent(),
+                Value<String?> machineName = const Value.absent(),
+                Value<String?> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+              }) => MachinesCompanion(
+                uid: uid,
+                machineId: machineId,
+                barcodeGuid: barcodeGuid,
+                machineNo: machineNo,
+                machineName: machineName,
+                status: status,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> machineId = const Value.absent(),
+                Value<String?> barcodeGuid = const Value.absent(),
+                Value<String?> machineNo = const Value.absent(),
+                Value<String?> machineName = const Value.absent(),
+                Value<String?> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+              }) => MachinesCompanion.insert(
+                uid: uid,
+                machineId: machineId,
+                barcodeGuid: barcodeGuid,
+                machineNo: machineNo,
+                machineName: machineName,
+                status: status,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MachinesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MachinesTable,
+      DbMachine,
+      $$MachinesTableFilterComposer,
+      $$MachinesTableOrderingComposer,
+      $$MachinesTableAnnotationComposer,
+      $$MachinesTableCreateCompanionBuilder,
+      $$MachinesTableUpdateCompanionBuilder,
+      (DbMachine, BaseReferences<_$AppDatabase, $MachinesTable, DbMachine>),
+      DbMachine,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -22488,4 +23193,6 @@ class $AppDatabaseManager {
       $$CheckInLogsTableTableManager(_db, _db.checkInLogs);
   $$ActivityLogsTableTableManager get activityLogs =>
       $$ActivityLogsTableTableManager(_db, _db.activityLogs);
+  $$MachinesTableTableManager get machines =>
+      $$MachinesTableTableManager(_db, _db.machines);
 }

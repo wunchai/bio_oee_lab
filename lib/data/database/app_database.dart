@@ -28,6 +28,7 @@ import 'package:bio_oee_lab/data/database/tables/job_machine_item_table.dart';
 import 'package:bio_oee_lab/data/database/tables/pause_reason_table.dart';
 import 'package:bio_oee_lab/data/database/tables/check_in_table.dart';
 import 'package:bio_oee_lab/data/database/tables/activity_log_table.dart';
+import 'package:bio_oee_lab/data/database/tables/machine_table.dart'; // <<< NEW: Import Machine table
 // Import DAO definitions
 import 'package:bio_oee_lab/data/database/daos/job_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
@@ -45,6 +46,7 @@ import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/check_in_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/machine_dao.dart'; // <<< NEW: Import Machine DAO
 // This line tells drift to generate a file named app_database.g.dart
 part 'app_database.g.dart';
 
@@ -71,6 +73,7 @@ part 'app_database.g.dart';
     CheckInActivities,
     CheckInLogs,
     ActivityLogs,
+    Machines, // <<< NEW: Add Machines table
   ],
   daos: [
     JobDao,
@@ -89,6 +92,7 @@ part 'app_database.g.dart';
     PauseReasonDao,
     CheckInDao,
     ActivityLogDao,
+    MachineDao, // <<< NEW: Add MachineDao
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -235,5 +239,10 @@ class AppDatabase extends _$AppDatabase {
     await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
     await _createUpdatedAtTrigger(m, 'images', 'updatedAt');
     await _createUpdatedAtTrigger(m, 'checksheet_master_images', 'updatedAt');
+    await _createUpdatedAtTrigger(
+      m,
+      'machines',
+      'updatedAt',
+    ); // <<< NEW: Add trigger for machines
   }
 }

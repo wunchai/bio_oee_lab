@@ -100,7 +100,7 @@ class LoginRepository with ChangeNotifier {
 
     // 6. ถ้า Password ในเครื่องมีค่า (Login ครั้งต่อไป)
     // ไปขั้นตอน Offline Login
-    return _performOfflineLogin(
+    return await _performOfflineLogin(
       enteredPassword: password,
       storedPassword: storedPassword,
       user: localUser,
@@ -110,8 +110,10 @@ class LoginRepository with ChangeNotifier {
 
   /// (C) ฟังก์ชัน Logout
   Future<void> logout() async {
-    // ⬇️⬇️⬇️ FIX 7: เรียกใช้เมธอดที่เราสร้างใน Dao ⬇️⬇️⬇️
-    await _userDao.clearAllUsers();
+    // ⬇️⬇️⬇️ FIX 7: เปลี่ยนจากลบ User เป็นแค่ปิด Session ⬇️⬇️⬇️
+    if (_loggedInUser != null && _loggedInUser!.userId != null) {
+      await _userDao.updateUserSessionStatus(_loggedInUser!.userId!, false);
+    }
 
     // 2. TODO: เคลียร์ Token จาก Secure Storage
     // await _secureStorage.delete(key: 'auth_token');
@@ -144,11 +146,12 @@ class LoginRepository with ChangeNotifier {
       // 2. ถ้า API สำเร็จ, อัปเดต DbUser ในเครื่อง
       final updatedUser = userToUpdate.copyWith(
         // --- ⬇️⬇️⬇️ FIX 2: แก้ไขส่วนนี้ทั้งหมด ⬇️⬇️⬇️ ---
-        password: Value(password), // <<< ใช้ 'pssword'
+        password: Value(password),
         userName: Value(loggedInUser.user.userName),
         userCode: Value(loggedInUser.user.userCode),
         position: Value(loggedInUser.user.position),
         status: loggedInUser.user.status,
+        isLocalSessionActive: true, // Keep as direct bool
         // --- ⬆️⬆️⬆️ -------------------------- ⬆️⬆️⬆️ ---
       );
 
@@ -164,14 +167,19 @@ class LoginRepository with ChangeNotifier {
   }
 
   /// Helper: กระบวนการ Login Offline (สำหรับครั้งต่อไป)
-  LoginResult _performOfflineLogin({
+  Future<LoginResult> _performOfflineLogin({
     required String enteredPassword,
     required String storedPassword,
     required DbUser user,
-  }) {
+  }) async {
     // 1. เปรียบเทียบ Password ที่กรอก กับ Password ในเครื่อง
     if (enteredPassword == storedPassword) {
       // 2. สำเร็จ (Login Offline)
+      // อัปเดตสถานะ Session เป็น Active
+      if (user.userId != null) {
+        await _userDao.updateUserSessionStatus(user.userId!, true);
+      }
+
       // TODO: โหลด Token ล่าสุดจาก Secure Storage
       _setSuccessState(user, null); // (ตอนนี้ยังไม่มี Token)
       return LoginResult(status: LoginStatus.success);

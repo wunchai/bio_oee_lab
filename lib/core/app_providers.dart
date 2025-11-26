@@ -18,6 +18,8 @@ import 'package:bio_oee_lab/data/database/daos/check_in_dao.dart';
 import 'package:bio_oee_lab/data/repositories/check_in_repository.dart';
 import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
 import 'package:bio_oee_lab/data/repositories/activity_repository.dart';
+import 'package:bio_oee_lab/data/network/machine_api_service.dart';
+import 'package:bio_oee_lab/data/repositories/machine_repository.dart';
 
 // ฟังก์ชันนี้จะเตรียม Provider ทั้งหมดที่แอปต้องใช้
 Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
@@ -27,6 +29,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final userApiService = UserApiService();
   final syncApiService = SyncApiService();
   final jobApiService = JobApiService();
+  final machineApiService = MachineApiService();
 
   // สร้าง Instance ของ Database (เราได้รับมาจาก main.dart)
   final dbProvider = Provider<AppDatabase>.value(value: appDatabase);
@@ -63,6 +66,12 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final checkInRepository = CheckInRepository(appDatabase: appDatabase);
 
   final activityRepository = ActivityRepository(appDatabase: appDatabase);
+
+  final machineRepository = MachineRepository(
+    apiService: machineApiService,
+    machineDao: appDatabase.machineDao,
+  );
+
   // --- คืนค่า List ของ Providers ทั้งหมด ---
   return [
     // 1. Database Provider
@@ -87,5 +96,8 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     ChangeNotifierProvider<SyncRepository>(create: (context) => syncRepository),
     ChangeNotifierProvider.value(value: jobRepository),
     Provider<DocumentRepository>.value(value: documentRepository),
+    ChangeNotifierProvider<MachineRepository>(
+      create: (context) => machineRepository,
+    ),
   ];
 }
