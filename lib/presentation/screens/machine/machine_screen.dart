@@ -3,6 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 import 'package:bio_oee_lab/data/repositories/machine_repository.dart';
+import 'dart:io';
+import 'package:flutter/foundation.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
 
 class MachineScreen extends StatefulWidget {
   const MachineScreen({super.key});
@@ -49,6 +54,104 @@ class _MachineScreenState extends State<MachineScreen> {
       }
     }
   }
+
+  // ---------------------------------------------------------
+  // 📸 ส่วนจัดการ QR Code (กล้อง & รูปภาพ)
+  // ---------------------------------------------------------
+
+  void _showScanOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Scan with Camera'),
+              onTap: () {
+                Navigator.pop(context);
+                _scanFromCamera();
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.image),
+              title: const Text('Scan from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _scanFromGallery();
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _scanFromCamera() async {
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (context) => const ScannerScreen()),
+    );
+
+    if (result != null && result.isNotEmpty) {
+      _updateSearch(result);
+    }
+  }
+
+  Future<void> _scanFromGallery() async {
+    if (kIsWeb ||
+        (!Platform.isAndroid && !Platform.isIOS && !Platform.isMacOS)) {
+      _showError(
+        'ฟีเจอร์ "สแกนจากรูปภาพ" รองรับเฉพาะบนมือถือ (Android/iOS) เท่านั้น',
+      );
+      return;
+    }
+
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+    if (image != null) {
+      final controller = MobileScannerController();
+      try {
+        final BarcodeCapture? capture = await controller.analyzeImage(
+          image.path,
+        );
+
+        if (capture != null && capture.barcodes.isNotEmpty) {
+          final String? code = capture.barcodes.first.rawValue;
+          if (code != null) {
+            _updateSearch(code);
+          } else {
+            _showError('QR Code not found in image.');
+          }
+        } else {
+          _showError('No QR Code detected.');
+        }
+      } catch (e) {
+        _showError('Error scanning image: $e');
+      } finally {
+        controller.dispose();
+      }
+    }
+  }
+
+  void _updateSearch(String code) {
+    setState(() {
+      _searchController.text = code;
+      _searchQuery = code;
+    });
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Found: $code')));
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  // ---------------------------------------------------------
+  // จบส่วน QR Code
+  // ---------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
@@ -159,11 +262,15 @@ class _MachineScreenState extends State<MachineScreen> {
       ),
       child: TextField(
         controller: _searchController,
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           hintText: 'Search Machine...',
-          prefixIcon: Icon(Icons.search, color: Colors.grey),
+          prefixIcon: const Icon(Icons.search, color: Colors.grey),
+          suffixIcon: IconButton(
+            icon: const Icon(Icons.qr_code_scanner, color: Colors.black87),
+            onPressed: _showScanOptions,
+          ),
           border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(vertical: 10),
+          contentPadding: const EdgeInsets.symmetric(vertical: 10),
         ),
         onChanged: (value) {
           setState(() {
