@@ -30,4 +30,8 @@ class ActivityLogs extends Table {
   IntColumn get syncStatus =>
       integer().named('SyncStatus').withDefault(const Constant(0))();
   TextColumn get lastSync => text().named('LastSync').nullable()();
+
+  // Versioning for concurrency control
+  IntColumn get recordVersion =>
+      integer().named('RecordVersion').withDefault(const Constant(0))();
 }

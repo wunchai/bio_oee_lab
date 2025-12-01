@@ -17,13 +17,11 @@ class _CheckInScreenState extends State<CheckInScreen> {
   @override
   void initState() {
     super.initState();
-    // โหลด Master Data (ถ้ายังไม่มี)
+    // Load Master Data if not exists
     Future.microtask(() => context.read<CheckInRepository>().initData());
   }
 
-  // ฟังก์ชันเริ่มสแกน
   Future<void> _handleScan() async {
-    // 1. สแกน QR
     final locationCode = await Navigator.push<String>(
       context,
       MaterialPageRoute(builder: (context) => const ScannerScreen()),
@@ -31,13 +29,11 @@ class _CheckInScreenState extends State<CheckInScreen> {
 
     if (locationCode != null && locationCode.isNotEmpty) {
       if (mounted) {
-        // 2. เปิด Dialog กรอกรายละเอียด
         _showCheckInDialog(locationCode);
       }
     }
   }
 
-  // Dialog เลือก Activity + Remark
   void _showCheckInDialog(String locationCode) async {
     final repo = context.read<CheckInRepository>();
     final activities = await repo.getActivities();
@@ -66,7 +62,6 @@ class _CheckInScreenState extends State<CheckInScreen> {
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Dropdown Activity
                 DropdownButtonFormField<String>(
                   decoration: const InputDecoration(labelText: 'Activity'),
                   value: selectedActivity,
@@ -83,7 +78,6 @@ class _CheckInScreenState extends State<CheckInScreen> {
                   },
                 ),
                 const SizedBox(height: 12),
-                // TextField Remark
                 TextField(
                   controller: remarkController,
                   decoration: const InputDecoration(
@@ -95,12 +89,12 @@ class _CheckInScreenState extends State<CheckInScreen> {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.pop(ctx), // Cancel
+                onPressed: () => Navigator.pop(ctx),
                 child: const Text('Cancel'),
               ),
               ElevatedButton(
                 onPressed: () async {
-                  Navigator.pop(ctx); // ปิด Dialog
+                  Navigator.pop(ctx);
                   await _processCheckIn(
                     locationCode,
                     selectedActivity,
@@ -166,7 +160,6 @@ class _CheckInScreenState extends State<CheckInScreen> {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
-            // --- ส่วนแสดงสถานะปัจจุบัน ---
             StreamBuilder<DbCheckInLog?>(
               stream: repo.watchCurrentStatus(userId),
               builder: (context, snapshot) {
@@ -242,7 +235,6 @@ class _CheckInScreenState extends State<CheckInScreen> {
 
             const Spacer(),
 
-            // --- ปุ่มสแกน ---
             SizedBox(
               width: double.infinity,
               height: 60,

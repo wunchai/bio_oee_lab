@@ -1,13 +1,13 @@
+// lib/presentation/screens/job/job_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'dart:io'; // 1. เพิ่ม import นี้เพื่อเช็ค Platform
-import 'package:flutter/foundation.dart'; // 2. เพิ่ม import นี้เพื่อเช็ค kIsWeb
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:bio_oee_lab/data/repositories/job_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
-import 'package:bio_oee_lab/data/repositories/document_repository.dart'; // สำหรับ active count
+import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 
-// Import สำหรับ QR Scan
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
@@ -29,11 +29,6 @@ class _JobScreenState extends State<JobScreen> {
     super.dispose();
   }
 
-  // ---------------------------------------------------------
-  // 📸 ส่วนจัดการ QR Code (กล้อง & รูปภาพ)
-  // ---------------------------------------------------------
-
-  /// 1. เมนูเลือก: สแกนกล้อง หรือ เอารูปจากเครื่อง
   void _showScanOptions() {
     showModalBottomSheet(
       context: context,
@@ -62,9 +57,7 @@ class _JobScreenState extends State<JobScreen> {
     );
   }
 
-  /// 2. เปิดกล้องสแกน (ไปหน้า ScannerScreen)
   Future<void> _scanFromCamera() async {
-    // เปิดหน้าสแกนที่เราสร้างไว้ด้านล่าง (ScannerScreen)
     final result = await Navigator.push<String>(
       context,
       MaterialPageRoute(builder: (context) => const ScannerScreen()),
@@ -75,7 +68,6 @@ class _JobScreenState extends State<JobScreen> {
     }
   }
 
-  /// 3. เลือกรูปจาก Gallery มาสแกน
   Future<void> _scanFromGallery() async {
     if (kIsWeb ||
         (!Platform.isAndroid && !Platform.isIOS && !Platform.isMacOS)) {
@@ -89,7 +81,6 @@ class _JobScreenState extends State<JobScreen> {
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      // ใช้ MobileScannerController เพื่อวิเคราะห์รูปภาพ
       final controller = MobileScannerController();
       try {
         final BarcodeCapture? capture = await controller.analyzeImage(
@@ -114,7 +105,6 @@ class _JobScreenState extends State<JobScreen> {
     }
   }
 
-  /// Helper: อัปเดตช่องค้นหาเมื่อได้ผลลัพธ์
   void _updateSearch(String code) {
     setState(() {
       _searchController.text = code;
@@ -128,10 +118,6 @@ class _JobScreenState extends State<JobScreen> {
   void _showError(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
-
-  // ---------------------------------------------------------
-  // จบส่วน QR Code
-  // ---------------------------------------------------------
 
   Future<void> _handleSync(BuildContext context) async {
     final jobRepo = context.read<JobRepository>();
@@ -150,7 +136,6 @@ class _JobScreenState extends State<JobScreen> {
   }
 
   void _onStartJobPressed(BuildContext context, DbJob job) async {
-    // ... (โค้ดเดิม: Start Job) ...
     final documentRepo = context.read<DocumentRepository>();
     final loginRepo = context.read<LoginRepository>();
     final userId = loginRepo.loggedInUser?.userId ?? '';
@@ -177,7 +162,6 @@ class _JobScreenState extends State<JobScreen> {
   }
 
   void _handleClaimJob() {
-    // ... (โค้ดเดิม: Claim Job) ...
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -206,7 +190,7 @@ class _JobScreenState extends State<JobScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('All Jobs'), // Restore Title
+        title: const Text('All Jobs'),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
@@ -246,7 +230,6 @@ class _JobScreenState extends State<JobScreen> {
               backgroundColor: Colors.grey[200],
             ),
 
-          // --- Active Running Jobs Bar ---
           if (userId.isNotEmpty)
             StreamBuilder<int>(
               stream: documentRepo.watchActiveDocCount(userId),
@@ -389,7 +372,6 @@ class _JobScreenState extends State<JobScreen> {
                             },
                           ),
 
-                          // Action Bar
                           Padding(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16.0,
@@ -465,7 +447,7 @@ class _JobScreenState extends State<JobScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'job_screen_fab', // <<< Fix: Add unique tag
+        heroTag: 'job_screen_fab',
         onPressed: _handleClaimJob,
         label: const Text('Claim Job'),
         icon: const Icon(Icons.add_task),
@@ -474,7 +456,6 @@ class _JobScreenState extends State<JobScreen> {
     );
   }
 
-  // --- Widget Search Bar ที่ปรับปรุงแล้ว ---
   Widget _buildSearchBar() {
     return Container(
       height: 40,
@@ -487,10 +468,9 @@ class _JobScreenState extends State<JobScreen> {
         decoration: InputDecoration(
           hintText: 'Search Job...',
           prefixIcon: const Icon(Icons.search, color: Colors.grey),
-          // ⬇️ เพิ่มปุ่ม QR Code ตรงนี้ ⬇️
           suffixIcon: IconButton(
             icon: const Icon(Icons.qr_code_scanner, color: Colors.black87),
-            onPressed: _showScanOptions, // เรียกเมนูเลือก
+            onPressed: _showScanOptions,
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),

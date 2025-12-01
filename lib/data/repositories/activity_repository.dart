@@ -4,11 +4,17 @@ import 'package:uuid/uuid.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
 
-class ActivityRepository {
-  final ActivityLogDao _dao;
+import 'package:bio_oee_lab/data/network/activity_api_service.dart';
 
-  ActivityRepository({required AppDatabase appDatabase})
-    : _dao = appDatabase.activityLogDao;
+class ActivityRepository extends ChangeNotifier {
+  final ActivityLogDao _dao;
+  final ActivityApiService _apiService;
+
+  ActivityRepository({
+    required AppDatabase appDatabase,
+    ActivityApiService? apiService,
+  }) : _dao = appDatabase.activityLogDao,
+       _apiService = apiService ?? ActivityApiService();
 
   // Stream สำหรับแสดงรายการหน้าจอ
   Stream<List<DbActivityLog>> watchMyActivities(String userId) {
@@ -35,6 +41,7 @@ class ActivityRepository {
         status: const drift.Value(1), // 1 = Running
         remark: drift.Value(remark),
         syncStatus: const drift.Value(0),
+        recordVersion: const drift.Value(0),
       );
 
       await _dao.insertActivity(entry);
@@ -57,11 +64,48 @@ class ActivityRepository {
         endTime: drift.Value(now),
         status: 2, // 2 = Completed
         syncStatus: 0,
+        recordVersion: activity.recordVersion + 1,
       );
 
       await _dao.updateActivity(updatedEntry);
       if (kDebugMode) print('Ended Activity: $recId');
     } catch (e) {
+      rethrow;
+    }
+  }
+
+  // 🔄 Sync Data
+  Future<void> syncActivityLogs() async {
+    try {
+      bool hasMore = true;
+      while (hasMore) {
+        final unsyncedLogs = await _dao.getUnsyncedActivities(limit: 10);
+
+        if (unsyncedLogs.isEmpty) {
+          hasMore = false;
+          break;
+        }
+
+        // 2. Send to API
+        final successRecIds = await _apiService.uploadActivityLogs(
+          unsyncedLogs,
+        );
+
+        // 3. Update local status
+        final now = DateTime.now().toIso8601String();
+        for (final recId in successRecIds) {
+          await _dao.updateSyncStatus(recId, 1, now);
+        }
+
+        // If we fetched less than 10, we are done
+        if (unsyncedLogs.length < 10) {
+          hasMore = false;
+        }
+      }
+
+      notifyListeners();
+    } catch (e) {
+      if (kDebugMode) print('Sync Error: $e');
       rethrow;
     }
   }

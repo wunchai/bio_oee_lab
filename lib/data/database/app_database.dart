@@ -10,16 +10,8 @@ import 'package:bio_oee_lab/data/database/connection/connection.dart'
 // Import all table definitions (should be present from previous steps)
 import 'package:bio_oee_lab/data/database/tables/job_table.dart';
 import 'package:bio_oee_lab/data/database/tables/document_table.dart';
-import 'package:bio_oee_lab/data/database/tables/document_machine_table.dart';
 import 'package:bio_oee_lab/data/database/tables/document_record_table.dart';
-import 'package:bio_oee_lab/data/database/tables/job_machine_table.dart';
-import 'package:bio_oee_lab/data/database/tables/job_tag_table.dart';
-import 'package:bio_oee_lab/data/database/tables/problem_table.dart';
-import 'package:bio_oee_lab/data/database/tables/sync_table.dart';
 import 'package:bio_oee_lab/data/database/tables/user_table.dart';
-import 'package:bio_oee_lab/data/database/tables/image_table.dart'; // <<< NEW: Import Image table
-import 'package:bio_oee_lab/data/database/tables/checksheet_master_image_table.dart';
-import 'package:bio_oee_lab/data/database/tables/document_timelog_table.dart'; // Import
 import 'package:bio_oee_lab/data/database/tables/job_test_set_table.dart';
 import 'package:bio_oee_lab/data/database/tables/running_job_machine_table.dart';
 import 'package:bio_oee_lab/data/database/tables/job_working_time_table.dart';
@@ -32,16 +24,8 @@ import 'package:bio_oee_lab/data/database/tables/machine_table.dart'; // <<< NEW
 // Import DAO definitions
 import 'package:bio_oee_lab/data/database/daos/job_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/document_machine_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/document_record_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/job_machine_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/job_tag_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/problem_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/sync_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/user_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/image_dao.dart'; // <<< NEW: Import ImageDao
-import 'package:bio_oee_lab/data/database/daos/checksheet_master_image_dao.dart'; // <<< NEW: Import ImageDao
-import 'package:bio_oee_lab/data/database/daos/document_timelog_dao.dart'; // Import
 import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/check_in_dao.dart';
@@ -54,16 +38,8 @@ part 'app_database.g.dart';
   tables: [
     Jobs,
     Documents,
-    DocumentMachines,
     DocumentRecords,
-    JobMachines,
-    JobTags,
-    Problems,
-    Syncs,
     Users,
-    Images, // <<< NEW: Add Images table
-    CheckSheetMasterImages,
-    DocumentTimeLogs,
     JobTestSets,
     RunningJobMachines,
     JobWorkingTimes,
@@ -78,16 +54,8 @@ part 'app_database.g.dart';
   daos: [
     JobDao,
     DocumentDao,
-    DocumentMachineDao,
     DocumentRecordDao,
-    JobMachineDao,
-    JobTagDao,
-    ProblemDao,
-    SyncDao,
     UserDao,
-    ImageDao,
-    ChecksheetMasterImageDao,
-    DocumentTimeLogDao,
     RunningJobDetailsDao,
     PauseReasonDao,
     CheckInDao,
@@ -105,13 +73,8 @@ class AppDatabase extends _$AppDatabase {
     return _instance!;
   }
 
-  // NEW: Add getter for ImageDao
-  ImageDao get imageDao => ImageDao(this); // <<< NEW: Add ImageDao getter
-  ChecksheetMasterImageDao get checksheetMasterImageDao =>
-      ChecksheetMasterImageDao(this);
-
   @override
-  int get schemaVersion => 15;
+  int get schemaVersion => 16;
 
   // Define the migration strategy.
   @override
@@ -129,13 +92,7 @@ class AppDatabase extends _$AppDatabase {
         // Add 'updatedAt' column to all *newly added* tables or tables that didn't have it before v3
         await m.addColumn(jobs, jobs.updatedAt);
         await m.addColumn(documents, documents.updatedAt);
-        await m.addColumn(documentMachines, documentMachines.updatedAt);
-        await m.addColumn(jobMachines, jobMachines.updatedAt);
-        await m.addColumn(jobTags, jobTags.updatedAt);
-        await m.addColumn(problems, problems.updatedAt);
-        await m.addColumn(syncs, syncs.updatedAt);
         await m.addColumn(users, users.updatedAt);
-        await m.addColumn(images, images.updatedAt);
 
         await _createAllUpdatedAtTriggers(m);
       }
@@ -154,23 +111,23 @@ class AppDatabase extends _$AppDatabase {
       // --- 2. เพิ่ม Logic การ Migration สำหรับเวอร์ชัน 6 ---
       if (from < 6) {
         // เพิ่มคอลัมน์ uiType เข้าไปในตาราง documentMachines
-        await m.addColumn(documentMachines, documentMachines.uiType);
+        // await m.addColumn(documentMachines, documentMachines.uiType);
       }
       if (from < 7) {
-        await m.createTable(
-          checkSheetMasterImages,
-        ); // ใช้ m.createTable สำหรับตารางใหม่
-        await _createUpdatedAtTrigger(
-          m,
-          'checksheet_master_images',
-          'updatedAt',
-        );
+        // await m.createTable(
+        //   checkSheetMasterImages,
+        // ); // ใช้ m.createTable สำหรับตารางใหม่
+        // await _createUpdatedAtTrigger(
+        //   m,
+        //   'checksheet_master_images',
+        //   'updatedAt',
+        // );
       }
       if (from < 8) {
-        await m.addColumn(
-          checkSheetMasterImages,
-          checkSheetMasterImages.newImage,
-        );
+        // await m.addColumn(
+        //   checkSheetMasterImages,
+        //   checkSheetMasterImages.newImage,
+        // );
       }
       if (from < 11) {
         await m.deleteTable(users.actualTableName);
@@ -187,6 +144,9 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(users);
         await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
       }
+      if (from < 16) {
+        await m.addColumn(activityLogs, activityLogs.recordVersion);
+      }
     },
   );
 
@@ -197,9 +157,7 @@ class AppDatabase extends _$AppDatabase {
     String columnName,
   ) async {
     // 1. ตรวจสอบชื่อตารางเพื่อเลือก Primary Key ที่ถูกต้อง
-    final String primaryKeyColumn = (tableName == 'checksheet_master_images')
-        ? 'id'
-        : 'uid';
+    final String primaryKeyColumn = 'uid';
 
     // 2. สร้าง Trigger สำหรับ AFTER UPDATE
     final triggerName = 'update_${tableName}_${columnName}';
@@ -230,15 +188,8 @@ class AppDatabase extends _$AppDatabase {
   Future<void> _createAllUpdatedAtTriggers(Migrator m) async {
     await _createUpdatedAtTrigger(m, 'jobs', 'updatedAt');
     await _createUpdatedAtTrigger(m, 'documents', 'updatedAt');
-    await _createUpdatedAtTrigger(m, 'document_machines', 'updatedAt');
     await _createUpdatedAtTrigger(m, 'document_records', 'updatedAt');
-    await _createUpdatedAtTrigger(m, 'job_machines', 'updatedAt');
-    await _createUpdatedAtTrigger(m, 'job_tags', 'updatedAt');
-    await _createUpdatedAtTrigger(m, 'problems', 'updatedAt');
-    await _createUpdatedAtTrigger(m, 'syncs', 'updatedAt');
     await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
-    await _createUpdatedAtTrigger(m, 'images', 'updatedAt');
-    await _createUpdatedAtTrigger(m, 'checksheet_master_images', 'updatedAt');
     await _createUpdatedAtTrigger(
       m,
       'machines',

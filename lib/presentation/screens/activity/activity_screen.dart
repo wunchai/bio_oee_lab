@@ -18,11 +18,6 @@ class ActivityScreen extends StatefulWidget {
 }
 
 class _ActivityScreenState extends State<ActivityScreen> {
-  // --------------------------------------------------
-  // 🛠️ Action Logic
-  // --------------------------------------------------
-
-  // 1. เริ่มกระบวนการเพิ่มกิจกรรม (เลือก Scan หรือ Manual)
   void _showAddOptions() {
     showModalBottomSheet(
       context: context,
@@ -51,7 +46,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  // 2. สแกน QR
   Future<void> _scanQr() async {
     final result = await Navigator.push<String>(
       context,
@@ -62,7 +56,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  // 3. พิมพ์เอง
   Future<void> _manualInput() async {
     final controller = TextEditingController();
     final machineNo = await showDialog<String>(
@@ -92,7 +85,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  // 4. เลือกประเภทกิจกรรม (Setup / Clean)
   void _showActivityTypeDialog(String machineNo) {
     showDialog(
       context: context,
@@ -100,7 +92,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
         title: Text('Machine: $machineNo'),
         content: const Text('Select Activity Type:'),
         actions: [
-          // ปุ่ม Setup
           ElevatedButton.icon(
             onPressed: () {
               Navigator.pop(ctx);
@@ -113,7 +104,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
               foregroundColor: Colors.white,
             ),
           ),
-          // ปุ่ม Clean
           ElevatedButton.icon(
             onPressed: () {
               Navigator.pop(ctx);
@@ -131,7 +121,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
   }
 
-  // 5. บันทึกลง DB
   Future<void> _startActivity(String machineNo, String type) async {
     try {
       final repo = context.read<ActivityRepository>();
@@ -158,7 +147,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  // 6. จบกิจกรรม
   Future<void> _endActivity(DbActivityLog activity) async {
     final confirm = await showDialog<bool>(
       context: context,
@@ -202,9 +190,30 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
-  // --------------------------------------------------
-  // 🎨 UI
-  // --------------------------------------------------
+  Future<void> _syncActivities() async {
+    try {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Syncing...')));
+      }
+      await context.read<ActivityRepository>().syncActivityLogs();
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Sync Completed')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sync Failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +224,16 @@ class _ActivityScreenState extends State<ActivityScreen> {
     if (userId.isEmpty) return const Center(child: Text('Please Login First'));
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Daily Activities'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Daily Activities'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.cloud_upload),
+            onPressed: _syncActivities,
+          ),
+        ],
+      ),
       body: StreamBuilder<List<DbActivityLog>>(
         stream: repo.watchMyActivities(userId),
         builder: (context, snapshot) {
@@ -255,7 +273,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
               final item = list[index];
               final start = DateTime.tryParse(item.startTime ?? '');
 
-              // คำนวณเวลาที่ทำไปแล้ว
               final duration = start != null
                   ? DateTime.now().difference(start)
                   : Duration.zero;
@@ -301,7 +318,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'activity_screen_fab', // <<< Fix: Add unique tag
+        heroTag: 'activity_screen_fab',
         onPressed: _showAddOptions,
         icon: const Icon(Icons.add),
         label: const Text('Activity'),

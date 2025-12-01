@@ -4,11 +4,6 @@ import 'package:flutter/foundation.dart'; // For kIsWeb
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import 'dart:io'; // สำหรับเช็ค Platform
-import 'package:flutter/foundation.dart'; // สำหรับ kIsWeb
-import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
-
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
 

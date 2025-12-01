@@ -328,7 +328,7 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.1),
+                      color: statusColor.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(statusIcon, color: statusColor, size: 28),

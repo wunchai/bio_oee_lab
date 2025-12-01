@@ -12,8 +12,11 @@ class ActivityLogDao extends DatabaseAccessor<AppDatabase>
   Future<int> insertActivity(ActivityLogsCompanion entry) =>
       into(activityLogs).insert(entry);
 
-  Future<bool> updateActivity(DbActivityLog entry) =>
-      update(activityLogs).replace(entry);
+  Future<bool> updateActivity(DbActivityLog entry) {
+    // Increment recordVersion
+    final updatedEntry = entry.copyWith(recordVersion: entry.recordVersion + 1);
+    return update(activityLogs).replace(updatedEntry);
+  }
 
   // ดึงกิจกรรมที่กำลังทำอยู่ (Status=1) ของ User นี้
   Stream<List<DbActivityLog>> watchActiveActivities(String userId) {
@@ -31,5 +34,23 @@ class ActivityLogDao extends DatabaseAccessor<AppDatabase>
     return (select(
       activityLogs,
     )..where((t) => t.recId.equals(recId))).getSingleOrNull();
+  }
+
+  // ดึงรายการที่ยังไม่ได้ Sync (syncStatus = 0)
+  Future<List<DbActivityLog>> getUnsyncedActivities({int limit = 10}) {
+    return (select(activityLogs)
+          ..where((t) => t.syncStatus.equals(0))
+          ..limit(limit))
+        .get();
+  }
+
+  // อัปเดตสถานะ Sync โดยไม่เพิ่ม recordVersion
+  Future<void> updateSyncStatus(String recId, int status, String lastSyncTime) {
+    return (update(activityLogs)..where((t) => t.recId.equals(recId))).write(
+      ActivityLogsCompanion(
+        syncStatus: Value(status),
+        lastSync: Value(lastSyncTime),
+      ),
+    );
   }
 }
