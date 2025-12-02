@@ -32,8 +32,11 @@ class CheckInDao extends DatabaseAccessor<AppDatabase> with _$CheckInDaoMixin {
   Future<int> insertCheckIn(CheckInLogsCompanion entry) =>
       into(checkInLogs).insert(entry);
 
-  Future<bool> updateCheckIn(DbCheckInLog entry) =>
-      update(checkInLogs).replace(entry);
+  Future<bool> updateCheckIn(DbCheckInLog entry) {
+    // Increment recordVersion
+    final updatedEntry = entry.copyWith(recordVersion: entry.recordVersion + 1);
+    return update(checkInLogs).replace(updatedEntry);
+  }
 
   // หา CheckIn ล่าสุดที่ยังไม่ CheckOut (Status=1) ของ User นี้
   Future<DbCheckInLog?> getCurrentActiveCheckIn(String userId) {
@@ -54,5 +57,44 @@ class CheckInDao extends DatabaseAccessor<AppDatabase> with _$CheckInDaoMixin {
     return (select(checkInLogs)
           ..where((t) => t.userId.equals(userId) & t.status.equals(1)))
         .watchSingleOrNull();
+  }
+
+  // ดึงประวัติการ Check-In ของ User นี้
+  Future<List<DbCheckInLog>> getCheckInHistory(String userId) {
+    return (select(checkInLogs)
+          ..where((t) => t.userId.equals(userId))
+          ..orderBy([
+            (t) => OrderingTerm(
+              expression: t.checkInTime,
+              mode: OrderingMode.desc,
+            ),
+          ]))
+        .get();
+  }
+
+  // ดึงรายการที่ยังไม่ได้ Sync (syncStatus = 0) และมี recId (Migration support)
+  Future<List<DbCheckInLog>> getUnsyncedCheckIns({int limit = 10}) {
+    return (select(checkInLogs)
+          ..where(
+            (t) => t.syncStatus.equals(0) & t.status.equals(2),
+          ) // Only completed
+          ..limit(limit))
+        .get();
+  }
+
+  // อัปเดตสถานะ Sync
+  Future<void> updateSyncStatus(
+    String recId,
+    int status,
+    String lastSyncTime,
+    int recordVersion,
+  ) {
+    return (update(checkInLogs)..where((t) => t.recId.equals(recId))).write(
+      CheckInLogsCompanion(
+        syncStatus: Value(status),
+        lastSync: Value(lastSyncTime),
+        recordVersion: Value(recordVersion),
+      ),
+    );
   }
 }

@@ -29,6 +29,37 @@ class ActivityLogDao extends DatabaseAccessor<AppDatabase>
         .watch();
   }
 
+  // ดึงกิจกรรมตาม Filter
+  Stream<List<DbActivityLog>> watchActivities(
+    String userId, {
+    String? query,
+    int? status,
+  }) {
+    return (select(activityLogs)
+          ..where((t) {
+            var predicate = t.operatorId.equals(userId);
+
+            if (status != null) {
+              predicate &= t.status.equals(status);
+            } else {
+              // Default behavior: status = 1 (Running)
+              predicate &= t.status.equals(1);
+            }
+
+            if (query != null && query.isNotEmpty) {
+              predicate &=
+                  t.machineNo.contains(query) | t.activityType.contains(query);
+            }
+
+            return predicate;
+          })
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.startTime, mode: OrderingMode.desc),
+          ]))
+        .watch();
+  }
+
   // ดึงรายการเดียวตาม ID
   Future<DbActivityLog?> getActivityById(String recId) {
     return (select(
@@ -45,11 +76,17 @@ class ActivityLogDao extends DatabaseAccessor<AppDatabase>
   }
 
   // อัปเดตสถานะ Sync โดยไม่เพิ่ม recordVersion
-  Future<void> updateSyncStatus(String recId, int status, String lastSyncTime) {
+  Future<void> updateSyncStatus(
+    String recId,
+    int status,
+    String lastSyncTime,
+    int recordVersion,
+  ) {
     return (update(activityLogs)..where((t) => t.recId.equals(recId))).write(
       ActivityLogsCompanion(
         syncStatus: Value(status),
         lastSync: Value(lastSyncTime),
+        recordVersion: Value(recordVersion),
       ),
     );
   }

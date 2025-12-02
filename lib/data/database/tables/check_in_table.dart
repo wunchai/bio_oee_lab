@@ -14,6 +14,7 @@ class CheckInActivities extends Table {
 @DataClassName('DbCheckInLog')
 class CheckInLogs extends Table {
   IntColumn get uid => integer().autoIncrement()();
+  TextColumn get recId => text().named('RecId').nullable()();
 
   // ข้อมูลสถานที่ (จาก QR Code)
   TextColumn get locationCode => text().named('LocationCode').nullable()();
@@ -39,4 +40,8 @@ class CheckInLogs extends Table {
   IntColumn get syncStatus =>
       integer().named('SyncStatus').withDefault(const Constant(0))();
   TextColumn get lastSync => text().named('LastSync').nullable()();
+
+  // Versioning
+  IntColumn get recordVersion =>
+      integer().named('RecordVersion').withDefault(const Constant(0))();
 }

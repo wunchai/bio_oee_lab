@@ -7167,6 +7167,15 @@ class $CheckInLogsTable extends CheckInLogs
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'RecId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _locationCodeMeta = const VerificationMeta(
     'locationCode',
   );
@@ -7262,9 +7271,22 @@ class $CheckInLogsTable extends CheckInLogs
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _recordVersionMeta = const VerificationMeta(
+    'recordVersion',
+  );
+  @override
+  late final GeneratedColumn<int> recordVersion = GeneratedColumn<int>(
+    'RecordVersion',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
+    recId,
     locationCode,
     userId,
     activityName,
@@ -7274,6 +7296,7 @@ class $CheckInLogsTable extends CheckInLogs
     status,
     syncStatus,
     lastSync,
+    recordVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7291,6 +7314,12 @@ class $CheckInLogsTable extends CheckInLogs
       context.handle(
         _uidMeta,
         uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('RecId')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['RecId']!, _recIdMeta),
       );
     }
     if (data.containsKey('LocationCode')) {
@@ -7359,6 +7388,15 @@ class $CheckInLogsTable extends CheckInLogs
         lastSync.isAcceptableOrUnknown(data['LastSync']!, _lastSyncMeta),
       );
     }
+    if (data.containsKey('RecordVersion')) {
+      context.handle(
+        _recordVersionMeta,
+        recordVersion.isAcceptableOrUnknown(
+          data['RecordVersion']!,
+          _recordVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -7372,6 +7410,10 @@ class $CheckInLogsTable extends CheckInLogs
         DriftSqlType.int,
         data['${effectivePrefix}uid'],
       )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}RecId'],
+      ),
       locationCode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}LocationCode'],
@@ -7408,6 +7450,10 @@ class $CheckInLogsTable extends CheckInLogs
         DriftSqlType.string,
         data['${effectivePrefix}LastSync'],
       ),
+      recordVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecordVersion'],
+      )!,
     );
   }
 
@@ -7419,6 +7465,7 @@ class $CheckInLogsTable extends CheckInLogs
 
 class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
   final int uid;
+  final String? recId;
   final String? locationCode;
   final String? userId;
   final String? activityName;
@@ -7428,8 +7475,10 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
   final int status;
   final int syncStatus;
   final String? lastSync;
+  final int recordVersion;
   const DbCheckInLog({
     required this.uid,
+    this.recId,
     this.locationCode,
     this.userId,
     this.activityName,
@@ -7439,11 +7488,15 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
     required this.status,
     required this.syncStatus,
     this.lastSync,
+    required this.recordVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || recId != null) {
+      map['RecId'] = Variable<String>(recId);
+    }
     if (!nullToAbsent || locationCode != null) {
       map['LocationCode'] = Variable<String>(locationCode);
     }
@@ -7467,12 +7520,16 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
     if (!nullToAbsent || lastSync != null) {
       map['LastSync'] = Variable<String>(lastSync);
     }
+    map['RecordVersion'] = Variable<int>(recordVersion);
     return map;
   }
 
   CheckInLogsCompanion toCompanion(bool nullToAbsent) {
     return CheckInLogsCompanion(
       uid: Value(uid),
+      recId: recId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recId),
       locationCode: locationCode == null && nullToAbsent
           ? const Value.absent()
           : Value(locationCode),
@@ -7496,6 +7553,7 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
       lastSync: lastSync == null && nullToAbsent
           ? const Value.absent()
           : Value(lastSync),
+      recordVersion: Value(recordVersion),
     );
   }
 
@@ -7506,6 +7564,7 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DbCheckInLog(
       uid: serializer.fromJson<int>(json['uid']),
+      recId: serializer.fromJson<String?>(json['recId']),
       locationCode: serializer.fromJson<String?>(json['locationCode']),
       userId: serializer.fromJson<String?>(json['userId']),
       activityName: serializer.fromJson<String?>(json['activityName']),
@@ -7515,6 +7574,7 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
       status: serializer.fromJson<int>(json['status']),
       syncStatus: serializer.fromJson<int>(json['syncStatus']),
       lastSync: serializer.fromJson<String?>(json['lastSync']),
+      recordVersion: serializer.fromJson<int>(json['recordVersion']),
     );
   }
   @override
@@ -7522,6 +7582,7 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'uid': serializer.toJson<int>(uid),
+      'recId': serializer.toJson<String?>(recId),
       'locationCode': serializer.toJson<String?>(locationCode),
       'userId': serializer.toJson<String?>(userId),
       'activityName': serializer.toJson<String?>(activityName),
@@ -7531,11 +7592,13 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
       'status': serializer.toJson<int>(status),
       'syncStatus': serializer.toJson<int>(syncStatus),
       'lastSync': serializer.toJson<String?>(lastSync),
+      'recordVersion': serializer.toJson<int>(recordVersion),
     };
   }
 
   DbCheckInLog copyWith({
     int? uid,
+    Value<String?> recId = const Value.absent(),
     Value<String?> locationCode = const Value.absent(),
     Value<String?> userId = const Value.absent(),
     Value<String?> activityName = const Value.absent(),
@@ -7545,8 +7608,10 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
     int? status,
     int? syncStatus,
     Value<String?> lastSync = const Value.absent(),
+    int? recordVersion,
   }) => DbCheckInLog(
     uid: uid ?? this.uid,
+    recId: recId.present ? recId.value : this.recId,
     locationCode: locationCode.present ? locationCode.value : this.locationCode,
     userId: userId.present ? userId.value : this.userId,
     activityName: activityName.present ? activityName.value : this.activityName,
@@ -7556,10 +7621,12 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
     status: status ?? this.status,
     syncStatus: syncStatus ?? this.syncStatus,
     lastSync: lastSync.present ? lastSync.value : this.lastSync,
+    recordVersion: recordVersion ?? this.recordVersion,
   );
   DbCheckInLog copyWithCompanion(CheckInLogsCompanion data) {
     return DbCheckInLog(
       uid: data.uid.present ? data.uid.value : this.uid,
+      recId: data.recId.present ? data.recId.value : this.recId,
       locationCode: data.locationCode.present
           ? data.locationCode.value
           : this.locationCode,
@@ -7579,6 +7646,9 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
           ? data.syncStatus.value
           : this.syncStatus,
       lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
+      recordVersion: data.recordVersion.present
+          ? data.recordVersion.value
+          : this.recordVersion,
     );
   }
 
@@ -7586,6 +7656,7 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
   String toString() {
     return (StringBuffer('DbCheckInLog(')
           ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
           ..write('locationCode: $locationCode, ')
           ..write('userId: $userId, ')
           ..write('activityName: $activityName, ')
@@ -7594,7 +7665,8 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
           ..write('checkOutTime: $checkOutTime, ')
           ..write('status: $status, ')
           ..write('syncStatus: $syncStatus, ')
-          ..write('lastSync: $lastSync')
+          ..write('lastSync: $lastSync, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -7602,6 +7674,7 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
   @override
   int get hashCode => Object.hash(
     uid,
+    recId,
     locationCode,
     userId,
     activityName,
@@ -7611,12 +7684,14 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
     status,
     syncStatus,
     lastSync,
+    recordVersion,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DbCheckInLog &&
           other.uid == this.uid &&
+          other.recId == this.recId &&
           other.locationCode == this.locationCode &&
           other.userId == this.userId &&
           other.activityName == this.activityName &&
@@ -7625,11 +7700,13 @@ class DbCheckInLog extends DataClass implements Insertable<DbCheckInLog> {
           other.checkOutTime == this.checkOutTime &&
           other.status == this.status &&
           other.syncStatus == this.syncStatus &&
-          other.lastSync == this.lastSync);
+          other.lastSync == this.lastSync &&
+          other.recordVersion == this.recordVersion);
 }
 
 class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
   final Value<int> uid;
+  final Value<String?> recId;
   final Value<String?> locationCode;
   final Value<String?> userId;
   final Value<String?> activityName;
@@ -7639,8 +7716,10 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
   final Value<int> status;
   final Value<int> syncStatus;
   final Value<String?> lastSync;
+  final Value<int> recordVersion;
   const CheckInLogsCompanion({
     this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
     this.locationCode = const Value.absent(),
     this.userId = const Value.absent(),
     this.activityName = const Value.absent(),
@@ -7650,9 +7729,11 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
     this.status = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSync = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   CheckInLogsCompanion.insert({
     this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
     this.locationCode = const Value.absent(),
     this.userId = const Value.absent(),
     this.activityName = const Value.absent(),
@@ -7662,9 +7743,11 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
     this.status = const Value.absent(),
     this.syncStatus = const Value.absent(),
     this.lastSync = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   static Insertable<DbCheckInLog> custom({
     Expression<int>? uid,
+    Expression<String>? recId,
     Expression<String>? locationCode,
     Expression<String>? userId,
     Expression<String>? activityName,
@@ -7674,9 +7757,11 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
     Expression<int>? status,
     Expression<int>? syncStatus,
     Expression<String>? lastSync,
+    Expression<int>? recordVersion,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
+      if (recId != null) 'RecId': recId,
       if (locationCode != null) 'LocationCode': locationCode,
       if (userId != null) 'UserId': userId,
       if (activityName != null) 'ActivityName': activityName,
@@ -7686,11 +7771,13 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
       if (status != null) 'Status': status,
       if (syncStatus != null) 'SyncStatus': syncStatus,
       if (lastSync != null) 'LastSync': lastSync,
+      if (recordVersion != null) 'RecordVersion': recordVersion,
     });
   }
 
   CheckInLogsCompanion copyWith({
     Value<int>? uid,
+    Value<String?>? recId,
     Value<String?>? locationCode,
     Value<String?>? userId,
     Value<String?>? activityName,
@@ -7700,9 +7787,11 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
     Value<int>? status,
     Value<int>? syncStatus,
     Value<String?>? lastSync,
+    Value<int>? recordVersion,
   }) {
     return CheckInLogsCompanion(
       uid: uid ?? this.uid,
+      recId: recId ?? this.recId,
       locationCode: locationCode ?? this.locationCode,
       userId: userId ?? this.userId,
       activityName: activityName ?? this.activityName,
@@ -7712,6 +7801,7 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
       status: status ?? this.status,
       syncStatus: syncStatus ?? this.syncStatus,
       lastSync: lastSync ?? this.lastSync,
+      recordVersion: recordVersion ?? this.recordVersion,
     );
   }
 
@@ -7720,6 +7810,9 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
     final map = <String, Expression>{};
     if (uid.present) {
       map['uid'] = Variable<int>(uid.value);
+    }
+    if (recId.present) {
+      map['RecId'] = Variable<String>(recId.value);
     }
     if (locationCode.present) {
       map['LocationCode'] = Variable<String>(locationCode.value);
@@ -7748,6 +7841,9 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
     if (lastSync.present) {
       map['LastSync'] = Variable<String>(lastSync.value);
     }
+    if (recordVersion.present) {
+      map['RecordVersion'] = Variable<int>(recordVersion.value);
+    }
     return map;
   }
 
@@ -7755,6 +7851,7 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
   String toString() {
     return (StringBuffer('CheckInLogsCompanion(')
           ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
           ..write('locationCode: $locationCode, ')
           ..write('userId: $userId, ')
           ..write('activityName: $activityName, ')
@@ -7763,7 +7860,8 @@ class CheckInLogsCompanion extends UpdateCompanion<DbCheckInLog> {
           ..write('checkOutTime: $checkOutTime, ')
           ..write('status: $status, ')
           ..write('syncStatus: $syncStatus, ')
-          ..write('lastSync: $lastSync')
+          ..write('lastSync: $lastSync, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -12471,6 +12569,7 @@ typedef $$CheckInActivitiesTableProcessedTableManager =
 typedef $$CheckInLogsTableCreateCompanionBuilder =
     CheckInLogsCompanion Function({
       Value<int> uid,
+      Value<String?> recId,
       Value<String?> locationCode,
       Value<String?> userId,
       Value<String?> activityName,
@@ -12480,10 +12579,12 @@ typedef $$CheckInLogsTableCreateCompanionBuilder =
       Value<int> status,
       Value<int> syncStatus,
       Value<String?> lastSync,
+      Value<int> recordVersion,
     });
 typedef $$CheckInLogsTableUpdateCompanionBuilder =
     CheckInLogsCompanion Function({
       Value<int> uid,
+      Value<String?> recId,
       Value<String?> locationCode,
       Value<String?> userId,
       Value<String?> activityName,
@@ -12493,6 +12594,7 @@ typedef $$CheckInLogsTableUpdateCompanionBuilder =
       Value<int> status,
       Value<int> syncStatus,
       Value<String?> lastSync,
+      Value<int> recordVersion,
     });
 
 class $$CheckInLogsTableFilterComposer
@@ -12506,6 +12608,11 @@ class $$CheckInLogsTableFilterComposer
   });
   ColumnFilters<int> get uid => $composableBuilder(
     column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12553,6 +12660,11 @@ class $$CheckInLogsTableFilterComposer
     column: $table.lastSync,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$CheckInLogsTableOrderingComposer
@@ -12566,6 +12678,11 @@ class $$CheckInLogsTableOrderingComposer
   });
   ColumnOrderings<int> get uid => $composableBuilder(
     column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -12613,6 +12730,11 @@ class $$CheckInLogsTableOrderingComposer
     column: $table.lastSync,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CheckInLogsTableAnnotationComposer
@@ -12626,6 +12748,9 @@ class $$CheckInLogsTableAnnotationComposer
   });
   GeneratedColumn<int> get uid =>
       $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
 
   GeneratedColumn<String> get locationCode => $composableBuilder(
     column: $table.locationCode,
@@ -12663,6 +12788,11 @@ class $$CheckInLogsTableAnnotationComposer
 
   GeneratedColumn<String> get lastSync =>
       $composableBuilder(column: $table.lastSync, builder: (column) => column);
+
+  GeneratedColumn<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => column,
+  );
 }
 
 class $$CheckInLogsTableTableManager
@@ -12697,6 +12827,7 @@ class $$CheckInLogsTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> uid = const Value.absent(),
+                Value<String?> recId = const Value.absent(),
                 Value<String?> locationCode = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> activityName = const Value.absent(),
@@ -12706,8 +12837,10 @@ class $$CheckInLogsTableTableManager
                 Value<int> status = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => CheckInLogsCompanion(
                 uid: uid,
+                recId: recId,
                 locationCode: locationCode,
                 userId: userId,
                 activityName: activityName,
@@ -12717,10 +12850,12 @@ class $$CheckInLogsTableTableManager
                 status: status,
                 syncStatus: syncStatus,
                 lastSync: lastSync,
+                recordVersion: recordVersion,
               ),
           createCompanionCallback:
               ({
                 Value<int> uid = const Value.absent(),
+                Value<String?> recId = const Value.absent(),
                 Value<String?> locationCode = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> activityName = const Value.absent(),
@@ -12730,8 +12865,10 @@ class $$CheckInLogsTableTableManager
                 Value<int> status = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => CheckInLogsCompanion.insert(
                 uid: uid,
+                recId: recId,
                 locationCode: locationCode,
                 userId: userId,
                 activityName: activityName,
@@ -12741,6 +12878,7 @@ class $$CheckInLogsTableTableManager
                 status: status,
                 syncStatus: syncStatus,
                 lastSync: lastSync,
+                recordVersion: recordVersion,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

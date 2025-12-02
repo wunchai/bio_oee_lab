@@ -6,6 +6,7 @@ import 'package:bio_oee_lab/presentation/screens/running_job/running_job_screen.
 import 'package:bio_oee_lab/presentation/screens/checkin/check_in_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/activity/activity_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/machine/machine_screen.dart';
+import 'package:bio_oee_lab/presentation/screens/info/info_screen.dart';
 
 class MainWrapperScreen extends StatefulWidget {
   const MainWrapperScreen({super.key});
@@ -17,12 +18,13 @@ class MainWrapperScreen extends StatefulWidget {
 class _MainWrapperScreenState extends State<MainWrapperScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
+  final List<Widget> _pages = [
     JobScreen(),
     RunningJobScreen(),
     CheckInScreen(),
     ActivityScreen(),
     MachineScreen(),
+    InfoScreen(),
   ];
 
   @override
@@ -52,6 +54,7 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
             icon: Icon(Icons.precision_manufacturing),
             label: 'Machine',
           ),
+          NavigationDestination(icon: Icon(Icons.info_outline), label: 'Info'),
         ],
       ),
     );

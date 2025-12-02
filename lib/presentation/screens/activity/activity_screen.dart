@@ -1,5 +1,3 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -7,8 +5,7 @@ import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/repositories/activity_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:bio_oee_lab/data/services/device_info_service.dart';
 
 class ActivityScreen extends StatefulWidget {
   const ActivityScreen({super.key});
@@ -53,6 +50,19 @@ class _ActivityScreenState extends State<ActivityScreen> {
     );
     if (result != null && result.isNotEmpty) {
       _showActivityTypeDialog(result);
+    }
+  }
+
+  Future<void> _scanQrForSearch() async {
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (context) => const ScannerScreen()),
+    );
+    if (result != null && result.isNotEmpty) {
+      setState(() {
+        _searchController.text = result;
+        _searchQuery = result;
+      });
     }
   }
 
@@ -190,6 +200,49 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
+  Future<void> _deleteActivity(DbActivityLog activity) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Activity'),
+        content: Text(
+          'Are you sure you want to delete ${activity.activityType} on ${activity.machineNo}?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await context.read<ActivityRepository>().deleteActivity(activity.recId);
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Activity Deleted')));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          );
+        }
+      }
+    }
+  }
+
   Future<void> _syncActivities() async {
     try {
       if (mounted) {
@@ -197,7 +250,10 @@ class _ActivityScreenState extends State<ActivityScreen> {
           context,
         ).showSnackBar(const SnackBar(content: Text('Syncing...')));
       }
-      await context.read<ActivityRepository>().syncActivityLogs();
+      await context.read<ActivityRepository>().syncActivityLogs(
+        context.read<LoginRepository>().loggedInUser?.userId ?? '',
+        context.read<DeviceInfoService>().getLoginDeviceId(),
+      );
       if (mounted) {
         ScaffoldMessenger.of(
           context,
@@ -215,6 +271,16 @@ class _ActivityScreenState extends State<ActivityScreen> {
     }
   }
 
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  int _selectedStatus = 1; // 1=Running, 2=Completed, 3=Deleted
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<ActivityRepository>();
@@ -227,7 +293,97 @@ class _ActivityScreenState extends State<ActivityScreen> {
       appBar: AppBar(
         title: const Text('Daily Activities'),
         centerTitle: true,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(120),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: TextField(
+                          controller: _searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search Machine / Type...',
+                            prefixIcon: const Icon(
+                              Icons.search,
+                              color: Colors.grey,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: const Icon(
+                                Icons.qr_code_scanner,
+                                color: Colors.black87,
+                              ),
+                              onPressed: _scanQrForSearch,
+                            ),
+                            border: InputBorder.none,
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10,
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    const Text(
+                      'Status: ',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    const SizedBox(width: 8),
+                    DropdownButton<int>(
+                      value: _selectedStatus,
+                      dropdownColor: Colors.white,
+                      style: const TextStyle(color: Colors.black),
+                      iconEnabledColor: Colors.black,
+                      underline: Container(height: 1, color: Colors.black),
+                      items: const [
+                        DropdownMenuItem(value: 1, child: Text('Running')),
+                        DropdownMenuItem(value: 2, child: Text('Completed')),
+                        DropdownMenuItem(value: 3, child: Text('Deleted')),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          setState(() {
+                            _selectedStatus = value;
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              setState(() {});
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.cloud_upload),
             onPressed: _syncActivities,
@@ -235,7 +391,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
         ],
       ),
       body: StreamBuilder<List<DbActivityLog>>(
-        stream: repo.watchMyActivities(userId),
+        stream: repo.watchMyActivities(
+          userId,
+          query: _searchQuery,
+          status: _selectedStatus,
+        ),
         builder: (context, snapshot) {
           if (snapshot.hasError)
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -268,50 +428,13 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
           return ListView.builder(
             itemCount: list.length,
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.fromLTRB(8, 8, 8, 80),
             itemBuilder: (context, index) {
               final item = list[index];
-              final start = DateTime.tryParse(item.startTime ?? '');
-
-              final duration = start != null
-                  ? DateTime.now().difference(start)
-                  : Duration.zero;
-              final durationStr =
-                  '${duration.inHours}h ${duration.inMinutes % 60}m';
-
-              return Card(
-                elevation: 3,
-                margin: const EdgeInsets.symmetric(vertical: 6),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: item.activityType == 'Setup'
-                        ? Colors.blue.shade100
-                        : Colors.green.shade100,
-                    child: Icon(
-                      item.activityType == 'Setup'
-                          ? Icons.settings
-                          : Icons.cleaning_services,
-                      color: item.activityType == 'Setup'
-                          ? Colors.blue
-                          : Colors.green,
-                    ),
-                  ),
-                  title: Text(
-                    '${item.activityType} : ${item.machineNo}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Text(
-                    'Started: ${start != null ? DateFormat('HH:mm').format(start) : '-'} ($durationStr)',
-                  ),
-                  trailing: ElevatedButton(
-                    onPressed: () => _endActivity(item),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red.shade50,
-                      foregroundColor: Colors.red,
-                    ),
-                    child: const Text('FINISH'),
-                  ),
-                ),
+              return ActivityListItem(
+                item: item,
+                onDelete: () => _deleteActivity(item),
+                onFinish: () => _endActivity(item),
               );
             },
           );
@@ -323,6 +446,94 @@ class _ActivityScreenState extends State<ActivityScreen> {
         icon: const Icon(Icons.add),
         label: const Text('Activity'),
         backgroundColor: Colors.blue,
+      ),
+    );
+  }
+}
+
+class ActivityListItem extends StatefulWidget {
+  final DbActivityLog item;
+  final VoidCallback onDelete;
+  final VoidCallback onFinish;
+
+  const ActivityListItem({
+    super.key,
+    required this.item,
+    required this.onDelete,
+    required this.onFinish,
+  });
+
+  @override
+  State<ActivityListItem> createState() => _ActivityListItemState();
+}
+
+class _ActivityListItemState extends State<ActivityListItem> {
+  bool _isHovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final item = widget.item;
+    final start = DateTime.tryParse(item.startTime ?? '');
+    final duration = start != null
+        ? DateTime.now().difference(start)
+        : Duration.zero;
+    final durationStr = '${duration.inHours}h ${duration.inMinutes % 60}m';
+
+    return MouseRegion(
+      onEnter: (_) => setState(() => _isHovered = true),
+      onExit: (_) => setState(() => _isHovered = false),
+      child: Card(
+        elevation: _isHovered ? 8 : 3,
+        shadowColor: _isHovered ? Colors.black54 : null,
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: item.activityType == 'Setup'
+                ? Colors.blue.shade100
+                : Colors.green.shade100,
+            child: Icon(
+              item.activityType == 'Setup'
+                  ? Icons.settings
+                  : Icons.cleaning_services,
+              color: item.activityType == 'Setup' ? Colors.blue : Colors.green,
+            ),
+          ),
+          title: Text(
+            '${item.activityType} : ${item.machineNo}',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Started: ${start != null ? DateFormat('dd/MM/yyyy HH:mm').format(start) : '-'} ($durationStr)',
+              ),
+              if (item.syncStatus == 0)
+                const Text(
+                  '• Waiting Sync',
+                  style: TextStyle(fontSize: 12, color: Colors.red),
+                ),
+            ],
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.delete, color: Colors.grey),
+                onPressed: widget.onDelete,
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: widget.onFinish,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red.shade50,
+                  foregroundColor: Colors.red,
+                ),
+                child: const Text('FINISH'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

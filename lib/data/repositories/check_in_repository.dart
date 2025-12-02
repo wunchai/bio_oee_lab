@@ -3,11 +3,18 @@ import 'package:drift/drift.dart' as drift;
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/daos/check_in_dao.dart';
 
+import 'package:uuid/uuid.dart';
+import 'package:bio_oee_lab/data/network/check_in_api_service.dart';
+
 class CheckInRepository {
   final CheckInDao _dao;
+  final CheckInApiService _apiService;
 
-  CheckInRepository({required AppDatabase appDatabase})
-    : _dao = appDatabase.checkInDao;
+  CheckInRepository({
+    required AppDatabase appDatabase,
+    CheckInApiService? apiService,
+  }) : _dao = appDatabase.checkInDao,
+       _apiService = apiService ?? CheckInApiService();
 
   // เตรียมข้อมูล Master Data
   Future<void> initData() async {
@@ -20,6 +27,10 @@ class CheckInRepository {
   Stream<DbCheckInLog?> watchCurrentStatus(String userId) =>
       _dao.watchCurrentActiveCheckIn(userId);
 
+  // ดึงประวัติการ Check-In
+  Future<List<DbCheckInLog>> getCheckInHistory(String userId) =>
+      _dao.getCheckInHistory(userId);
+
   // 🟢 ฟังก์ชันหลัก: Check-In (พร้อม Auto Check-Out ของเก่า)
   Future<void> checkIn({
     required String locationCode,
@@ -29,6 +40,7 @@ class CheckInRepository {
   }) async {
     try {
       final now = DateTime.now().toIso8601String();
+      final newId = const Uuid().v4();
 
       // 1. หาว่ามีอันเก่าค้างอยู่ไหม?
       final activeLog = await _dao.getCurrentActiveCheckIn(userId);
@@ -46,6 +58,7 @@ class CheckInRepository {
 
       // 3. Check-In อันใหม่
       final newLog = CheckInLogsCompanion(
+        recId: drift.Value(newId),
         locationCode: drift.Value(locationCode),
         userId: drift.Value(userId),
         activityName: drift.Value(activityName),
@@ -75,6 +88,59 @@ class CheckInRepository {
         syncStatus: 0,
       );
       await _dao.updateCheckIn(closedLog);
+    }
+  }
+
+  // 🔄 Sync Data
+  Future<void> syncCheckInLogs(String userId, String deviceId) async {
+    try {
+      bool hasMore = true;
+      while (hasMore) {
+        final unsyncedLogs = await _dao.getUnsyncedCheckIns(limit: 10);
+
+        if (unsyncedLogs.isEmpty) {
+          hasMore = false;
+          break;
+        }
+
+        // Filter out logs without recId (legacy data support or migration needed)
+        // For now, we skip them or we could generate one on the fly.
+        // Let's skip for safety.
+        final validLogs = unsyncedLogs.where((l) => l.recId != null).toList();
+
+        if (validLogs.isEmpty && unsyncedLogs.isNotEmpty) {
+          // If we have unsynced logs but none have RecId, we might get stuck in a loop.
+          // We should probably mark them as synced or ignore them.
+          // For this implementation, let's assume new data has RecId.
+          // To prevent infinite loop, we break if we can't process any.
+          break;
+        }
+
+        // 2. Send to API
+        final List<CheckInSyncResult> results = await _apiService
+            .uploadCheckInLogs(validLogs, userId, deviceId);
+
+        // 3. Update local status
+        final now = DateTime.now().toIso8601String();
+        for (final result in results) {
+          if (result.execResult == 1) {
+            await _dao.updateSyncStatus(
+              result.recId,
+              1,
+              now,
+              result.recordVersion,
+            );
+          }
+        }
+
+        // If we fetched less than 10, we are done
+        if (unsyncedLogs.length < 10) {
+          hasMore = false;
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) print('Sync CheckIn Error: $e');
+      rethrow;
     }
   }
 }

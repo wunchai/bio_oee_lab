@@ -5,6 +5,7 @@ import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/repositories/check_in_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
+import 'package:bio_oee_lab/data/services/device_info_service.dart';
 
 class CheckInScreen extends StatefulWidget {
   const CheckInScreen({super.key});
@@ -25,6 +26,39 @@ class _CheckInScreenState extends State<CheckInScreen> {
     final locationCode = await Navigator.push<String>(
       context,
       MaterialPageRoute(builder: (context) => const ScannerScreen()),
+    );
+
+    if (locationCode != null && locationCode.isNotEmpty) {
+      if (mounted) {
+        _showCheckInDialog(locationCode);
+      }
+    }
+  }
+
+  Future<void> _handleManualInput() async {
+    final controller = TextEditingController();
+    final locationCode = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Manual Check-In'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Location Code',
+            hintText: 'Enter location code',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            child: const Text('Next'),
+          ),
+        ],
+      ),
     );
 
     if (locationCode != null && locationCode.isNotEmpty) {
@@ -148,6 +182,110 @@ class _CheckInScreenState extends State<CheckInScreen> {
     );
   }
 
+  Future<void> _syncCheckIns() async {
+    try {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Syncing Check-Ins...')));
+      }
+      await context.read<CheckInRepository>().syncCheckInLogs(
+        context.read<LoginRepository>().loggedInUser?.userId ?? '',
+        context.read<DeviceInfoService>().getLoginDeviceId(),
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Sync Completed')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sync Failed: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _showHistoryDialog() async {
+    final repo = context.read<CheckInRepository>();
+    final loginRepo = context.read<LoginRepository>();
+    final userId = loginRepo.loggedInUser?.userId ?? '';
+
+    if (userId.isEmpty) return;
+
+    final history = await repo.getCheckInHistory(userId);
+
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Check-In History'),
+        content: SizedBox(
+          width: double.maxFinite,
+          child: history.isEmpty
+              ? const Center(child: Text('No history found.'))
+              : ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: history.length,
+                  itemBuilder: (context, index) {
+                    final item = history[index];
+                    final checkIn = item.checkInTime != null
+                        ? DateTime.parse(item.checkInTime!)
+                        : null;
+                    final checkOut = item.checkOutTime != null
+                        ? DateTime.parse(item.checkOutTime!)
+                        : null;
+
+                    String durationStr = '-';
+                    if (checkIn != null && checkOut != null) {
+                      final diff = checkOut.difference(checkIn);
+                      durationStr = '${diff.inMinutes} mins';
+                    }
+
+                    return ListTile(
+                      leading: Icon(
+                        item.status == 1 ? Icons.location_on : Icons.history,
+                        color: item.status == 1 ? Colors.green : Colors.grey,
+                      ),
+                      title: Text(item.locationCode ?? 'Unknown Location'),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Activity: ${item.activityName ?? '-'}'),
+                          if (checkIn != null)
+                            Text(
+                              'In: ${DateFormat('dd/MM HH:mm').format(checkIn)}',
+                            ),
+                          if (checkOut != null)
+                            Text(
+                              'Out: ${DateFormat('dd/MM HH:mm').format(checkOut)}',
+                            ),
+                          Text('Duration: $durationStr'),
+                        ],
+                      ),
+                      trailing: item.syncStatus == 1
+                          ? const Icon(Icons.cloud_done, color: Colors.green)
+                          : const Icon(Icons.cloud_upload, color: Colors.grey),
+                      isThreeLine: true,
+                    );
+                  },
+                ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final repo = context.watch<CheckInRepository>();
@@ -155,7 +293,20 @@ class _CheckInScreenState extends State<CheckInScreen> {
     final userId = loginRepo.loggedInUser?.userId ?? '';
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Check-In / Out'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('Check-In / Out'),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: _showHistoryDialog,
+          ),
+          IconButton(
+            icon: const Icon(Icons.cloud_upload),
+            onPressed: _syncCheckIns,
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -190,7 +341,7 @@ class _CheckInScreenState extends State<CheckInScreen> {
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        isCheckedIn ? 'CURRENTLY AT' : 'NOT CHECKED IN',
+                        current != null ? 'CURRENTLY AT' : 'NOT CHECKED IN',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -200,21 +351,21 @@ class _CheckInScreenState extends State<CheckInScreen> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        isCheckedIn ? (current?.locationCode ?? '-') : '-',
+                        current != null ? (current.locationCode ?? '-') : '-',
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
                       ),
-                      if (isCheckedIn) ...[
+                      if (current != null) ...[
                         const SizedBox(height: 8),
                         Chip(
-                          label: Text(current?.activityName ?? '-'),
+                          label: Text(current.activityName ?? '-'),
                           backgroundColor: Colors.white,
                         ),
                         Text(
-                          'Since: ${DateFormat('HH:mm').format(DateTime.parse(current!.checkInTime!))}',
+                          'Since: ${DateFormat('HH:mm').format(DateTime.parse(current.checkInTime ?? DateTime.now().toIso8601String()))}',
                           style: const TextStyle(color: Colors.grey),
                         ),
                         const SizedBox(height: 16),
@@ -254,7 +405,13 @@ class _CheckInScreenState extends State<CheckInScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
+            TextButton.icon(
+              onPressed: _handleManualInput,
+              icon: const Icon(Icons.keyboard),
+              label: const Text('Manual Input (Test)'),
+            ),
+            const SizedBox(height: 8),
             const Text(
               'Scan new location to automatically\nCheck-Out from previous location.',
               textAlign: TextAlign.center,

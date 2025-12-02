@@ -16,6 +16,7 @@ import 'package:bio_oee_lab/data/repositories/activity_repository.dart';
 import 'package:bio_oee_lab/data/network/machine_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/machine_repository.dart';
 import 'package:bio_oee_lab/data/network/activity_api_service.dart';
+import 'package:bio_oee_lab/data/repositories/info_repository.dart';
 
 Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final deviceInfoService = DeviceInfoService();
@@ -78,6 +79,12 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     Provider<DocumentRepository>.value(value: documentRepository),
     ChangeNotifierProvider<MachineRepository>(
       create: (context) => machineRepository,
+    ),
+    Provider<InfoRepository>(
+      create: (context) => InfoRepository(
+        appDatabase: appDatabase,
+        deviceInfoService: deviceInfoService,
+      ),
     ),
   ];
 }

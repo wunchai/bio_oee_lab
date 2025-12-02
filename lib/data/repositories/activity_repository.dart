@@ -17,8 +17,12 @@ class ActivityRepository extends ChangeNotifier {
        _apiService = apiService ?? ActivityApiService();
 
   // Stream สำหรับแสดงรายการหน้าจอ
-  Stream<List<DbActivityLog>> watchMyActivities(String userId) {
-    return _dao.watchActiveActivities(userId);
+  Stream<List<DbActivityLog>> watchMyActivities(
+    String userId, {
+    String? query,
+    int? status,
+  }) {
+    return _dao.watchActivities(userId, query: query, status: status);
   }
 
   // 🟢 เริ่มกิจกรรม (Start)
@@ -74,8 +78,27 @@ class ActivityRepository extends ChangeNotifier {
     }
   }
 
+  // 🗑️ ลบกิจกรรม (Soft Delete)
+  Future<void> deleteActivity(String recId) async {
+    try {
+      final activity = await _dao.getActivityById(recId);
+      if (activity == null) throw Exception('Activity not found');
+
+      final updatedEntry = activity.copyWith(
+        status: 3, // 3 = Deleted
+        syncStatus: 0,
+        recordVersion: activity.recordVersion + 1,
+      );
+
+      await _dao.updateActivity(updatedEntry);
+      if (kDebugMode) print('Deleted Activity: $recId');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // 🔄 Sync Data
-  Future<void> syncActivityLogs() async {
+  Future<void> syncActivityLogs(String userId, String deviceId) async {
     try {
       bool hasMore = true;
       while (hasMore) {
@@ -87,14 +110,20 @@ class ActivityRepository extends ChangeNotifier {
         }
 
         // 2. Send to API
-        final successRecIds = await _apiService.uploadActivityLogs(
-          unsyncedLogs,
-        );
+        final List<ActivitySyncResult> results = await _apiService
+            .uploadActivityLogs(unsyncedLogs, userId, deviceId);
 
         // 3. Update local status
         final now = DateTime.now().toIso8601String();
-        for (final recId in successRecIds) {
-          await _dao.updateSyncStatus(recId, 1, now);
+        for (final result in results) {
+          if (result.execResult == 1) {
+            await _dao.updateSyncStatus(
+              result.recId,
+              1,
+              now,
+              result.recordVersion,
+            );
+          }
         }
 
         // If we fetched less than 10, we are done
