@@ -121,4 +121,30 @@ class DocumentDao extends DatabaseAccessor<AppDatabase>
       documents,
     )..where((tbl) => tbl.documentId.equals(documentId))).watchSingleOrNull();
   }
+
+  // ดึงเอกสารที่ยังไม่ได้ Sync (syncStatus = 0)
+  Future<List<DbDocument>> getUnsyncedDocuments({int limit = 10}) {
+    return (select(documents)
+          ..where((t) => t.syncStatus.equals(0))
+          ..limit(limit))
+        .get();
+  }
+
+  // อัปเดตสถานะ Sync
+  Future<void> updateSyncStatus(
+    String documentId,
+    int status,
+    String lastSyncTime,
+    int recordVersion,
+  ) {
+    return (update(
+      documents,
+    )..where((t) => t.documentId.equals(documentId))).write(
+      DocumentsCompanion(
+        syncStatus: Value(status),
+        lastSync: Value(lastSyncTime),
+        recordVersion: Value(recordVersion),
+      ),
+    );
+  }
 }

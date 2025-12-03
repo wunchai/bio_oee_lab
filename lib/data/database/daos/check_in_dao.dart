@@ -75,9 +75,7 @@ class CheckInDao extends DatabaseAccessor<AppDatabase> with _$CheckInDaoMixin {
   // ดึงรายการที่ยังไม่ได้ Sync (syncStatus = 0) และมี recId (Migration support)
   Future<List<DbCheckInLog>> getUnsyncedCheckIns({int limit = 10}) {
     return (select(checkInLogs)
-          ..where(
-            (t) => t.syncStatus.equals(0) & t.status.equals(2),
-          ) // Only completed
+          ..where((t) => t.syncStatus.equals(0))
           ..limit(limit))
         .get();
   }

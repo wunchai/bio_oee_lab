@@ -21,4 +21,8 @@ class RunningJobMachines extends Table {
   TextColumn get lastSync => text().named('lastSync').nullable()();
   IntColumn get syncStatus =>
       integer().named('syncStatus').withDefault(const Constant(0))();
+
+  // Versioning
+  IntColumn get recordVersion =>
+      integer().named('RecordVersion').withDefault(const Constant(0))();
 }

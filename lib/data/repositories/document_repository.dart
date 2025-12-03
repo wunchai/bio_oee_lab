@@ -424,4 +424,70 @@ class DocumentRepository {
       throw Exception('Sync failed: $e');
     }
   }
+
+  // --- Machine Events & Items ---
+
+  Future<void> addMachineEvent({
+    required String machineRecId,
+    required String activityType, // 'Start' or 'Breakdown'
+    required String userId,
+  }) async {
+    final now = DateTime.now();
+    final nowStr = now.toIso8601String();
+
+    // 1. ถ้าเป็น Start ให้ปิด Event ก่อนหน้า (ถ้ามี)
+    if (activityType == 'Start') {
+      // Logic: Find open event for this machine and close it?
+      // Or just insert new event?
+      // For simplicity, let's just insert.
+      // But usually 'Start' means machine is running. 'Breakdown' means stopped.
+    }
+
+    await _runningJobDetailsDao.insertMachineLog(
+      JobMachineEventLogsCompanion(
+        recId: drift.Value(const Uuid().v4()),
+        jobMachineRecId: drift.Value(machineRecId),
+        startTime: drift.Value(nowStr),
+        eventType: drift.Value(
+          activityType,
+        ), // Save event type (Start/Breakdown)
+        // endTime: Value(null), // Open event
+        status: const drift.Value(1), // 1=Active
+        syncStatus: const drift.Value(0),
+        recordVersion: const drift.Value(0),
+      ),
+    );
+  }
+
+  Future<void> addMachineItem({
+    required String documentId,
+    required String machineRecId,
+    required String testSetRecId,
+    required String userId,
+  }) async {
+    final now = DateTime.now();
+    final nowStr = now.toIso8601String();
+
+    await _runningJobDetailsDao.insertMachineItem(
+      JobMachineItemsCompanion(
+        recId: drift.Value(const Uuid().v4()),
+        documentId: drift.Value(documentId),
+        jobMachineRecId: drift.Value(machineRecId),
+        jobTestSetRecId: drift.Value(testSetRecId),
+        registerDateTime: drift.Value(nowStr),
+        registerUser: drift.Value(userId),
+        status: const drift.Value(1),
+        syncStatus: const drift.Value(0),
+        recordVersion: const drift.Value(0),
+      ),
+    );
+  }
+
+  Future<void> deleteMachineEvent(String recId) async {
+    await _runningJobDetailsDao.deleteMachineLog(recId);
+  }
+
+  Future<void> deleteMachineItem(String recId) async {
+    await _runningJobDetailsDao.deleteMachineItem(recId);
+  }
 }

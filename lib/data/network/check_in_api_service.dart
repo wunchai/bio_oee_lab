@@ -19,10 +19,10 @@ class CheckInSyncResult {
 
   factory CheckInSyncResult.fromJson(Map<String, dynamic> json) {
     return CheckInSyncResult(
-      recId: json['RecId'] ?? '',
-      execResult: json['ExecResult'] ?? 0,
-      message: json['Message'],
-      recordVersion: json['RecordVersion'] ?? 0,
+      recId: json['RecId'] ?? json['recId'] ?? '',
+      execResult: json['ExecResult'] ?? json['execResult'] ?? 0,
+      message: json['Message'] ?? json['message'],
+      recordVersion: json['RecordVersion'] ?? json['recordVersion'] ?? 0,
     );
   }
 }
@@ -72,9 +72,28 @@ class CheckInApiService {
 
       if (response.statusCode == 200) {
         final jsonResponse = jsonDecode(response.body);
-        if (jsonResponse['ExecResult'] == 1 && jsonResponse['Data'] != null) {
-          final List<dynamic> data = jsonResponse['Data'];
+        final execResult =
+            jsonResponse['ExecResult'] ?? jsonResponse['execResult'];
+        final dataList = jsonResponse['Data'] ?? jsonResponse['data'];
+
+        // Case 1: Standard format
+        if (execResult == 1 && dataList != null) {
+          final List<dynamic> data = dataList;
           return data.map((e) => CheckInSyncResult.fromJson(e)).toList();
+        }
+
+        // Case 2: ExecResult is a JSON string containing the list
+        if (execResult is String) {
+          try {
+            final parsedList = jsonDecode(execResult);
+            if (parsedList is List) {
+              return parsedList
+                  .map((e) => CheckInSyncResult.fromJson(e))
+                  .toList();
+            }
+          } catch (e) {
+            if (kDebugMode) print('Error parsing ExecResult string: $e');
+          }
         }
       }
 

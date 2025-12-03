@@ -5,6 +5,7 @@ import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
+import 'package:bio_oee_lab/presentation/screens/running_job/machine_detail_screen.dart';
 
 class RunningJobDetailScreen extends StatefulWidget {
   final String documentId;
@@ -689,7 +690,8 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     );
   }
 
-  // --- Tab 3: Machines ---
+  // --- Machine Action Dialogs ---
+
   // --- Tab 3: Machines (Updated) ---
   Widget _buildMachinesTab(AppDatabase db) {
     return Column(
@@ -785,12 +787,18 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                       subtitle: Text(
                         'Registered by: ${item.registerUser ?? '-'}',
                       ),
-                      trailing: item.syncStatus == 0
-                          ? const Icon(
-                              Icons.cloud_upload_outlined,
-                              color: Colors.grey,
-                            )
-                          : const Icon(Icons.check_circle, color: Colors.green),
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => MachineDetailScreen(
+                              machine: item,
+                              documentId: widget.documentId,
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   );
                 },

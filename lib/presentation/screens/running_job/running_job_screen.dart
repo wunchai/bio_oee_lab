@@ -9,6 +9,8 @@ import 'package:bio_oee_lab/presentation/screens/running_job/running_job_detail_
 // Import สำหรับ QR Code
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:bio_oee_lab/data/repositories/job_sync_repository.dart';
+import 'package:bio_oee_lab/data/network/job_sync_api_service.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
 
 class RunningJobScreen extends StatefulWidget {
@@ -139,8 +141,27 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
     });
 
     try {
-      final docRepo = context.read<DocumentRepository>();
-      await docRepo.uploadPendingDocuments();
+      // Initialize Sync Repository (In a real app, this should be provided via Provider)
+      final appDatabase = Provider.of<AppDatabase>(context, listen: false);
+      final apiService = JobSyncApiService(); // Or inject
+      final syncRepo = JobSyncRepository(
+        appDatabase: appDatabase,
+        apiService: apiService,
+      );
+
+      final loginRepo = context.read<LoginRepository>();
+      final userId = loginRepo.loggedInUser?.userId ?? '';
+
+      // Use DeviceInfoService to get deviceId (assuming it's available or use a placeholder)
+      // For now, using a placeholder or fetching if available.
+      // Ideally, DeviceInfoService should be injected.
+      // Let's assume we can get it from a provider or use a default.
+      String deviceId = 'UNKNOWN_DEVICE';
+      // If you have DeviceInfoService in provider:
+      // final deviceInfo = context.read<DeviceInfoService>();
+      // deviceId = await deviceInfo.getDeviceId();
+
+      await syncRepo.syncAllJobData(userId, deviceId);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

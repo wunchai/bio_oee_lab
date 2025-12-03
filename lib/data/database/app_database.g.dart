@@ -835,6 +835,18 @@ class $DocumentsTable extends Documents
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _recordVersionMeta = const VerificationMeta(
+    'recordVersion',
+  );
+  @override
+  late final GeneratedColumn<int> recordVersion = GeneratedColumn<int>(
+    'RecordVersion',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
@@ -852,6 +864,7 @@ class $DocumentsTable extends Documents
     deleteDate,
     cancelDate,
     postDate,
+    recordVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -961,6 +974,15 @@ class $DocumentsTable extends Documents
         postDate.isAcceptableOrUnknown(data['PostDate']!, _postDateMeta),
       );
     }
+    if (data.containsKey('RecordVersion')) {
+      context.handle(
+        _recordVersionMeta,
+        recordVersion.isAcceptableOrUnknown(
+          data['RecordVersion']!,
+          _recordVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1030,6 +1052,10 @@ class $DocumentsTable extends Documents
         DriftSqlType.string,
         data['${effectivePrefix}PostDate'],
       ),
+      recordVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecordVersion'],
+      )!,
     );
   }
 
@@ -1055,6 +1081,7 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
   final String? deleteDate;
   final String? cancelDate;
   final String? postDate;
+  final int recordVersion;
   const DbDocument({
     required this.uid,
     this.documentId,
@@ -1071,6 +1098,7 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     this.deleteDate,
     this.cancelDate,
     this.postDate,
+    required this.recordVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1114,6 +1142,7 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     if (!nullToAbsent || postDate != null) {
       map['PostDate'] = Variable<String>(postDate);
     }
+    map['RecordVersion'] = Variable<int>(recordVersion);
     return map;
   }
 
@@ -1158,6 +1187,7 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       postDate: postDate == null && nullToAbsent
           ? const Value.absent()
           : Value(postDate),
+      recordVersion: Value(recordVersion),
     );
   }
 
@@ -1182,6 +1212,7 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       deleteDate: serializer.fromJson<String?>(json['deleteDate']),
       cancelDate: serializer.fromJson<String?>(json['cancelDate']),
       postDate: serializer.fromJson<String?>(json['postDate']),
+      recordVersion: serializer.fromJson<int>(json['recordVersion']),
     );
   }
   @override
@@ -1203,6 +1234,7 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       'deleteDate': serializer.toJson<String?>(deleteDate),
       'cancelDate': serializer.toJson<String?>(cancelDate),
       'postDate': serializer.toJson<String?>(postDate),
+      'recordVersion': serializer.toJson<int>(recordVersion),
     };
   }
 
@@ -1222,6 +1254,7 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     Value<String?> deleteDate = const Value.absent(),
     Value<String?> cancelDate = const Value.absent(),
     Value<String?> postDate = const Value.absent(),
+    int? recordVersion,
   }) => DbDocument(
     uid: uid ?? this.uid,
     documentId: documentId.present ? documentId.value : this.documentId,
@@ -1238,6 +1271,7 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     deleteDate: deleteDate.present ? deleteDate.value : this.deleteDate,
     cancelDate: cancelDate.present ? cancelDate.value : this.cancelDate,
     postDate: postDate.present ? postDate.value : this.postDate,
+    recordVersion: recordVersion ?? this.recordVersion,
   );
   DbDocument copyWithCompanion(DocumentsCompanion data) {
     return DbDocument(
@@ -1270,6 +1304,9 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
           ? data.cancelDate.value
           : this.cancelDate,
       postDate: data.postDate.present ? data.postDate.value : this.postDate,
+      recordVersion: data.recordVersion.present
+          ? data.recordVersion.value
+          : this.recordVersion,
     );
   }
 
@@ -1290,7 +1327,8 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
           ..write('endDate: $endDate, ')
           ..write('deleteDate: $deleteDate, ')
           ..write('cancelDate: $cancelDate, ')
-          ..write('postDate: $postDate')
+          ..write('postDate: $postDate, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -1312,6 +1350,7 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     deleteDate,
     cancelDate,
     postDate,
+    recordVersion,
   );
   @override
   bool operator ==(Object other) =>
@@ -1331,7 +1370,8 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
           other.endDate == this.endDate &&
           other.deleteDate == this.deleteDate &&
           other.cancelDate == this.cancelDate &&
-          other.postDate == this.postDate);
+          other.postDate == this.postDate &&
+          other.recordVersion == this.recordVersion);
 }
 
 class DocumentsCompanion extends UpdateCompanion<DbDocument> {
@@ -1350,6 +1390,7 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
   final Value<String?> deleteDate;
   final Value<String?> cancelDate;
   final Value<String?> postDate;
+  final Value<int> recordVersion;
   const DocumentsCompanion({
     this.uid = const Value.absent(),
     this.documentId = const Value.absent(),
@@ -1366,6 +1407,7 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     this.deleteDate = const Value.absent(),
     this.cancelDate = const Value.absent(),
     this.postDate = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   DocumentsCompanion.insert({
     this.uid = const Value.absent(),
@@ -1383,6 +1425,7 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     this.deleteDate = const Value.absent(),
     this.cancelDate = const Value.absent(),
     this.postDate = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   static Insertable<DbDocument> custom({
     Expression<int>? uid,
@@ -1400,6 +1443,7 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     Expression<String>? deleteDate,
     Expression<String>? cancelDate,
     Expression<String>? postDate,
+    Expression<int>? recordVersion,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
@@ -1417,6 +1461,7 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
       if (deleteDate != null) 'DeleteDate': deleteDate,
       if (cancelDate != null) 'CancleDate': cancelDate,
       if (postDate != null) 'PostDate': postDate,
+      if (recordVersion != null) 'RecordVersion': recordVersion,
     });
   }
 
@@ -1436,6 +1481,7 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     Value<String?>? deleteDate,
     Value<String?>? cancelDate,
     Value<String?>? postDate,
+    Value<int>? recordVersion,
   }) {
     return DocumentsCompanion(
       uid: uid ?? this.uid,
@@ -1453,6 +1499,7 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
       deleteDate: deleteDate ?? this.deleteDate,
       cancelDate: cancelDate ?? this.cancelDate,
       postDate: postDate ?? this.postDate,
+      recordVersion: recordVersion ?? this.recordVersion,
     );
   }
 
@@ -1504,6 +1551,9 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     if (postDate.present) {
       map['PostDate'] = Variable<String>(postDate.value);
     }
+    if (recordVersion.present) {
+      map['RecordVersion'] = Variable<int>(recordVersion.value);
+    }
     return map;
   }
 
@@ -1524,7 +1574,8 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
           ..write('endDate: $endDate, ')
           ..write('deleteDate: $deleteDate, ')
           ..write('cancelDate: $cancelDate, ')
-          ..write('postDate: $postDate')
+          ..write('postDate: $postDate, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -3661,6 +3712,18 @@ class $JobTestSetsTable extends JobTestSets
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _recordVersionMeta = const VerificationMeta(
+    'recordVersion',
+  );
+  @override
+  late final GeneratedColumn<int> recordVersion = GeneratedColumn<int>(
+    'RecordVersion',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
@@ -3673,6 +3736,7 @@ class $JobTestSetsTable extends JobTestSets
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -3754,6 +3818,15 @@ class $JobTestSetsTable extends JobTestSets
         syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('RecordVersion')) {
+      context.handle(
+        _recordVersionMeta,
+        recordVersion.isAcceptableOrUnknown(
+          data['RecordVersion']!,
+          _recordVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -3803,6 +3876,10 @@ class $JobTestSetsTable extends JobTestSets
         DriftSqlType.int,
         data['${effectivePrefix}syncStatus'],
       )!,
+      recordVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecordVersion'],
+      )!,
     );
   }
 
@@ -3823,6 +3900,7 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
   final String? updatedAt;
   final String? lastSync;
   final int syncStatus;
+  final int recordVersion;
   const DbJobTestSet({
     required this.uid,
     required this.recId,
@@ -3834,6 +3912,7 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
     this.updatedAt,
     this.lastSync,
     required this.syncStatus,
+    required this.recordVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -3860,6 +3939,7 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
       map['lastSync'] = Variable<String>(lastSync);
     }
     map['syncStatus'] = Variable<int>(syncStatus);
+    map['RecordVersion'] = Variable<int>(recordVersion);
     return map;
   }
 
@@ -3887,6 +3967,7 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
           ? const Value.absent()
           : Value(lastSync),
       syncStatus: Value(syncStatus),
+      recordVersion: Value(recordVersion),
     );
   }
 
@@ -3906,6 +3987,7 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
       updatedAt: serializer.fromJson<String?>(json['updatedAt']),
       lastSync: serializer.fromJson<String?>(json['lastSync']),
       syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      recordVersion: serializer.fromJson<int>(json['recordVersion']),
     );
   }
   @override
@@ -3922,6 +4004,7 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
       'updatedAt': serializer.toJson<String?>(updatedAt),
       'lastSync': serializer.toJson<String?>(lastSync),
       'syncStatus': serializer.toJson<int>(syncStatus),
+      'recordVersion': serializer.toJson<int>(recordVersion),
     };
   }
 
@@ -3936,6 +4019,7 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
     Value<String?> updatedAt = const Value.absent(),
     Value<String?> lastSync = const Value.absent(),
     int? syncStatus,
+    int? recordVersion,
   }) => DbJobTestSet(
     uid: uid ?? this.uid,
     recId: recId ?? this.recId,
@@ -3949,6 +4033,7 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     lastSync: lastSync.present ? lastSync.value : this.lastSync,
     syncStatus: syncStatus ?? this.syncStatus,
+    recordVersion: recordVersion ?? this.recordVersion,
   );
   DbJobTestSet copyWithCompanion(JobTestSetsCompanion data) {
     return DbJobTestSet(
@@ -3970,6 +4055,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      recordVersion: data.recordVersion.present
+          ? data.recordVersion.value
+          : this.recordVersion,
     );
   }
 
@@ -3985,7 +4073,8 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -4002,6 +4091,7 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   );
   @override
   bool operator ==(Object other) =>
@@ -4016,7 +4106,8 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
           other.status == this.status &&
           other.updatedAt == this.updatedAt &&
           other.lastSync == this.lastSync &&
-          other.syncStatus == this.syncStatus);
+          other.syncStatus == this.syncStatus &&
+          other.recordVersion == this.recordVersion);
 }
 
 class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
@@ -4030,6 +4121,7 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
   final Value<String?> updatedAt;
   final Value<String?> lastSync;
   final Value<int> syncStatus;
+  final Value<int> recordVersion;
   const JobTestSetsCompanion({
     this.uid = const Value.absent(),
     this.recId = const Value.absent(),
@@ -4041,6 +4133,7 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   JobTestSetsCompanion.insert({
     this.uid = const Value.absent(),
@@ -4053,6 +4146,7 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   }) : recId = Value(recId);
   static Insertable<DbJobTestSet> custom({
     Expression<int>? uid,
@@ -4065,6 +4159,7 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     Expression<String>? updatedAt,
     Expression<String>? lastSync,
     Expression<int>? syncStatus,
+    Expression<int>? recordVersion,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
@@ -4077,6 +4172,7 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
       if (updatedAt != null) 'updatedAt': updatedAt,
       if (lastSync != null) 'lastSync': lastSync,
       if (syncStatus != null) 'syncStatus': syncStatus,
+      if (recordVersion != null) 'RecordVersion': recordVersion,
     });
   }
 
@@ -4091,6 +4187,7 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     Value<String?>? updatedAt,
     Value<String?>? lastSync,
     Value<int>? syncStatus,
+    Value<int>? recordVersion,
   }) {
     return JobTestSetsCompanion(
       uid: uid ?? this.uid,
@@ -4103,6 +4200,7 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
       updatedAt: updatedAt ?? this.updatedAt,
       lastSync: lastSync ?? this.lastSync,
       syncStatus: syncStatus ?? this.syncStatus,
+      recordVersion: recordVersion ?? this.recordVersion,
     );
   }
 
@@ -4139,6 +4237,9 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     if (syncStatus.present) {
       map['syncStatus'] = Variable<int>(syncStatus.value);
     }
+    if (recordVersion.present) {
+      map['RecordVersion'] = Variable<int>(recordVersion.value);
+    }
     return map;
   }
 
@@ -4154,7 +4255,8 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -4277,6 +4379,18 @@ class $RunningJobMachinesTable extends RunningJobMachines
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _recordVersionMeta = const VerificationMeta(
+    'recordVersion',
+  );
+  @override
+  late final GeneratedColumn<int> recordVersion = GeneratedColumn<int>(
+    'RecordVersion',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
@@ -4289,6 +4403,7 @@ class $RunningJobMachinesTable extends RunningJobMachines
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4370,6 +4485,15 @@ class $RunningJobMachinesTable extends RunningJobMachines
         syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('RecordVersion')) {
+      context.handle(
+        _recordVersionMeta,
+        recordVersion.isAcceptableOrUnknown(
+          data['RecordVersion']!,
+          _recordVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -4419,6 +4543,10 @@ class $RunningJobMachinesTable extends RunningJobMachines
         DriftSqlType.int,
         data['${effectivePrefix}syncStatus'],
       )!,
+      recordVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecordVersion'],
+      )!,
     );
   }
 
@@ -4440,6 +4568,7 @@ class DbRunningJobMachine extends DataClass
   final String? updatedAt;
   final String? lastSync;
   final int syncStatus;
+  final int recordVersion;
   const DbRunningJobMachine({
     required this.uid,
     required this.recId,
@@ -4451,6 +4580,7 @@ class DbRunningJobMachine extends DataClass
     this.updatedAt,
     this.lastSync,
     required this.syncStatus,
+    required this.recordVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4477,6 +4607,7 @@ class DbRunningJobMachine extends DataClass
       map['lastSync'] = Variable<String>(lastSync);
     }
     map['syncStatus'] = Variable<int>(syncStatus);
+    map['RecordVersion'] = Variable<int>(recordVersion);
     return map;
   }
 
@@ -4504,6 +4635,7 @@ class DbRunningJobMachine extends DataClass
           ? const Value.absent()
           : Value(lastSync),
       syncStatus: Value(syncStatus),
+      recordVersion: Value(recordVersion),
     );
   }
 
@@ -4523,6 +4655,7 @@ class DbRunningJobMachine extends DataClass
       updatedAt: serializer.fromJson<String?>(json['updatedAt']),
       lastSync: serializer.fromJson<String?>(json['lastSync']),
       syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      recordVersion: serializer.fromJson<int>(json['recordVersion']),
     );
   }
   @override
@@ -4539,6 +4672,7 @@ class DbRunningJobMachine extends DataClass
       'updatedAt': serializer.toJson<String?>(updatedAt),
       'lastSync': serializer.toJson<String?>(lastSync),
       'syncStatus': serializer.toJson<int>(syncStatus),
+      'recordVersion': serializer.toJson<int>(recordVersion),
     };
   }
 
@@ -4553,6 +4687,7 @@ class DbRunningJobMachine extends DataClass
     Value<String?> updatedAt = const Value.absent(),
     Value<String?> lastSync = const Value.absent(),
     int? syncStatus,
+    int? recordVersion,
   }) => DbRunningJobMachine(
     uid: uid ?? this.uid,
     recId: recId ?? this.recId,
@@ -4566,6 +4701,7 @@ class DbRunningJobMachine extends DataClass
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     lastSync: lastSync.present ? lastSync.value : this.lastSync,
     syncStatus: syncStatus ?? this.syncStatus,
+    recordVersion: recordVersion ?? this.recordVersion,
   );
   DbRunningJobMachine copyWithCompanion(RunningJobMachinesCompanion data) {
     return DbRunningJobMachine(
@@ -4587,6 +4723,9 @@ class DbRunningJobMachine extends DataClass
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      recordVersion: data.recordVersion.present
+          ? data.recordVersion.value
+          : this.recordVersion,
     );
   }
 
@@ -4602,7 +4741,8 @@ class DbRunningJobMachine extends DataClass
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -4619,6 +4759,7 @@ class DbRunningJobMachine extends DataClass
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   );
   @override
   bool operator ==(Object other) =>
@@ -4633,7 +4774,8 @@ class DbRunningJobMachine extends DataClass
           other.status == this.status &&
           other.updatedAt == this.updatedAt &&
           other.lastSync == this.lastSync &&
-          other.syncStatus == this.syncStatus);
+          other.syncStatus == this.syncStatus &&
+          other.recordVersion == this.recordVersion);
 }
 
 class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
@@ -4647,6 +4789,7 @@ class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
   final Value<String?> updatedAt;
   final Value<String?> lastSync;
   final Value<int> syncStatus;
+  final Value<int> recordVersion;
   const RunningJobMachinesCompanion({
     this.uid = const Value.absent(),
     this.recId = const Value.absent(),
@@ -4658,6 +4801,7 @@ class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   RunningJobMachinesCompanion.insert({
     this.uid = const Value.absent(),
@@ -4670,6 +4814,7 @@ class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   }) : recId = Value(recId);
   static Insertable<DbRunningJobMachine> custom({
     Expression<int>? uid,
@@ -4682,6 +4827,7 @@ class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
     Expression<String>? updatedAt,
     Expression<String>? lastSync,
     Expression<int>? syncStatus,
+    Expression<int>? recordVersion,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
@@ -4694,6 +4840,7 @@ class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
       if (updatedAt != null) 'updatedAt': updatedAt,
       if (lastSync != null) 'lastSync': lastSync,
       if (syncStatus != null) 'syncStatus': syncStatus,
+      if (recordVersion != null) 'RecordVersion': recordVersion,
     });
   }
 
@@ -4708,6 +4855,7 @@ class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
     Value<String?>? updatedAt,
     Value<String?>? lastSync,
     Value<int>? syncStatus,
+    Value<int>? recordVersion,
   }) {
     return RunningJobMachinesCompanion(
       uid: uid ?? this.uid,
@@ -4720,6 +4868,7 @@ class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
       updatedAt: updatedAt ?? this.updatedAt,
       lastSync: lastSync ?? this.lastSync,
       syncStatus: syncStatus ?? this.syncStatus,
+      recordVersion: recordVersion ?? this.recordVersion,
     );
   }
 
@@ -4756,6 +4905,9 @@ class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
     if (syncStatus.present) {
       map['syncStatus'] = Variable<int>(syncStatus.value);
     }
+    if (recordVersion.present) {
+      map['RecordVersion'] = Variable<int>(recordVersion.value);
+    }
     return map;
   }
 
@@ -4771,7 +4923,8 @@ class RunningJobMachinesCompanion extends UpdateCompanion<DbRunningJobMachine> {
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -4795,6 +4948,15 @@ class $JobWorkingTimesTable extends JobWorkingTimes
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'PRIMARY KEY AUTOINCREMENT',
     ),
+  );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'recID',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _documentIdMeta = const VerificationMeta(
     'documentId',
@@ -4893,9 +5055,22 @@ class $JobWorkingTimesTable extends JobWorkingTimes
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _recordVersionMeta = const VerificationMeta(
+    'recordVersion',
+  );
+  @override
+  late final GeneratedColumn<int> recordVersion = GeneratedColumn<int>(
+    'RecordVersion',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
+    recId,
     documentId,
     userId,
     activityId,
@@ -4905,6 +5080,7 @@ class $JobWorkingTimesTable extends JobWorkingTimes
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4922,6 +5098,12 @@ class $JobWorkingTimesTable extends JobWorkingTimes
       context.handle(
         _uidMeta,
         uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('recID')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['recID']!, _recIdMeta),
       );
     }
     if (data.containsKey('documentId')) {
@@ -4978,6 +5160,15 @@ class $JobWorkingTimesTable extends JobWorkingTimes
         syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('RecordVersion')) {
+      context.handle(
+        _recordVersionMeta,
+        recordVersion.isAcceptableOrUnknown(
+          data['RecordVersion']!,
+          _recordVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -4991,6 +5182,10 @@ class $JobWorkingTimesTable extends JobWorkingTimes
         DriftSqlType.int,
         data['${effectivePrefix}uid'],
       )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recID'],
+      ),
       documentId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}documentId'],
@@ -5027,6 +5222,10 @@ class $JobWorkingTimesTable extends JobWorkingTimes
         DriftSqlType.int,
         data['${effectivePrefix}syncStatus'],
       )!,
+      recordVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecordVersion'],
+      )!,
     );
   }
 
@@ -5039,6 +5238,7 @@ class $JobWorkingTimesTable extends JobWorkingTimes
 class DbJobWorkingTime extends DataClass
     implements Insertable<DbJobWorkingTime> {
   final int uid;
+  final String? recId;
   final String? documentId;
   final String? userId;
   final String? activityId;
@@ -5048,8 +5248,10 @@ class DbJobWorkingTime extends DataClass
   final String? updatedAt;
   final String? lastSync;
   final int syncStatus;
+  final int recordVersion;
   const DbJobWorkingTime({
     required this.uid,
+    this.recId,
     this.documentId,
     this.userId,
     this.activityId,
@@ -5059,11 +5261,15 @@ class DbJobWorkingTime extends DataClass
     this.updatedAt,
     this.lastSync,
     required this.syncStatus,
+    required this.recordVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || recId != null) {
+      map['recID'] = Variable<String>(recId);
+    }
     if (!nullToAbsent || documentId != null) {
       map['documentId'] = Variable<String>(documentId);
     }
@@ -5087,12 +5293,16 @@ class DbJobWorkingTime extends DataClass
       map['lastSync'] = Variable<String>(lastSync);
     }
     map['syncStatus'] = Variable<int>(syncStatus);
+    map['RecordVersion'] = Variable<int>(recordVersion);
     return map;
   }
 
   JobWorkingTimesCompanion toCompanion(bool nullToAbsent) {
     return JobWorkingTimesCompanion(
       uid: Value(uid),
+      recId: recId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recId),
       documentId: documentId == null && nullToAbsent
           ? const Value.absent()
           : Value(documentId),
@@ -5116,6 +5326,7 @@ class DbJobWorkingTime extends DataClass
           ? const Value.absent()
           : Value(lastSync),
       syncStatus: Value(syncStatus),
+      recordVersion: Value(recordVersion),
     );
   }
 
@@ -5126,6 +5337,7 @@ class DbJobWorkingTime extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DbJobWorkingTime(
       uid: serializer.fromJson<int>(json['uid']),
+      recId: serializer.fromJson<String?>(json['recId']),
       documentId: serializer.fromJson<String?>(json['documentId']),
       userId: serializer.fromJson<String?>(json['userId']),
       activityId: serializer.fromJson<String?>(json['activityId']),
@@ -5135,6 +5347,7 @@ class DbJobWorkingTime extends DataClass
       updatedAt: serializer.fromJson<String?>(json['updatedAt']),
       lastSync: serializer.fromJson<String?>(json['lastSync']),
       syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      recordVersion: serializer.fromJson<int>(json['recordVersion']),
     );
   }
   @override
@@ -5142,6 +5355,7 @@ class DbJobWorkingTime extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'uid': serializer.toJson<int>(uid),
+      'recId': serializer.toJson<String?>(recId),
       'documentId': serializer.toJson<String?>(documentId),
       'userId': serializer.toJson<String?>(userId),
       'activityId': serializer.toJson<String?>(activityId),
@@ -5151,11 +5365,13 @@ class DbJobWorkingTime extends DataClass
       'updatedAt': serializer.toJson<String?>(updatedAt),
       'lastSync': serializer.toJson<String?>(lastSync),
       'syncStatus': serializer.toJson<int>(syncStatus),
+      'recordVersion': serializer.toJson<int>(recordVersion),
     };
   }
 
   DbJobWorkingTime copyWith({
     int? uid,
+    Value<String?> recId = const Value.absent(),
     Value<String?> documentId = const Value.absent(),
     Value<String?> userId = const Value.absent(),
     Value<String?> activityId = const Value.absent(),
@@ -5165,8 +5381,10 @@ class DbJobWorkingTime extends DataClass
     Value<String?> updatedAt = const Value.absent(),
     Value<String?> lastSync = const Value.absent(),
     int? syncStatus,
+    int? recordVersion,
   }) => DbJobWorkingTime(
     uid: uid ?? this.uid,
+    recId: recId.present ? recId.value : this.recId,
     documentId: documentId.present ? documentId.value : this.documentId,
     userId: userId.present ? userId.value : this.userId,
     activityId: activityId.present ? activityId.value : this.activityId,
@@ -5176,10 +5394,12 @@ class DbJobWorkingTime extends DataClass
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     lastSync: lastSync.present ? lastSync.value : this.lastSync,
     syncStatus: syncStatus ?? this.syncStatus,
+    recordVersion: recordVersion ?? this.recordVersion,
   );
   DbJobWorkingTime copyWithCompanion(JobWorkingTimesCompanion data) {
     return DbJobWorkingTime(
       uid: data.uid.present ? data.uid.value : this.uid,
+      recId: data.recId.present ? data.recId.value : this.recId,
       documentId: data.documentId.present
           ? data.documentId.value
           : this.documentId,
@@ -5195,6 +5415,9 @@ class DbJobWorkingTime extends DataClass
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      recordVersion: data.recordVersion.present
+          ? data.recordVersion.value
+          : this.recordVersion,
     );
   }
 
@@ -5202,6 +5425,7 @@ class DbJobWorkingTime extends DataClass
   String toString() {
     return (StringBuffer('DbJobWorkingTime(')
           ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
           ..write('documentId: $documentId, ')
           ..write('userId: $userId, ')
           ..write('activityId: $activityId, ')
@@ -5210,7 +5434,8 @@ class DbJobWorkingTime extends DataClass
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -5218,6 +5443,7 @@ class DbJobWorkingTime extends DataClass
   @override
   int get hashCode => Object.hash(
     uid,
+    recId,
     documentId,
     userId,
     activityId,
@@ -5227,12 +5453,14 @@ class DbJobWorkingTime extends DataClass
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DbJobWorkingTime &&
           other.uid == this.uid &&
+          other.recId == this.recId &&
           other.documentId == this.documentId &&
           other.userId == this.userId &&
           other.activityId == this.activityId &&
@@ -5241,11 +5469,13 @@ class DbJobWorkingTime extends DataClass
           other.status == this.status &&
           other.updatedAt == this.updatedAt &&
           other.lastSync == this.lastSync &&
-          other.syncStatus == this.syncStatus);
+          other.syncStatus == this.syncStatus &&
+          other.recordVersion == this.recordVersion);
 }
 
 class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
   final Value<int> uid;
+  final Value<String?> recId;
   final Value<String?> documentId;
   final Value<String?> userId;
   final Value<String?> activityId;
@@ -5255,8 +5485,10 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
   final Value<String?> updatedAt;
   final Value<String?> lastSync;
   final Value<int> syncStatus;
+  final Value<int> recordVersion;
   const JobWorkingTimesCompanion({
     this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
     this.documentId = const Value.absent(),
     this.userId = const Value.absent(),
     this.activityId = const Value.absent(),
@@ -5266,9 +5498,11 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   JobWorkingTimesCompanion.insert({
     this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
     this.documentId = const Value.absent(),
     this.userId = const Value.absent(),
     this.activityId = const Value.absent(),
@@ -5278,9 +5512,11 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   static Insertable<DbJobWorkingTime> custom({
     Expression<int>? uid,
+    Expression<String>? recId,
     Expression<String>? documentId,
     Expression<String>? userId,
     Expression<String>? activityId,
@@ -5290,9 +5526,11 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     Expression<String>? updatedAt,
     Expression<String>? lastSync,
     Expression<int>? syncStatus,
+    Expression<int>? recordVersion,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
+      if (recId != null) 'recID': recId,
       if (documentId != null) 'documentId': documentId,
       if (userId != null) 'UserId': userId,
       if (activityId != null) 'ActivityID': activityId,
@@ -5302,11 +5540,13 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
       if (updatedAt != null) 'updatedAt': updatedAt,
       if (lastSync != null) 'lastSync': lastSync,
       if (syncStatus != null) 'syncStatus': syncStatus,
+      if (recordVersion != null) 'RecordVersion': recordVersion,
     });
   }
 
   JobWorkingTimesCompanion copyWith({
     Value<int>? uid,
+    Value<String?>? recId,
     Value<String?>? documentId,
     Value<String?>? userId,
     Value<String?>? activityId,
@@ -5316,9 +5556,11 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     Value<String?>? updatedAt,
     Value<String?>? lastSync,
     Value<int>? syncStatus,
+    Value<int>? recordVersion,
   }) {
     return JobWorkingTimesCompanion(
       uid: uid ?? this.uid,
+      recId: recId ?? this.recId,
       documentId: documentId ?? this.documentId,
       userId: userId ?? this.userId,
       activityId: activityId ?? this.activityId,
@@ -5328,6 +5570,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
       updatedAt: updatedAt ?? this.updatedAt,
       lastSync: lastSync ?? this.lastSync,
       syncStatus: syncStatus ?? this.syncStatus,
+      recordVersion: recordVersion ?? this.recordVersion,
     );
   }
 
@@ -5336,6 +5579,9 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     final map = <String, Expression>{};
     if (uid.present) {
       map['uid'] = Variable<int>(uid.value);
+    }
+    if (recId.present) {
+      map['recID'] = Variable<String>(recId.value);
     }
     if (documentId.present) {
       map['documentId'] = Variable<String>(documentId.value);
@@ -5364,6 +5610,9 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     if (syncStatus.present) {
       map['syncStatus'] = Variable<int>(syncStatus.value);
     }
+    if (recordVersion.present) {
+      map['RecordVersion'] = Variable<int>(recordVersion.value);
+    }
     return map;
   }
 
@@ -5371,6 +5620,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
   String toString() {
     return (StringBuffer('JobWorkingTimesCompanion(')
           ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
           ..write('documentId: $documentId, ')
           ..write('userId: $userId, ')
           ..write('activityId: $activityId, ')
@@ -5379,7 +5629,8 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -5403,6 +5654,16 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'PRIMARY KEY AUTOINCREMENT',
     ),
+  );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'recID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
   static const VerificationMeta _jobMachineRecIdMeta = const VerificationMeta(
     'jobMachineRecId',
@@ -5432,6 +5693,17 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
   @override
   late final GeneratedColumn<String> endTime = GeneratedColumn<String>(
     'EndTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _eventTypeMeta = const VerificationMeta(
+    'eventType',
+  );
+  @override
+  late final GeneratedColumn<String> eventType = GeneratedColumn<String>(
+    'EventType',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -5481,16 +5753,31 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _recordVersionMeta = const VerificationMeta(
+    'recordVersion',
+  );
+  @override
+  late final GeneratedColumn<int> recordVersion = GeneratedColumn<int>(
+    'RecordVersion',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
+    recId,
     jobMachineRecId,
     startTime,
     endTime,
+    eventType,
     status,
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -5509,6 +5796,14 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
         _uidMeta,
         uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
       );
+    }
+    if (data.containsKey('recID')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['recID']!, _recIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recIdMeta);
     }
     if (data.containsKey('JobMachineRef')) {
       context.handle(
@@ -5529,6 +5824,12 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
       context.handle(
         _endTimeMeta,
         endTime.isAcceptableOrUnknown(data['EndTime']!, _endTimeMeta),
+      );
+    }
+    if (data.containsKey('EventType')) {
+      context.handle(
+        _eventTypeMeta,
+        eventType.isAcceptableOrUnknown(data['EventType']!, _eventTypeMeta),
       );
     }
     if (data.containsKey('status')) {
@@ -5555,6 +5856,15 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
         syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('RecordVersion')) {
+      context.handle(
+        _recordVersionMeta,
+        recordVersion.isAcceptableOrUnknown(
+          data['RecordVersion']!,
+          _recordVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -5568,6 +5878,10 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
         DriftSqlType.int,
         data['${effectivePrefix}uid'],
       )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recID'],
+      )!,
       jobMachineRecId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}JobMachineRef'],
@@ -5579,6 +5893,10 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
       endTime: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}EndTime'],
+      ),
+      eventType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}EventType'],
       ),
       status: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -5596,6 +5914,10 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
         DriftSqlType.int,
         data['${effectivePrefix}syncStatus'],
       )!,
+      recordVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecordVersion'],
+      )!,
     );
   }
 
@@ -5608,27 +5930,34 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
 class DbJobMachineEventLog extends DataClass
     implements Insertable<DbJobMachineEventLog> {
   final int uid;
+  final String recId;
   final String? jobMachineRecId;
   final String? startTime;
   final String? endTime;
+  final String? eventType;
   final int status;
   final String? updatedAt;
   final String? lastSync;
   final int syncStatus;
+  final int recordVersion;
   const DbJobMachineEventLog({
     required this.uid,
+    required this.recId,
     this.jobMachineRecId,
     this.startTime,
     this.endTime,
+    this.eventType,
     required this.status,
     this.updatedAt,
     this.lastSync,
     required this.syncStatus,
+    required this.recordVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['uid'] = Variable<int>(uid);
+    map['recID'] = Variable<String>(recId);
     if (!nullToAbsent || jobMachineRecId != null) {
       map['JobMachineRef'] = Variable<String>(jobMachineRecId);
     }
@@ -5638,6 +5967,9 @@ class DbJobMachineEventLog extends DataClass
     if (!nullToAbsent || endTime != null) {
       map['EndTime'] = Variable<String>(endTime);
     }
+    if (!nullToAbsent || eventType != null) {
+      map['EventType'] = Variable<String>(eventType);
+    }
     map['status'] = Variable<int>(status);
     if (!nullToAbsent || updatedAt != null) {
       map['updatedAt'] = Variable<String>(updatedAt);
@@ -5646,12 +5978,14 @@ class DbJobMachineEventLog extends DataClass
       map['lastSync'] = Variable<String>(lastSync);
     }
     map['syncStatus'] = Variable<int>(syncStatus);
+    map['RecordVersion'] = Variable<int>(recordVersion);
     return map;
   }
 
   JobMachineEventLogsCompanion toCompanion(bool nullToAbsent) {
     return JobMachineEventLogsCompanion(
       uid: Value(uid),
+      recId: Value(recId),
       jobMachineRecId: jobMachineRecId == null && nullToAbsent
           ? const Value.absent()
           : Value(jobMachineRecId),
@@ -5661,6 +5995,9 @@ class DbJobMachineEventLog extends DataClass
       endTime: endTime == null && nullToAbsent
           ? const Value.absent()
           : Value(endTime),
+      eventType: eventType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventType),
       status: Value(status),
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
@@ -5669,6 +6006,7 @@ class DbJobMachineEventLog extends DataClass
           ? const Value.absent()
           : Value(lastSync),
       syncStatus: Value(syncStatus),
+      recordVersion: Value(recordVersion),
     );
   }
 
@@ -5679,13 +6017,16 @@ class DbJobMachineEventLog extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return DbJobMachineEventLog(
       uid: serializer.fromJson<int>(json['uid']),
+      recId: serializer.fromJson<String>(json['recId']),
       jobMachineRecId: serializer.fromJson<String?>(json['jobMachineRecId']),
       startTime: serializer.fromJson<String?>(json['startTime']),
       endTime: serializer.fromJson<String?>(json['endTime']),
+      eventType: serializer.fromJson<String?>(json['eventType']),
       status: serializer.fromJson<int>(json['status']),
       updatedAt: serializer.fromJson<String?>(json['updatedAt']),
       lastSync: serializer.fromJson<String?>(json['lastSync']),
       syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      recordVersion: serializer.fromJson<int>(json['recordVersion']),
     );
   }
   @override
@@ -5693,51 +6034,65 @@ class DbJobMachineEventLog extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'uid': serializer.toJson<int>(uid),
+      'recId': serializer.toJson<String>(recId),
       'jobMachineRecId': serializer.toJson<String?>(jobMachineRecId),
       'startTime': serializer.toJson<String?>(startTime),
       'endTime': serializer.toJson<String?>(endTime),
+      'eventType': serializer.toJson<String?>(eventType),
       'status': serializer.toJson<int>(status),
       'updatedAt': serializer.toJson<String?>(updatedAt),
       'lastSync': serializer.toJson<String?>(lastSync),
       'syncStatus': serializer.toJson<int>(syncStatus),
+      'recordVersion': serializer.toJson<int>(recordVersion),
     };
   }
 
   DbJobMachineEventLog copyWith({
     int? uid,
+    String? recId,
     Value<String?> jobMachineRecId = const Value.absent(),
     Value<String?> startTime = const Value.absent(),
     Value<String?> endTime = const Value.absent(),
+    Value<String?> eventType = const Value.absent(),
     int? status,
     Value<String?> updatedAt = const Value.absent(),
     Value<String?> lastSync = const Value.absent(),
     int? syncStatus,
+    int? recordVersion,
   }) => DbJobMachineEventLog(
     uid: uid ?? this.uid,
+    recId: recId ?? this.recId,
     jobMachineRecId: jobMachineRecId.present
         ? jobMachineRecId.value
         : this.jobMachineRecId,
     startTime: startTime.present ? startTime.value : this.startTime,
     endTime: endTime.present ? endTime.value : this.endTime,
+    eventType: eventType.present ? eventType.value : this.eventType,
     status: status ?? this.status,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     lastSync: lastSync.present ? lastSync.value : this.lastSync,
     syncStatus: syncStatus ?? this.syncStatus,
+    recordVersion: recordVersion ?? this.recordVersion,
   );
   DbJobMachineEventLog copyWithCompanion(JobMachineEventLogsCompanion data) {
     return DbJobMachineEventLog(
       uid: data.uid.present ? data.uid.value : this.uid,
+      recId: data.recId.present ? data.recId.value : this.recId,
       jobMachineRecId: data.jobMachineRecId.present
           ? data.jobMachineRecId.value
           : this.jobMachineRecId,
       startTime: data.startTime.present ? data.startTime.value : this.startTime,
       endTime: data.endTime.present ? data.endTime.value : this.endTime,
+      eventType: data.eventType.present ? data.eventType.value : this.eventType,
       status: data.status.present ? data.status.value : this.status,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      recordVersion: data.recordVersion.present
+          ? data.recordVersion.value
+          : this.recordVersion,
     );
   }
 
@@ -5745,13 +6100,16 @@ class DbJobMachineEventLog extends DataClass
   String toString() {
     return (StringBuffer('DbJobMachineEventLog(')
           ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
           ..write('jobMachineRecId: $jobMachineRecId, ')
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
+          ..write('eventType: $eventType, ')
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -5759,99 +6117,126 @@ class DbJobMachineEventLog extends DataClass
   @override
   int get hashCode => Object.hash(
     uid,
+    recId,
     jobMachineRecId,
     startTime,
     endTime,
+    eventType,
     status,
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is DbJobMachineEventLog &&
           other.uid == this.uid &&
+          other.recId == this.recId &&
           other.jobMachineRecId == this.jobMachineRecId &&
           other.startTime == this.startTime &&
           other.endTime == this.endTime &&
+          other.eventType == this.eventType &&
           other.status == this.status &&
           other.updatedAt == this.updatedAt &&
           other.lastSync == this.lastSync &&
-          other.syncStatus == this.syncStatus);
+          other.syncStatus == this.syncStatus &&
+          other.recordVersion == this.recordVersion);
 }
 
 class JobMachineEventLogsCompanion
     extends UpdateCompanion<DbJobMachineEventLog> {
   final Value<int> uid;
+  final Value<String> recId;
   final Value<String?> jobMachineRecId;
   final Value<String?> startTime;
   final Value<String?> endTime;
+  final Value<String?> eventType;
   final Value<int> status;
   final Value<String?> updatedAt;
   final Value<String?> lastSync;
   final Value<int> syncStatus;
+  final Value<int> recordVersion;
   const JobMachineEventLogsCompanion({
     this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
     this.jobMachineRecId = const Value.absent(),
     this.startTime = const Value.absent(),
     this.endTime = const Value.absent(),
+    this.eventType = const Value.absent(),
     this.status = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   JobMachineEventLogsCompanion.insert({
     this.uid = const Value.absent(),
+    required String recId,
     this.jobMachineRecId = const Value.absent(),
     this.startTime = const Value.absent(),
     this.endTime = const Value.absent(),
+    this.eventType = const Value.absent(),
     this.status = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
-  });
+    this.recordVersion = const Value.absent(),
+  }) : recId = Value(recId);
   static Insertable<DbJobMachineEventLog> custom({
     Expression<int>? uid,
+    Expression<String>? recId,
     Expression<String>? jobMachineRecId,
     Expression<String>? startTime,
     Expression<String>? endTime,
+    Expression<String>? eventType,
     Expression<int>? status,
     Expression<String>? updatedAt,
     Expression<String>? lastSync,
     Expression<int>? syncStatus,
+    Expression<int>? recordVersion,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
+      if (recId != null) 'recID': recId,
       if (jobMachineRecId != null) 'JobMachineRef': jobMachineRecId,
       if (startTime != null) 'StartTime': startTime,
       if (endTime != null) 'EndTime': endTime,
+      if (eventType != null) 'EventType': eventType,
       if (status != null) 'status': status,
       if (updatedAt != null) 'updatedAt': updatedAt,
       if (lastSync != null) 'lastSync': lastSync,
       if (syncStatus != null) 'syncStatus': syncStatus,
+      if (recordVersion != null) 'RecordVersion': recordVersion,
     });
   }
 
   JobMachineEventLogsCompanion copyWith({
     Value<int>? uid,
+    Value<String>? recId,
     Value<String?>? jobMachineRecId,
     Value<String?>? startTime,
     Value<String?>? endTime,
+    Value<String?>? eventType,
     Value<int>? status,
     Value<String?>? updatedAt,
     Value<String?>? lastSync,
     Value<int>? syncStatus,
+    Value<int>? recordVersion,
   }) {
     return JobMachineEventLogsCompanion(
       uid: uid ?? this.uid,
+      recId: recId ?? this.recId,
       jobMachineRecId: jobMachineRecId ?? this.jobMachineRecId,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
+      eventType: eventType ?? this.eventType,
       status: status ?? this.status,
       updatedAt: updatedAt ?? this.updatedAt,
       lastSync: lastSync ?? this.lastSync,
       syncStatus: syncStatus ?? this.syncStatus,
+      recordVersion: recordVersion ?? this.recordVersion,
     );
   }
 
@@ -5861,6 +6246,9 @@ class JobMachineEventLogsCompanion
     if (uid.present) {
       map['uid'] = Variable<int>(uid.value);
     }
+    if (recId.present) {
+      map['recID'] = Variable<String>(recId.value);
+    }
     if (jobMachineRecId.present) {
       map['JobMachineRef'] = Variable<String>(jobMachineRecId.value);
     }
@@ -5869,6 +6257,9 @@ class JobMachineEventLogsCompanion
     }
     if (endTime.present) {
       map['EndTime'] = Variable<String>(endTime.value);
+    }
+    if (eventType.present) {
+      map['EventType'] = Variable<String>(eventType.value);
     }
     if (status.present) {
       map['status'] = Variable<int>(status.value);
@@ -5882,6 +6273,9 @@ class JobMachineEventLogsCompanion
     if (syncStatus.present) {
       map['syncStatus'] = Variable<int>(syncStatus.value);
     }
+    if (recordVersion.present) {
+      map['RecordVersion'] = Variable<int>(recordVersion.value);
+    }
     return map;
   }
 
@@ -5889,13 +6283,16 @@ class JobMachineEventLogsCompanion
   String toString() {
     return (StringBuffer('JobMachineEventLogsCompanion(')
           ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
           ..write('jobMachineRecId: $jobMachineRecId, ')
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
+          ..write('eventType: $eventType, ')
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -6029,6 +6426,18 @@ class $JobMachineItemsTable extends JobMachineItems
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _recordVersionMeta = const VerificationMeta(
+    'recordVersion',
+  );
+  @override
+  late final GeneratedColumn<int> recordVersion = GeneratedColumn<int>(
+    'RecordVersion',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
@@ -6042,6 +6451,7 @@ class $JobMachineItemsTable extends JobMachineItems
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -6135,6 +6545,15 @@ class $JobMachineItemsTable extends JobMachineItems
         syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
       );
     }
+    if (data.containsKey('RecordVersion')) {
+      context.handle(
+        _recordVersionMeta,
+        recordVersion.isAcceptableOrUnknown(
+          data['RecordVersion']!,
+          _recordVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -6188,6 +6607,10 @@ class $JobMachineItemsTable extends JobMachineItems
         DriftSqlType.int,
         data['${effectivePrefix}syncStatus'],
       )!,
+      recordVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecordVersion'],
+      )!,
     );
   }
 
@@ -6210,6 +6633,7 @@ class DbJobMachineItem extends DataClass
   final String? updatedAt;
   final String? lastSync;
   final int syncStatus;
+  final int recordVersion;
   const DbJobMachineItem({
     required this.uid,
     required this.recId,
@@ -6222,6 +6646,7 @@ class DbJobMachineItem extends DataClass
     this.updatedAt,
     this.lastSync,
     required this.syncStatus,
+    required this.recordVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -6251,6 +6676,7 @@ class DbJobMachineItem extends DataClass
       map['lastSync'] = Variable<String>(lastSync);
     }
     map['syncStatus'] = Variable<int>(syncStatus);
+    map['RecordVersion'] = Variable<int>(recordVersion);
     return map;
   }
 
@@ -6281,6 +6707,7 @@ class DbJobMachineItem extends DataClass
           ? const Value.absent()
           : Value(lastSync),
       syncStatus: Value(syncStatus),
+      recordVersion: Value(recordVersion),
     );
   }
 
@@ -6301,6 +6728,7 @@ class DbJobMachineItem extends DataClass
       updatedAt: serializer.fromJson<String?>(json['updatedAt']),
       lastSync: serializer.fromJson<String?>(json['lastSync']),
       syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      recordVersion: serializer.fromJson<int>(json['recordVersion']),
     );
   }
   @override
@@ -6318,6 +6746,7 @@ class DbJobMachineItem extends DataClass
       'updatedAt': serializer.toJson<String?>(updatedAt),
       'lastSync': serializer.toJson<String?>(lastSync),
       'syncStatus': serializer.toJson<int>(syncStatus),
+      'recordVersion': serializer.toJson<int>(recordVersion),
     };
   }
 
@@ -6333,6 +6762,7 @@ class DbJobMachineItem extends DataClass
     Value<String?> updatedAt = const Value.absent(),
     Value<String?> lastSync = const Value.absent(),
     int? syncStatus,
+    int? recordVersion,
   }) => DbJobMachineItem(
     uid: uid ?? this.uid,
     recId: recId ?? this.recId,
@@ -6351,6 +6781,7 @@ class DbJobMachineItem extends DataClass
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     lastSync: lastSync.present ? lastSync.value : this.lastSync,
     syncStatus: syncStatus ?? this.syncStatus,
+    recordVersion: recordVersion ?? this.recordVersion,
   );
   DbJobMachineItem copyWithCompanion(JobMachineItemsCompanion data) {
     return DbJobMachineItem(
@@ -6377,6 +6808,9 @@ class DbJobMachineItem extends DataClass
       syncStatus: data.syncStatus.present
           ? data.syncStatus.value
           : this.syncStatus,
+      recordVersion: data.recordVersion.present
+          ? data.recordVersion.value
+          : this.recordVersion,
     );
   }
 
@@ -6393,7 +6827,8 @@ class DbJobMachineItem extends DataClass
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -6411,6 +6846,7 @@ class DbJobMachineItem extends DataClass
     updatedAt,
     lastSync,
     syncStatus,
+    recordVersion,
   );
   @override
   bool operator ==(Object other) =>
@@ -6426,7 +6862,8 @@ class DbJobMachineItem extends DataClass
           other.status == this.status &&
           other.updatedAt == this.updatedAt &&
           other.lastSync == this.lastSync &&
-          other.syncStatus == this.syncStatus);
+          other.syncStatus == this.syncStatus &&
+          other.recordVersion == this.recordVersion);
 }
 
 class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
@@ -6441,6 +6878,7 @@ class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
   final Value<String?> updatedAt;
   final Value<String?> lastSync;
   final Value<int> syncStatus;
+  final Value<int> recordVersion;
   const JobMachineItemsCompanion({
     this.uid = const Value.absent(),
     this.recId = const Value.absent(),
@@ -6453,6 +6891,7 @@ class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   JobMachineItemsCompanion.insert({
     this.uid = const Value.absent(),
@@ -6466,6 +6905,7 @@ class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
     this.updatedAt = const Value.absent(),
     this.lastSync = const Value.absent(),
     this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   }) : recId = Value(recId);
   static Insertable<DbJobMachineItem> custom({
     Expression<int>? uid,
@@ -6479,6 +6919,7 @@ class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
     Expression<String>? updatedAt,
     Expression<String>? lastSync,
     Expression<int>? syncStatus,
+    Expression<int>? recordVersion,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
@@ -6492,6 +6933,7 @@ class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
       if (updatedAt != null) 'updatedAt': updatedAt,
       if (lastSync != null) 'lastSync': lastSync,
       if (syncStatus != null) 'syncStatus': syncStatus,
+      if (recordVersion != null) 'RecordVersion': recordVersion,
     });
   }
 
@@ -6507,6 +6949,7 @@ class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
     Value<String?>? updatedAt,
     Value<String?>? lastSync,
     Value<int>? syncStatus,
+    Value<int>? recordVersion,
   }) {
     return JobMachineItemsCompanion(
       uid: uid ?? this.uid,
@@ -6520,6 +6963,7 @@ class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
       updatedAt: updatedAt ?? this.updatedAt,
       lastSync: lastSync ?? this.lastSync,
       syncStatus: syncStatus ?? this.syncStatus,
+      recordVersion: recordVersion ?? this.recordVersion,
     );
   }
 
@@ -6559,6 +7003,9 @@ class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
     if (syncStatus.present) {
       map['syncStatus'] = Variable<int>(syncStatus.value);
     }
+    if (recordVersion.present) {
+      map['RecordVersion'] = Variable<int>(recordVersion.value);
+    }
     return map;
   }
 
@@ -6575,7 +7022,8 @@ class JobMachineItemsCompanion extends UpdateCompanion<DbJobMachineItem> {
           ..write('status: $status, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('lastSync: $lastSync, ')
-          ..write('syncStatus: $syncStatus')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -9434,6 +9882,7 @@ typedef $$DocumentsTableCreateCompanionBuilder =
       Value<String?> deleteDate,
       Value<String?> cancelDate,
       Value<String?> postDate,
+      Value<int> recordVersion,
     });
 typedef $$DocumentsTableUpdateCompanionBuilder =
     DocumentsCompanion Function({
@@ -9452,6 +9901,7 @@ typedef $$DocumentsTableUpdateCompanionBuilder =
       Value<String?> deleteDate,
       Value<String?> cancelDate,
       Value<String?> postDate,
+      Value<int> recordVersion,
     });
 
 class $$DocumentsTableFilterComposer
@@ -9535,6 +9985,11 @@ class $$DocumentsTableFilterComposer
 
   ColumnFilters<String> get postDate => $composableBuilder(
     column: $table.postDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -9622,6 +10077,11 @@ class $$DocumentsTableOrderingComposer
     column: $table.postDate,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$DocumentsTableAnnotationComposer
@@ -9691,6 +10151,11 @@ class $$DocumentsTableAnnotationComposer
 
   GeneratedColumn<String> get postDate =>
       $composableBuilder(column: $table.postDate, builder: (column) => column);
+
+  GeneratedColumn<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => column,
+  );
 }
 
 class $$DocumentsTableTableManager
@@ -9739,6 +10204,7 @@ class $$DocumentsTableTableManager
                 Value<String?> deleteDate = const Value.absent(),
                 Value<String?> cancelDate = const Value.absent(),
                 Value<String?> postDate = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => DocumentsCompanion(
                 uid: uid,
                 documentId: documentId,
@@ -9755,6 +10221,7 @@ class $$DocumentsTableTableManager
                 deleteDate: deleteDate,
                 cancelDate: cancelDate,
                 postDate: postDate,
+                recordVersion: recordVersion,
               ),
           createCompanionCallback:
               ({
@@ -9773,6 +10240,7 @@ class $$DocumentsTableTableManager
                 Value<String?> deleteDate = const Value.absent(),
                 Value<String?> cancelDate = const Value.absent(),
                 Value<String?> postDate = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => DocumentsCompanion.insert(
                 uid: uid,
                 documentId: documentId,
@@ -9789,6 +10257,7 @@ class $$DocumentsTableTableManager
                 deleteDate: deleteDate,
                 cancelDate: cancelDate,
                 postDate: postDate,
+                recordVersion: recordVersion,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -10723,6 +11192,7 @@ typedef $$JobTestSetsTableCreateCompanionBuilder =
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 typedef $$JobTestSetsTableUpdateCompanionBuilder =
     JobTestSetsCompanion Function({
@@ -10736,6 +11206,7 @@ typedef $$JobTestSetsTableUpdateCompanionBuilder =
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 
 class $$JobTestSetsTableFilterComposer
@@ -10794,6 +11265,11 @@ class $$JobTestSetsTableFilterComposer
 
   ColumnFilters<int> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -10856,6 +11332,11 @@ class $$JobTestSetsTableOrderingComposer
     column: $table.syncStatus,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$JobTestSetsTableAnnotationComposer
@@ -10904,6 +11385,11 @@ class $$JobTestSetsTableAnnotationComposer
     column: $table.syncStatus,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => column,
+  );
 }
 
 class $$JobTestSetsTableTableManager
@@ -10947,6 +11433,7 @@ class $$JobTestSetsTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobTestSetsCompanion(
                 uid: uid,
                 recId: recId,
@@ -10958,6 +11445,7 @@ class $$JobTestSetsTableTableManager
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           createCompanionCallback:
               ({
@@ -10971,6 +11459,7 @@ class $$JobTestSetsTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobTestSetsCompanion.insert(
                 uid: uid,
                 recId: recId,
@@ -10982,6 +11471,7 @@ class $$JobTestSetsTableTableManager
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -11020,6 +11510,7 @@ typedef $$RunningJobMachinesTableCreateCompanionBuilder =
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 typedef $$RunningJobMachinesTableUpdateCompanionBuilder =
     RunningJobMachinesCompanion Function({
@@ -11033,6 +11524,7 @@ typedef $$RunningJobMachinesTableUpdateCompanionBuilder =
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 
 class $$RunningJobMachinesTableFilterComposer
@@ -11091,6 +11583,11 @@ class $$RunningJobMachinesTableFilterComposer
 
   ColumnFilters<int> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -11153,6 +11650,11 @@ class $$RunningJobMachinesTableOrderingComposer
     column: $table.syncStatus,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$RunningJobMachinesTableAnnotationComposer
@@ -11199,6 +11701,11 @@ class $$RunningJobMachinesTableAnnotationComposer
 
   GeneratedColumn<int> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
     builder: (column) => column,
   );
 }
@@ -11253,6 +11760,7 @@ class $$RunningJobMachinesTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => RunningJobMachinesCompanion(
                 uid: uid,
                 recId: recId,
@@ -11264,6 +11772,7 @@ class $$RunningJobMachinesTableTableManager
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           createCompanionCallback:
               ({
@@ -11277,6 +11786,7 @@ class $$RunningJobMachinesTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => RunningJobMachinesCompanion.insert(
                 uid: uid,
                 recId: recId,
@@ -11288,6 +11798,7 @@ class $$RunningJobMachinesTableTableManager
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -11321,6 +11832,7 @@ typedef $$RunningJobMachinesTableProcessedTableManager =
 typedef $$JobWorkingTimesTableCreateCompanionBuilder =
     JobWorkingTimesCompanion Function({
       Value<int> uid,
+      Value<String?> recId,
       Value<String?> documentId,
       Value<String?> userId,
       Value<String?> activityId,
@@ -11330,10 +11842,12 @@ typedef $$JobWorkingTimesTableCreateCompanionBuilder =
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 typedef $$JobWorkingTimesTableUpdateCompanionBuilder =
     JobWorkingTimesCompanion Function({
       Value<int> uid,
+      Value<String?> recId,
       Value<String?> documentId,
       Value<String?> userId,
       Value<String?> activityId,
@@ -11343,6 +11857,7 @@ typedef $$JobWorkingTimesTableUpdateCompanionBuilder =
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 
 class $$JobWorkingTimesTableFilterComposer
@@ -11356,6 +11871,11 @@ class $$JobWorkingTimesTableFilterComposer
   });
   ColumnFilters<int> get uid => $composableBuilder(
     column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11403,6 +11923,11 @@ class $$JobWorkingTimesTableFilterComposer
     column: $table.syncStatus,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$JobWorkingTimesTableOrderingComposer
@@ -11416,6 +11941,11 @@ class $$JobWorkingTimesTableOrderingComposer
   });
   ColumnOrderings<int> get uid => $composableBuilder(
     column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -11463,6 +11993,11 @@ class $$JobWorkingTimesTableOrderingComposer
     column: $table.syncStatus,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$JobWorkingTimesTableAnnotationComposer
@@ -11476,6 +12011,9 @@ class $$JobWorkingTimesTableAnnotationComposer
   });
   GeneratedColumn<int> get uid =>
       $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
 
   GeneratedColumn<String> get documentId => $composableBuilder(
     column: $table.documentId,
@@ -11507,6 +12045,11 @@ class $$JobWorkingTimesTableAnnotationComposer
 
   GeneratedColumn<int> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
     builder: (column) => column,
   );
 }
@@ -11549,6 +12092,7 @@ class $$JobWorkingTimesTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> uid = const Value.absent(),
+                Value<String?> recId = const Value.absent(),
                 Value<String?> documentId = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> activityId = const Value.absent(),
@@ -11558,8 +12102,10 @@ class $$JobWorkingTimesTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobWorkingTimesCompanion(
                 uid: uid,
+                recId: recId,
                 documentId: documentId,
                 userId: userId,
                 activityId: activityId,
@@ -11569,10 +12115,12 @@ class $$JobWorkingTimesTableTableManager
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           createCompanionCallback:
               ({
                 Value<int> uid = const Value.absent(),
+                Value<String?> recId = const Value.absent(),
                 Value<String?> documentId = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> activityId = const Value.absent(),
@@ -11582,8 +12130,10 @@ class $$JobWorkingTimesTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobWorkingTimesCompanion.insert(
                 uid: uid,
+                recId: recId,
                 documentId: documentId,
                 userId: userId,
                 activityId: activityId,
@@ -11593,6 +12143,7 @@ class $$JobWorkingTimesTableTableManager
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -11622,24 +12173,30 @@ typedef $$JobWorkingTimesTableProcessedTableManager =
 typedef $$JobMachineEventLogsTableCreateCompanionBuilder =
     JobMachineEventLogsCompanion Function({
       Value<int> uid,
+      required String recId,
       Value<String?> jobMachineRecId,
       Value<String?> startTime,
       Value<String?> endTime,
+      Value<String?> eventType,
       Value<int> status,
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 typedef $$JobMachineEventLogsTableUpdateCompanionBuilder =
     JobMachineEventLogsCompanion Function({
       Value<int> uid,
+      Value<String> recId,
       Value<String?> jobMachineRecId,
       Value<String?> startTime,
       Value<String?> endTime,
+      Value<String?> eventType,
       Value<int> status,
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 
 class $$JobMachineEventLogsTableFilterComposer
@@ -11656,6 +12213,11 @@ class $$JobMachineEventLogsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<String> get jobMachineRecId => $composableBuilder(
     column: $table.jobMachineRecId,
     builder: (column) => ColumnFilters(column),
@@ -11668,6 +12230,11 @@ class $$JobMachineEventLogsTableFilterComposer
 
   ColumnFilters<String> get endTime => $composableBuilder(
     column: $table.endTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventType => $composableBuilder(
+    column: $table.eventType,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11690,6 +12257,11 @@ class $$JobMachineEventLogsTableFilterComposer
     column: $table.syncStatus,
     builder: (column) => ColumnFilters(column),
   );
+
+  ColumnFilters<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnFilters(column),
+  );
 }
 
 class $$JobMachineEventLogsTableOrderingComposer
@@ -11706,6 +12278,11 @@ class $$JobMachineEventLogsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get jobMachineRecId => $composableBuilder(
     column: $table.jobMachineRecId,
     builder: (column) => ColumnOrderings(column),
@@ -11718,6 +12295,11 @@ class $$JobMachineEventLogsTableOrderingComposer
 
   ColumnOrderings<String> get endTime => $composableBuilder(
     column: $table.endTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventType => $composableBuilder(
+    column: $table.eventType,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -11740,6 +12322,11 @@ class $$JobMachineEventLogsTableOrderingComposer
     column: $table.syncStatus,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$JobMachineEventLogsTableAnnotationComposer
@@ -11754,6 +12341,9 @@ class $$JobMachineEventLogsTableAnnotationComposer
   GeneratedColumn<int> get uid =>
       $composableBuilder(column: $table.uid, builder: (column) => column);
 
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
+
   GeneratedColumn<String> get jobMachineRecId => $composableBuilder(
     column: $table.jobMachineRecId,
     builder: (column) => column,
@@ -11764,6 +12354,9 @@ class $$JobMachineEventLogsTableAnnotationComposer
 
   GeneratedColumn<String> get endTime =>
       $composableBuilder(column: $table.endTime, builder: (column) => column);
+
+  GeneratedColumn<String> get eventType =>
+      $composableBuilder(column: $table.eventType, builder: (column) => column);
 
   GeneratedColumn<int> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
@@ -11776,6 +12369,11 @@ class $$JobMachineEventLogsTableAnnotationComposer
 
   GeneratedColumn<int> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
     builder: (column) => column,
   );
 }
@@ -11824,42 +12422,54 @@ class $$JobMachineEventLogsTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> uid = const Value.absent(),
+                Value<String> recId = const Value.absent(),
                 Value<String?> jobMachineRecId = const Value.absent(),
                 Value<String?> startTime = const Value.absent(),
                 Value<String?> endTime = const Value.absent(),
+                Value<String?> eventType = const Value.absent(),
                 Value<int> status = const Value.absent(),
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobMachineEventLogsCompanion(
                 uid: uid,
+                recId: recId,
                 jobMachineRecId: jobMachineRecId,
                 startTime: startTime,
                 endTime: endTime,
+                eventType: eventType,
                 status: status,
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           createCompanionCallback:
               ({
                 Value<int> uid = const Value.absent(),
+                required String recId,
                 Value<String?> jobMachineRecId = const Value.absent(),
                 Value<String?> startTime = const Value.absent(),
                 Value<String?> endTime = const Value.absent(),
+                Value<String?> eventType = const Value.absent(),
                 Value<int> status = const Value.absent(),
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobMachineEventLogsCompanion.insert(
                 uid: uid,
+                recId: recId,
                 jobMachineRecId: jobMachineRecId,
                 startTime: startTime,
                 endTime: endTime,
+                eventType: eventType,
                 status: status,
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -11903,6 +12513,7 @@ typedef $$JobMachineItemsTableCreateCompanionBuilder =
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 typedef $$JobMachineItemsTableUpdateCompanionBuilder =
     JobMachineItemsCompanion Function({
@@ -11917,6 +12528,7 @@ typedef $$JobMachineItemsTableUpdateCompanionBuilder =
       Value<String?> updatedAt,
       Value<String?> lastSync,
       Value<int> syncStatus,
+      Value<int> recordVersion,
     });
 
 class $$JobMachineItemsTableFilterComposer
@@ -11980,6 +12592,11 @@ class $$JobMachineItemsTableFilterComposer
 
   ColumnFilters<int> get syncStatus => $composableBuilder(
     column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -12047,6 +12664,11 @@ class $$JobMachineItemsTableOrderingComposer
     column: $table.syncStatus,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$JobMachineItemsTableAnnotationComposer
@@ -12102,6 +12724,11 @@ class $$JobMachineItemsTableAnnotationComposer
     column: $table.syncStatus,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => column,
+  );
 }
 
 class $$JobMachineItemsTableTableManager
@@ -12152,6 +12779,7 @@ class $$JobMachineItemsTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobMachineItemsCompanion(
                 uid: uid,
                 recId: recId,
@@ -12164,6 +12792,7 @@ class $$JobMachineItemsTableTableManager
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           createCompanionCallback:
               ({
@@ -12178,6 +12807,7 @@ class $$JobMachineItemsTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<String?> lastSync = const Value.absent(),
                 Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobMachineItemsCompanion.insert(
                 uid: uid,
                 recId: recId,
@@ -12190,6 +12820,7 @@ class $$JobMachineItemsTableTableManager
                 updatedAt: updatedAt,
                 lastSync: lastSync,
                 syncStatus: syncStatus,
+                recordVersion: recordVersion,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

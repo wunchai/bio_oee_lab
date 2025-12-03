@@ -44,4 +44,8 @@ class Documents extends Table {
   // Note: ใช้ 'cancelDate' เพื่อความถูกต้องของภาษา แต่ map กับ DB เป็น 'CancleDate' ตามที่คุณอาจจะเคยใช้
   TextColumn get cancelDate => text().named('CancleDate').nullable()();
   TextColumn get postDate => text().named('PostDate').nullable()();
+
+  // Versioning
+  IntColumn get recordVersion =>
+      integer().named('RecordVersion').withDefault(const Constant(0))();
 }
