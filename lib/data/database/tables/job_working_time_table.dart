@@ -13,6 +13,7 @@ class JobWorkingTimes extends Table {
   TextColumn get userId => text().named('UserId').nullable()();
   TextColumn get activityId =>
       text().named('ActivityID').nullable()(); // 1=Start, 2=Pause, etc.
+  TextColumn get activityName => text().named('ActivityName').nullable()();
 
   TextColumn get startTime => text().named('StartTime').nullable()();
   TextColumn get endTime => text().named('EndTime').nullable()();

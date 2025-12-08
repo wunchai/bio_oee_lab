@@ -4989,6 +4989,17 @@ class $JobWorkingTimesTable extends JobWorkingTimes
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _activityNameMeta = const VerificationMeta(
+    'activityName',
+  );
+  @override
+  late final GeneratedColumn<String> activityName = GeneratedColumn<String>(
+    'ActivityName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _startTimeMeta = const VerificationMeta(
     'startTime',
   );
@@ -5074,6 +5085,7 @@ class $JobWorkingTimesTable extends JobWorkingTimes
     documentId,
     userId,
     activityId,
+    activityName,
     startTime,
     endTime,
     status,
@@ -5122,6 +5134,15 @@ class $JobWorkingTimesTable extends JobWorkingTimes
       context.handle(
         _activityIdMeta,
         activityId.isAcceptableOrUnknown(data['ActivityID']!, _activityIdMeta),
+      );
+    }
+    if (data.containsKey('ActivityName')) {
+      context.handle(
+        _activityNameMeta,
+        activityName.isAcceptableOrUnknown(
+          data['ActivityName']!,
+          _activityNameMeta,
+        ),
       );
     }
     if (data.containsKey('StartTime')) {
@@ -5198,6 +5219,10 @@ class $JobWorkingTimesTable extends JobWorkingTimes
         DriftSqlType.string,
         data['${effectivePrefix}ActivityID'],
       ),
+      activityName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ActivityName'],
+      ),
       startTime: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}StartTime'],
@@ -5242,6 +5267,7 @@ class DbJobWorkingTime extends DataClass
   final String? documentId;
   final String? userId;
   final String? activityId;
+  final String? activityName;
   final String? startTime;
   final String? endTime;
   final int status;
@@ -5255,6 +5281,7 @@ class DbJobWorkingTime extends DataClass
     this.documentId,
     this.userId,
     this.activityId,
+    this.activityName,
     this.startTime,
     this.endTime,
     required this.status,
@@ -5278,6 +5305,9 @@ class DbJobWorkingTime extends DataClass
     }
     if (!nullToAbsent || activityId != null) {
       map['ActivityID'] = Variable<String>(activityId);
+    }
+    if (!nullToAbsent || activityName != null) {
+      map['ActivityName'] = Variable<String>(activityName);
     }
     if (!nullToAbsent || startTime != null) {
       map['StartTime'] = Variable<String>(startTime);
@@ -5312,6 +5342,9 @@ class DbJobWorkingTime extends DataClass
       activityId: activityId == null && nullToAbsent
           ? const Value.absent()
           : Value(activityId),
+      activityName: activityName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activityName),
       startTime: startTime == null && nullToAbsent
           ? const Value.absent()
           : Value(startTime),
@@ -5341,6 +5374,7 @@ class DbJobWorkingTime extends DataClass
       documentId: serializer.fromJson<String?>(json['documentId']),
       userId: serializer.fromJson<String?>(json['userId']),
       activityId: serializer.fromJson<String?>(json['activityId']),
+      activityName: serializer.fromJson<String?>(json['activityName']),
       startTime: serializer.fromJson<String?>(json['startTime']),
       endTime: serializer.fromJson<String?>(json['endTime']),
       status: serializer.fromJson<int>(json['status']),
@@ -5359,6 +5393,7 @@ class DbJobWorkingTime extends DataClass
       'documentId': serializer.toJson<String?>(documentId),
       'userId': serializer.toJson<String?>(userId),
       'activityId': serializer.toJson<String?>(activityId),
+      'activityName': serializer.toJson<String?>(activityName),
       'startTime': serializer.toJson<String?>(startTime),
       'endTime': serializer.toJson<String?>(endTime),
       'status': serializer.toJson<int>(status),
@@ -5375,6 +5410,7 @@ class DbJobWorkingTime extends DataClass
     Value<String?> documentId = const Value.absent(),
     Value<String?> userId = const Value.absent(),
     Value<String?> activityId = const Value.absent(),
+    Value<String?> activityName = const Value.absent(),
     Value<String?> startTime = const Value.absent(),
     Value<String?> endTime = const Value.absent(),
     int? status,
@@ -5388,6 +5424,7 @@ class DbJobWorkingTime extends DataClass
     documentId: documentId.present ? documentId.value : this.documentId,
     userId: userId.present ? userId.value : this.userId,
     activityId: activityId.present ? activityId.value : this.activityId,
+    activityName: activityName.present ? activityName.value : this.activityName,
     startTime: startTime.present ? startTime.value : this.startTime,
     endTime: endTime.present ? endTime.value : this.endTime,
     status: status ?? this.status,
@@ -5407,6 +5444,9 @@ class DbJobWorkingTime extends DataClass
       activityId: data.activityId.present
           ? data.activityId.value
           : this.activityId,
+      activityName: data.activityName.present
+          ? data.activityName.value
+          : this.activityName,
       startTime: data.startTime.present ? data.startTime.value : this.startTime,
       endTime: data.endTime.present ? data.endTime.value : this.endTime,
       status: data.status.present ? data.status.value : this.status,
@@ -5429,6 +5469,7 @@ class DbJobWorkingTime extends DataClass
           ..write('documentId: $documentId, ')
           ..write('userId: $userId, ')
           ..write('activityId: $activityId, ')
+          ..write('activityName: $activityName, ')
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
           ..write('status: $status, ')
@@ -5447,6 +5488,7 @@ class DbJobWorkingTime extends DataClass
     documentId,
     userId,
     activityId,
+    activityName,
     startTime,
     endTime,
     status,
@@ -5464,6 +5506,7 @@ class DbJobWorkingTime extends DataClass
           other.documentId == this.documentId &&
           other.userId == this.userId &&
           other.activityId == this.activityId &&
+          other.activityName == this.activityName &&
           other.startTime == this.startTime &&
           other.endTime == this.endTime &&
           other.status == this.status &&
@@ -5479,6 +5522,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
   final Value<String?> documentId;
   final Value<String?> userId;
   final Value<String?> activityId;
+  final Value<String?> activityName;
   final Value<String?> startTime;
   final Value<String?> endTime;
   final Value<int> status;
@@ -5492,6 +5536,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     this.documentId = const Value.absent(),
     this.userId = const Value.absent(),
     this.activityId = const Value.absent(),
+    this.activityName = const Value.absent(),
     this.startTime = const Value.absent(),
     this.endTime = const Value.absent(),
     this.status = const Value.absent(),
@@ -5506,6 +5551,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     this.documentId = const Value.absent(),
     this.userId = const Value.absent(),
     this.activityId = const Value.absent(),
+    this.activityName = const Value.absent(),
     this.startTime = const Value.absent(),
     this.endTime = const Value.absent(),
     this.status = const Value.absent(),
@@ -5520,6 +5566,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     Expression<String>? documentId,
     Expression<String>? userId,
     Expression<String>? activityId,
+    Expression<String>? activityName,
     Expression<String>? startTime,
     Expression<String>? endTime,
     Expression<int>? status,
@@ -5534,6 +5581,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
       if (documentId != null) 'documentId': documentId,
       if (userId != null) 'UserId': userId,
       if (activityId != null) 'ActivityID': activityId,
+      if (activityName != null) 'ActivityName': activityName,
       if (startTime != null) 'StartTime': startTime,
       if (endTime != null) 'EndTime': endTime,
       if (status != null) 'status': status,
@@ -5550,6 +5598,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     Value<String?>? documentId,
     Value<String?>? userId,
     Value<String?>? activityId,
+    Value<String?>? activityName,
     Value<String?>? startTime,
     Value<String?>? endTime,
     Value<int>? status,
@@ -5564,6 +5613,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
       documentId: documentId ?? this.documentId,
       userId: userId ?? this.userId,
       activityId: activityId ?? this.activityId,
+      activityName: activityName ?? this.activityName,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       status: status ?? this.status,
@@ -5591,6 +5641,9 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     }
     if (activityId.present) {
       map['ActivityID'] = Variable<String>(activityId.value);
+    }
+    if (activityName.present) {
+      map['ActivityName'] = Variable<String>(activityName.value);
     }
     if (startTime.present) {
       map['StartTime'] = Variable<String>(startTime.value);
@@ -5624,6 +5677,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
           ..write('documentId: $documentId, ')
           ..write('userId: $userId, ')
           ..write('activityId: $activityId, ')
+          ..write('activityName: $activityName, ')
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
           ..write('status: $status, ')
@@ -11836,6 +11890,7 @@ typedef $$JobWorkingTimesTableCreateCompanionBuilder =
       Value<String?> documentId,
       Value<String?> userId,
       Value<String?> activityId,
+      Value<String?> activityName,
       Value<String?> startTime,
       Value<String?> endTime,
       Value<int> status,
@@ -11851,6 +11906,7 @@ typedef $$JobWorkingTimesTableUpdateCompanionBuilder =
       Value<String?> documentId,
       Value<String?> userId,
       Value<String?> activityId,
+      Value<String?> activityName,
       Value<String?> startTime,
       Value<String?> endTime,
       Value<int> status,
@@ -11891,6 +11947,11 @@ class $$JobWorkingTimesTableFilterComposer
 
   ColumnFilters<String> get activityId => $composableBuilder(
     column: $table.activityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activityName => $composableBuilder(
+    column: $table.activityName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -11964,6 +12025,11 @@ class $$JobWorkingTimesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get startTime => $composableBuilder(
     column: $table.startTime,
     builder: (column) => ColumnOrderings(column),
@@ -12025,6 +12091,11 @@ class $$JobWorkingTimesTableAnnotationComposer
 
   GeneratedColumn<String> get activityId => $composableBuilder(
     column: $table.activityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get activityName => $composableBuilder(
+    column: $table.activityName,
     builder: (column) => column,
   );
 
@@ -12096,6 +12167,7 @@ class $$JobWorkingTimesTableTableManager
                 Value<String?> documentId = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> activityId = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
                 Value<String?> startTime = const Value.absent(),
                 Value<String?> endTime = const Value.absent(),
                 Value<int> status = const Value.absent(),
@@ -12109,6 +12181,7 @@ class $$JobWorkingTimesTableTableManager
                 documentId: documentId,
                 userId: userId,
                 activityId: activityId,
+                activityName: activityName,
                 startTime: startTime,
                 endTime: endTime,
                 status: status,
@@ -12124,6 +12197,7 @@ class $$JobWorkingTimesTableTableManager
                 Value<String?> documentId = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
                 Value<String?> activityId = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
                 Value<String?> startTime = const Value.absent(),
                 Value<String?> endTime = const Value.absent(),
                 Value<int> status = const Value.absent(),
@@ -12137,6 +12211,7 @@ class $$JobWorkingTimesTableTableManager
                 documentId: documentId,
                 userId: userId,
                 activityId: activityId,
+                activityName: activityName,
                 startTime: startTime,
                 endTime: endTime,
                 status: status,

@@ -89,6 +89,7 @@ class JobSyncApiService {
               "documentId": item.documentId,
               "jobId": item.jobId,
               "documentName": item.documentName,
+              "userId": item.userId,
               "createDate": item.createDate,
               "status": item.status,
               "runningDate": item.runningDate,
@@ -102,6 +103,11 @@ class JobSyncApiService {
           )
           .toList(),
     };
+
+    if (kDebugMode) {
+      print('--- UPLOAD syncDocuments LOG ---');
+      print(body);
+    }
 
     try {
       final response = await http.post(
@@ -144,6 +150,10 @@ class JobSyncApiService {
           .toList(),
     };
 
+    if (kDebugMode) {
+      print('--- UPLOAD syncJobWorkingTimes LOG ---');
+      print(body);
+    }
     try {
       final response = await http.post(
         url,
@@ -183,6 +193,11 @@ class JobSyncApiService {
           )
           .toList(),
     };
+
+    if (kDebugMode) {
+      print('--- UPLOAD syncJobTestSets LOG ---');
+      print(body);
+    }
 
     try {
       final response = await http.post(
@@ -224,6 +239,11 @@ class JobSyncApiService {
           .toList(),
     };
 
+    if (kDebugMode) {
+      print('--- UPLOAD syncRunningJobMachines LOG ---');
+      print(body);
+    }
+
     try {
       final response = await http.post(
         url,
@@ -262,6 +282,11 @@ class JobSyncApiService {
           )
           .toList(),
     };
+
+    if (kDebugMode) {
+      print('--- UPLOAD syncJobMachineEventLogs LOG ---');
+      print(body);
+    }
 
     try {
       final response = await http.post(
@@ -303,6 +328,11 @@ class JobSyncApiService {
           )
           .toList(),
     };
+
+    if (kDebugMode) {
+      print('--- UPLOAD syncJobMachineItems LOG ---');
+      print(body);
+    }
 
     try {
       final response = await http.post(

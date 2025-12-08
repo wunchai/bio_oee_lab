@@ -48,6 +48,7 @@ class CheckInApiService {
         return {
           "recId": log.recId,
           "locationCode": log.locationCode,
+          "userId": log.userId,
           "activityName": log.activityName,
           "remark": log.remark,
           "checkInTime": log.checkInTime,

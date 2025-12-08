@@ -91,7 +91,9 @@ class DocumentRepository {
   Future<void> handleUserAction({
     required String documentId,
     required String userId,
-    required String activityType,
+    required String
+    activityType, // This is now the ID (e.g. '1', '2' or 'Work')
+    String? activityName, // Optional: The human readable name
     required int newDocStatus, // 1=Running, 2=End
   }) async {
     try {
@@ -117,27 +119,30 @@ class DocumentRepository {
         await _runningJobDetailsDao.updateWorkingTime(closedLog);
       }
 
-      // 3. เปิด Log ใหม่ (ถ้าไม่ใช่ End)
-      if (newDocStatus != 2) {
-        final newLog = JobWorkingTimesCompanion(
-          documentId: drift.Value(documentId),
-          userId: drift.Value(userId),
-          activityId: drift.Value(activityType),
-          startTime: drift.Value(now),
-          // EndTime ปล่อย null ไว้
-          status: const drift.Value(1),
-          syncStatus: const drift.Value(0),
-          updatedAt: drift.Value(now),
-        );
-        await _runningJobDetailsDao.insertWorkingTime(newLog);
-      }
+      // 3. เปิด Log ใหม่
+      // (Modified to allow logging even if End, per user request)
+      final newLog = JobWorkingTimesCompanion(
+        recId: drift.Value(const Uuid().v4()), // Generate UUID
+        documentId: drift.Value(documentId),
+        userId: drift.Value(userId),
+        activityId: drift.Value(activityType),
+        activityName: drift.Value(
+          activityName ?? activityType,
+        ), // Use ID as Name if Name not provided
+        startTime: drift.Value(now),
+        // EndTime ปล่อย null ไว้ (แสดงถึงจุดที่จบงาน)
+        status: const drift.Value(1),
+        syncStatus: const drift.Value(0),
+        updatedAt: drift.Value(now),
+      );
+      await _runningJobDetailsDao.insertWorkingTime(newLog);
 
       // 4. อัปเดตสถานะของ Document หลัก
       await updateDocumentStatus(documentId, newDocStatus);
 
       if (kDebugMode) {
         print(
-          'User Action: $activityType | DocStatus: $newDocStatus | Time: $now',
+          'User Action: $activityType ($activityName) | DocStatus: $newDocStatus | Time: $now',
         );
       }
     } catch (e) {

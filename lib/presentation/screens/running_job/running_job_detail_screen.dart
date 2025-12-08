@@ -39,7 +39,8 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
   // -------------------------------------------------------
 
   Future<void> _performAction({
-    required String activityType,
+    required String activityType, // ID
+    String? activityName, // Name
     required int newStatus,
     String label = 'Action',
   }) async {
@@ -52,6 +53,7 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
         documentId: widget.documentId,
         userId: userId,
         activityType: activityType,
+        activityName: activityName,
         newDocStatus: newStatus,
       );
 
@@ -230,8 +232,14 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
 
     // 3. ถ้ากดตกลง บันทึกข้อมูล
     if (shouldPause == true && selectedReason != null) {
+      // Find selected reason object
+      final reasonObj = reasons.firstWhere(
+        (r) => r.reasonName == selectedReason,
+      );
+
       await _performAction(
-        activityType: selectedReason!, // ส่งชื่อเหตุผลไปบันทึก
+        activityType: '${reasonObj.reasonCode}', // Use Code as ID
+        activityName: reasonObj.reasonName, // Use Name
         newStatus: 1,
         label: 'Pause',
       );
@@ -259,7 +267,12 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     );
 
     if (confirm == true) {
-      await _performAction(activityType: 'End', newStatus: 2, label: 'End Job');
+      await _performAction(
+        activityType: 'End',
+        activityName: 'End Job',
+        newStatus: 2,
+        label: 'End Job',
+      );
     }
   }
 
@@ -418,11 +431,11 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
         final bool hasOpenLog =
             currentLog != null && currentLog.endTime == null;
 
-        // กำลังทำงานอยู่ (มี Log เปิดค้าง และกิจกรรมคือ Work)
-        final bool isWorking = hasOpenLog && currentLog.activityId == 'Work';
+        // กำลังทำงานอยู่ (มี Log เปิดค้าง และกิจกรรมคือ Work => ID '00')
+        final bool isWorking = hasOpenLog && currentLog.activityId == '00';
 
         // กำลังพักอยู่ (มี Log เปิดค้าง แต่กิจกรรมไม่ใช่ Work)
-        final bool isPaused = hasOpenLog && currentLog.activityId != 'Work';
+        final bool isPaused = hasOpenLog && currentLog.activityId != '00';
 
         final bool isEnded = doc.status == 2;
 
@@ -441,7 +454,8 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                               Colors.green,
                               Icons.play_arrow,
                               () => _performAction(
-                                activityType: 'Work',
+                                activityType: '00',
+                                activityName: 'Work',
                                 newStatus: 1,
                                 label: 'Start',
                               ),
@@ -452,7 +466,8 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                               Colors.green,
                               Icons.play_arrow,
                               () => _performAction(
-                                activityType: 'Work',
+                                activityType: '00',
+                                activityName: 'Work',
                                 newStatus: 1,
                                 label: 'Resume',
                               ),
@@ -500,7 +515,7 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                       itemCount: logs.length,
                       itemBuilder: (context, index) {
                         final log = logs[index];
-                        final isWork = log.activityId == 'Work';
+                        final isWork = log.activityId == '00';
                         final start = DateTime.tryParse(log.startTime ?? '');
                         final end = DateTime.tryParse(log.endTime ?? '');
 
@@ -521,7 +536,9 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                               size: 20,
                             ),
                           ),
-                          title: Text(log.activityId ?? 'Unknown'),
+                          title: Text(
+                            log.activityName ?? log.activityId ?? 'Unknown',
+                          ),
                           subtitle: Text(
                             'Start: ${DateFormat('HH:mm:ss').format(start!)}',
                           ),
