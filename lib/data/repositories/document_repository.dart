@@ -3,21 +3,15 @@ import 'package:drift/drift.dart' as drift;
 import 'package:uuid/uuid.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/document_record_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
-import 'package:bio_oee_lab/data/database/tables/job_working_time_table.dart';
-import 'package:bio_oee_lab/data/database/tables/job_test_set_table.dart';
-import 'package:bio_oee_lab/data/database/tables/running_job_machine_table.dart';
 
 /// Repository for managing document data.
 class DocumentRepository {
   final DocumentDao _documentDao;
-  final DocumentRecordDao _documentRecordDao;
   final RunningJobDetailsDao _runningJobDetailsDao;
 
   DocumentRepository({required AppDatabase appDatabase})
     : _documentDao = appDatabase.documentDao,
-      _documentRecordDao = appDatabase.documentRecordDao,
       _runningJobDetailsDao = appDatabase.runningJobDetailsDao;
 
   /// ฟังก์ชัน: เพิ่ม Machine จากการสแกน QR Code หรือ Manual Input
@@ -328,42 +322,6 @@ class DocumentRepository {
 
       await _documentDao.insertDocument(copiedDocumentEntry);
 
-      final originalRecords = await _documentRecordDao.getRecordsByDocumentId(
-        originalDocumentId,
-      );
-      if (originalRecords.isNotEmpty) {
-        final List<DocumentRecordsCompanion> copiedRecords = originalRecords
-            .map((record) {
-              return DocumentRecordsCompanion(
-                documentId: drift.Value(newDocId),
-                machineId: drift.Value(record.machineId),
-                jobId: drift.Value(newJobId),
-                tagId: drift.Value(record.tagId),
-                tagName: drift.Value(record.tagName),
-                tagType: drift.Value(record.tagType),
-                tagGroupId: drift.Value(record.tagGroupId),
-                tagGroupName: drift.Value(record.tagGroupName),
-                tagSelectionValue: drift.Value(record.tagSelectionValue),
-                description: drift.Value(record.description),
-                specification: drift.Value(record.specification),
-                specMin: drift.Value(record.specMin),
-                specMax: drift.Value(record.specMax),
-                unit: drift.Value(record.unit),
-                queryStr: drift.Value(record.queryStr),
-                value: drift.Value(record.value),
-                valueType: drift.Value(record.valueType),
-                remark: drift.Value(record.remark),
-                status: drift.Value(record.status),
-                unReadable: drift.Value(record.unReadable),
-                lastSync: drift.Value(DateTime.now().toIso8601String()),
-              );
-            })
-            .toList();
-        await _documentRecordDao.insertAllDocumentRecords(copiedRecords);
-        if (kDebugMode) {
-          print('Copied ${copiedRecords.length} records for new document.');
-        }
-      }
       if (kDebugMode) {
         print(
           'Document $originalDocumentId copied to $newDocumentName (ID: $newDocId)',
@@ -389,7 +347,6 @@ class DocumentRepository {
       }
 
       await _documentDao.deleteDocument(docToDelete);
-      await _documentRecordDao.deleteAllRecordsByDocumentId(documentId);
       if (kDebugMode) {
         print('Document deleted: $documentId');
       }
@@ -440,18 +397,27 @@ class DocumentRepository {
     final now = DateTime.now();
     final nowStr = now.toIso8601String();
 
-    // 1. ถ้าเป็น Start ให้ปิด Event ก่อนหน้า (ถ้ามี)
-    if (activityType == 'Start') {
-      // Logic: Find open event for this machine and close it?
-      // Or just insert new event?
-      // For simplicity, let's just insert.
-      // But usually 'Start' means machine is running. 'Breakdown' means stopped.
+    // 1. Close previous open event (if any)
+    final lastLog = await _runningJobDetailsDao.getLastOpenMachineLog(
+      machineRecId,
+    );
+
+    if (lastLog != null) {
+      // Close it
+      final closedLog = lastLog.copyWith(
+        endTime: drift.Value(nowStr),
+        recordVersion: DateTime.now().millisecondsSinceEpoch, // Update version
+        syncStatus: 0, // Mark for sync
+        // Note: recordUserId remains unchanged as per requirement
+      );
+      await _runningJobDetailsDao.updateMachineLog(closedLog);
     }
 
     await _runningJobDetailsDao.insertMachineLog(
       JobMachineEventLogsCompanion(
         recId: drift.Value(const Uuid().v4()),
         jobMachineRecId: drift.Value(machineRecId),
+        recordUserId: drift.Value(userId), // Save UserID
         startTime: drift.Value(nowStr),
         eventType: drift.Value(
           activityType,

@@ -525,42 +525,94 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                         final durationStr =
                             '${duration.inHours}h ${duration.inMinutes % 60}m ${duration.inSeconds % 60}s';
 
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: isWork
-                                ? Colors.green.shade100
-                                : Colors.orange.shade100,
-                            child: Icon(
-                              isWork ? Icons.work : Icons.coffee,
-                              color: isWork ? Colors.green : Colors.orange,
-                              size: 20,
+                        final isSynced = log.syncStatus == 1;
+
+                        return Card(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 4,
+                          ),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
                             ),
-                          ),
-                          title: Text(
-                            log.activityName ?? log.activityId ?? 'Unknown',
-                          ),
-                          subtitle: Text(
-                            'Start: ${DateFormat('HH:mm:ss').format(start!)}',
-                          ),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Text(
-                                durationStr,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            leading: CircleAvatar(
+                              backgroundColor: isWork
+                                  ? Colors.green.shade100
+                                  : Colors.orange.shade100,
+                              child: Icon(
+                                isWork ? Icons.work : Icons.coffee,
+                                color: isWork ? Colors.green : Colors.orange,
+                                size: 20,
                               ),
-                              if (end == null)
-                                const Text(
-                                  'Running...',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: Colors.green,
+                            ),
+                            title: Text(
+                              log.activityName ?? log.activityId ?? 'Unknown',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Start: ${DateFormat('HH:mm:ss').format(start!)}',
+                                ),
+                                if (end != null)
+                                  Text(
+                                    'End: ${DateFormat('HH:mm:ss').format(end)}',
+                                    style: TextStyle(
+                                      color: Colors.grey.shade600,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            trailing: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  durationStr,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                            ],
+                                const SizedBox(height: 4),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (end == null)
+                                      const Padding(
+                                        padding: EdgeInsets.only(right: 8.0),
+                                        child: Text(
+                                          'Running...',
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            color: Colors.green,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ),
+                                    Icon(
+                                      isSynced
+                                          ? Icons.cloud_done_outlined
+                                          : Icons.cloud_off,
+                                      size: 16,
+                                      color: isSynced
+                                          ? Colors.green
+                                          : Colors.grey,
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },

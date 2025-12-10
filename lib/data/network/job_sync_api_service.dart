@@ -274,6 +274,7 @@ class JobSyncApiService {
             (item) => {
               "recId": item.recId,
               "jobMachineRecId": item.jobMachineRecId,
+              "recordUserId": item.recordUserId,
               "startTime": item.startTime,
               "endTime": item.endTime,
               "status": item.status,

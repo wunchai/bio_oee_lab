@@ -224,11 +224,22 @@ class _JobScreenState extends State<JobScreen> {
       ),
       body: Column(
         children: [
-          if (isSyncing)
+          if (isSyncing) ...[
             LinearProgressIndicator(
               value: null,
               backgroundColor: Colors.grey[200],
             ),
+            Container(
+              width: double.infinity,
+              color: Colors.grey[100],
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                jobRepo.syncMessage,
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+              ),
+            ),
+          ],
 
           if (userId.isNotEmpty)
             StreamBuilder<int>(

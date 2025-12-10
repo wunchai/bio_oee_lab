@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:bio_oee_lab/data/repositories/sync_repository.dart';
 import 'package:bio_oee_lab/data/repositories/info_repository.dart';
+import 'package:bio_oee_lab/data/database/app_database.dart'; // For DbSyncLog
 
 class InfoScreen extends StatefulWidget {
   const InfoScreen({super.key});
@@ -62,16 +64,143 @@ class _InfoScreenState extends State<InfoScreen> {
                   _buildSectionTitle('Last Updated At'),
                   _buildInfoCard(_lastUpdateTimes),
                   const SizedBox(height: 16),
-                  _buildSectionTitle('Sync Summary'),
-                  const Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text('Not implemented yet'),
-                    ),
+                  const SizedBox(height: 16),
+                  _buildSectionTitle('Sync Actions'),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => _handleSyncMaster(context),
+                          icon: const Icon(Icons.cloud_download),
+                          label: const Text('Sync Master'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue.shade100,
+                            foregroundColor: Colors.blue.shade900,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () => _handleSyncData(context),
+                          icon: const Icon(Icons.cloud_upload),
+                          label: const Text('Sync Data'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.shade100,
+                            foregroundColor: Colors.green.shade900,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 16),
+                  _buildSectionTitle('Sync Summary'),
+                  _buildSyncHistory(),
                 ],
               ),
             ),
+    );
+  }
+
+  Future<void> _handleSyncMaster(BuildContext context) async {
+    final repo = context.read<SyncRepository>();
+    final infoRepo = context.read<InfoRepository>();
+    final deviceInfo = await infoRepo.getDeviceInfo();
+    // Use deviceId as userId for simplicity in this context, or fetch real user if needed
+    // Assuming admin or generic user for master sync if userId not stricly required by Repo logic
+    // But repos need userId.
+    // Let's try to get logged in user or device serial as fallback
+    final userId =
+        deviceInfo['deviceSerial'] ?? 'unknown_user'; // Fallback for now
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Starting Master Sync...')));
+
+    await repo.syncMasterData(userId);
+    _loadData(); // Refresh info
+  }
+
+  Future<void> _handleSyncData(BuildContext context) async {
+    final repo = context.read<SyncRepository>();
+    final infoRepo = context.read<InfoRepository>();
+    final deviceInfo = await infoRepo.getDeviceInfo();
+    final userId = deviceInfo['deviceSerial'] ?? 'unknown_user';
+    final deviceId = deviceInfo['deviceId'] ?? 'unknown_device';
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Starting Data Sync...')));
+
+    await repo.syncTransactionalData(userId, deviceId);
+    _loadData(); // Refresh info
+  }
+
+  Widget _buildSyncHistory() {
+    final repo = context.watch<SyncRepository>();
+
+    return StreamBuilder<List<DbSyncLog>>(
+      stream: repo.watchRecentLogs(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('No sync history yet.'),
+            ),
+          );
+        }
+
+        final logs = snapshot.data!;
+        if (logs.isEmpty) {
+          return const Card(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text('No sync logs.'),
+            ),
+          );
+        }
+
+        return Card(
+          child: Column(
+            children: logs.map((log) {
+              Color statusColor;
+              IconData statusIcon;
+
+              switch (log.status) {
+                case 0: // Start
+                  statusColor = Colors.blue;
+                  statusIcon = Icons.sync;
+                  break;
+                case 1: // Success
+                  statusColor = Colors.green;
+                  statusIcon = Icons.check_circle;
+                  break;
+                case 2: // Failure
+                  statusColor = Colors.red;
+                  statusIcon = Icons.error;
+                  break;
+                default:
+                  statusColor = Colors.grey;
+                  statusIcon = Icons.help;
+              }
+
+              return ListTile(
+                leading: Icon(statusIcon, color: statusColor),
+                title: Text('${log.syncType} Sync'),
+                subtitle: Text(log.message ?? ''),
+                trailing: Text(
+                  log.timestamp.split('T').last.split('.').first,
+                  style: const TextStyle(fontSize: 12),
+                ),
+                dense: true,
+              );
+            }).toList(),
+          ),
+        );
+      },
     );
   }
 
@@ -114,8 +243,8 @@ class _InfoScreenState extends State<InfoScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
                 color: entry.value > 0
-                    ? Colors.red.withOpacity(0.1)
-                    : Colors.green.withOpacity(0.1),
+                    ? Colors.red.withValues(alpha: 0.1)
+                    : Colors.green.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(

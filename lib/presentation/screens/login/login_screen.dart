@@ -96,15 +96,25 @@ class _LoginScreenContent extends StatelessWidget {
       builder: (ctx) => const SyncProgressDialog(),
     );
 
-    final bool success = await syncRepository.syncAllUsers();
+    String message = 'Sync Complete';
+    bool success = true;
+    try {
+      // Use the dedicated syncAllUsers method for login
+      success = await syncRepository.syncAllUsers();
+      if (!success) message = syncRepository.lastSyncMessage;
+    } catch (e) {
+      success = false;
+      message = 'Sync Failed: $e';
+    }
 
+    if (!context.mounted) return;
     Navigator.of(context, rootNavigator: true).pop();
 
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(success ? 'Sync Complete' : 'Sync Failed'),
-        content: Text(syncRepository.lastSyncMessage),
+        content: Text(message),
         actions: [
           TextButton(
             child: const Text('OK'),

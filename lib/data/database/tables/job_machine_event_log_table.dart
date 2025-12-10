@@ -10,6 +10,9 @@ class JobMachineEventLogs extends Table {
   // เชื่อมกับ RunningJobMachine (recID)
   TextColumn get jobMachineRecId => text().named('JobMachineRef').nullable()();
 
+  // ผู้บันทึกรายการ
+  TextColumn get recordUserId => text().named('RecordUserId').nullable()();
+
   TextColumn get startTime => text().named('StartTime').nullable()();
   TextColumn get endTime => text().named('EndTime').nullable()();
 

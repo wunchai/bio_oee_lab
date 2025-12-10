@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart'; // import
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/services/device_info_service.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -32,19 +33,39 @@ class InfoRepository {
       _db.checkInLogs,
     )..where((t) => t.syncStatus.equals(0))).get().then((rows) => rows.length);
 
-    final documentRecordsCount = await (_db.select(
-      _db.documentRecords,
-    )..where((t) => t.syncStatus.equals(0))).get().then((rows) => rows.length);
-
     final jobMachineEventLogsCount = await (_db.select(
       _db.jobMachineEventLogs,
     )..where((t) => t.syncStatus.equals(0))).get().then((rows) => rows.length);
 
+    final jobWorkingTimesCount = await (_db.select(
+      _db.jobWorkingTimes,
+    )..where((t) => t.syncStatus.equals(0))).get().then((rows) => rows.length);
+
+    final jobTestSetsCount = await (_db.select(
+      _db.jobTestSets,
+    )..where((t) => t.syncStatus.equals(0))).get().then((rows) => rows.length);
+
+    final runningJobMachinesCount = await (_db.select(
+      _db.runningJobMachines,
+    )..where((t) => t.syncStatus.equals(0))).get().then((rows) => rows.length);
+
+    final jobMachineItemsCount = await (_db.select(
+      _db.jobMachineItems,
+    )..where((t) => t.syncStatus.equals(0))).get().then((rows) => rows.length);
+
+    final documentsCount = await (_db.select(
+      _db.documents,
+    )..where((t) => t.syncStatus.equals(0))).get().then((rows) => rows.length);
+
     return {
+      'Documents': documentsCount,
       'Activity Logs': activityLogsCount,
       'Check-In Logs': checkInLogsCount,
-      'Document Records': documentRecordsCount,
+      'Job Working Times': jobWorkingTimesCount,
       'Job Machine Events': jobMachineEventLogsCount,
+      'Job Machine Items': jobMachineItemsCount,
+      'Running Job Machines': runningJobMachinesCount,
+      'Job Test Sets': jobTestSetsCount,
     };
   }
 
@@ -83,10 +104,6 @@ class InfoRepository {
       'Documents': await getLastUpdate(_db.documents, _db.documents.updatedAt),
       'Users': await getLastUpdate(_db.users, _db.users.updatedAt),
       'Machines': await getLastUpdate(_db.machines, _db.machines.updatedAt),
-      'Document Records': await getLastUpdate(
-        _db.documentRecords,
-        _db.documentRecords.updatedAt,
-      ),
     };
   }
 }

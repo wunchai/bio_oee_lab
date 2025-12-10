@@ -339,12 +339,30 @@ class _MachineDetailScreenState extends State<MachineDetailScreen>
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text('Time: $timeStr'),
-                      trailing: IconButton(
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
-                        ),
-                        onPressed: () => _deleteEvent(log.recId),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Sync Status Icon
+                          Icon(
+                            log.syncStatus == 1
+                                ? Icons.cloud_done_outlined
+                                : Icons.cloud_off,
+                            color: log.syncStatus == 1
+                                ? Colors.green
+                                : Colors.grey,
+                            size: 20,
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ), // Spacing between icon and delete button
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.red,
+                            ),
+                            onPressed: () => _deleteEvent(log.recId),
+                          ),
+                        ],
                       ),
                     ),
                   );
@@ -426,12 +444,27 @@ class _MachineDetailScreenState extends State<MachineDetailScreen>
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text('Added: $timeStr'),
-                          trailing: IconButton(
-                            icon: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.red,
-                            ),
-                            onPressed: () => _deleteItem(mItem.recId),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                mItem.syncStatus == 1
+                                    ? Icons.cloud_done_outlined
+                                    : Icons.cloud_off,
+                                color: mItem.syncStatus == 1
+                                    ? Colors.green
+                                    : Colors.grey,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              IconButton(
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.red,
+                                ),
+                                onPressed: () => _deleteItem(mItem.recId),
+                              ),
+                            ],
                           ),
                         ),
                       );

@@ -210,6 +210,28 @@ class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
         .watch();
   }
 
+  // Find the last open event (endTime is null) for a machine
+  Future<DbJobMachineEventLog?> getLastOpenMachineLog(String machineRecId) {
+    return (select(jobMachineEventLogs)
+          ..where(
+            (t) =>
+                t.jobMachineRecId.equals(machineRecId) &
+                t.endTime.isNull() &
+                t.status.equals(1), // Active
+          )
+          ..orderBy([
+            (t) =>
+                OrderingTerm(expression: t.startTime, mode: OrderingMode.desc),
+          ])
+          ..limit(1))
+        .getSingleOrNull();
+  }
+
+  // Update a machine Log
+  Future<bool> updateMachineLog(DbJobMachineEventLog entry) {
+    return update(jobMachineEventLogs).replace(entry);
+  }
+
   Stream<List<DbJobMachineItem>> watchMachineItems(String machineRecId) {
     return (select(jobMachineItems)
           ..where((t) => t.jobMachineRecId.equals(machineRecId))

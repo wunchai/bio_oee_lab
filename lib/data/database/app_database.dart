@@ -8,9 +8,9 @@ import 'package:bio_oee_lab/data/database/connection/connection.dart'
     as platform_connection; // <<< เปลี่ยนเป็น platform_connection
 
 // Import all table definitions (should be present from previous steps)
+// Import all table definitions (should be present from previous steps)
 import 'package:bio_oee_lab/data/database/tables/job_table.dart';
 import 'package:bio_oee_lab/data/database/tables/document_table.dart';
-import 'package:bio_oee_lab/data/database/tables/document_record_table.dart';
 import 'package:bio_oee_lab/data/database/tables/user_table.dart';
 import 'package:bio_oee_lab/data/database/tables/job_test_set_table.dart';
 import 'package:bio_oee_lab/data/database/tables/running_job_machine_table.dart';
@@ -20,17 +20,20 @@ import 'package:bio_oee_lab/data/database/tables/job_machine_item_table.dart';
 import 'package:bio_oee_lab/data/database/tables/pause_reason_table.dart';
 import 'package:bio_oee_lab/data/database/tables/check_in_table.dart';
 import 'package:bio_oee_lab/data/database/tables/activity_log_table.dart';
-import 'package:bio_oee_lab/data/database/tables/machine_table.dart'; // <<< NEW: Import Machine table
+import 'package:bio_oee_lab/data/database/tables/machine_table.dart';
+import 'package:bio_oee_lab/data/database/tables/sync_log_table.dart'; // <<< NEW
+
 // Import DAO definitions
 import 'package:bio_oee_lab/data/database/daos/job_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/document_record_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/user_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/check_in_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/machine_dao.dart'; // <<< NEW: Import Machine DAO
+import 'package:bio_oee_lab/data/database/daos/machine_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/sync_log_dao.dart'; // <<< NEW
+
 // This line tells drift to generate a file named app_database.g.dart
 part 'app_database.g.dart';
 
@@ -38,7 +41,6 @@ part 'app_database.g.dart';
   tables: [
     Jobs,
     Documents,
-    DocumentRecords,
     Users,
     JobTestSets,
     RunningJobMachines,
@@ -49,18 +51,20 @@ part 'app_database.g.dart';
     CheckInActivities,
     CheckInLogs,
     ActivityLogs,
-    Machines, // <<< NEW: Add Machines table
+    ActivityLogs,
+    Machines,
+    SyncLogs, // <<< NEW: Add SyncLogs table
   ],
   daos: [
     JobDao,
     DocumentDao,
-    DocumentRecordDao,
     UserDao,
     RunningJobDetailsDao,
     PauseReasonDao,
     CheckInDao,
     ActivityLogDao,
-    MachineDao, // <<< NEW: Add MachineDao
+    MachineDao,
+    SyncLogDao, // <<< NEW: Add SyncLogDao
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -85,8 +89,7 @@ class AppDatabase extends _$AppDatabase {
     },
     onUpgrade: (Migrator m, int from, int to) async {
       if (from < 2) {
-        await m.addColumn(documentRecords, documentRecords.updatedAt);
-        // If you had other tables in v1 that need updatedAt, add them here.
+        // Removed DocumentRecords migration
       }
       if (from < 3) {
         // Add 'updatedAt' column to all *newly added* tables or tables that didn't have it before v3
@@ -188,7 +191,6 @@ class AppDatabase extends _$AppDatabase {
   Future<void> _createAllUpdatedAtTriggers(Migrator m) async {
     await _createUpdatedAtTrigger(m, 'jobs', 'updatedAt');
     await _createUpdatedAtTrigger(m, 'documents', 'updatedAt');
-    await _createUpdatedAtTrigger(m, 'document_records', 'updatedAt');
     await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
     await _createUpdatedAtTrigger(
       m,

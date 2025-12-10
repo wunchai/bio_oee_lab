@@ -1581,1410 +1581,6 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
   }
 }
 
-class $DocumentRecordsTable extends DocumentRecords
-    with TableInfo<$DocumentRecordsTable, DbDocumentRecord> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $DocumentRecordsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
-  @override
-  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
-    'uid',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _documentIdMeta = const VerificationMeta(
-    'documentId',
-  );
-  @override
-  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
-    'documentId',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _machineIdMeta = const VerificationMeta(
-    'machineId',
-  );
-  @override
-  late final GeneratedColumn<String> machineId = GeneratedColumn<String>(
-    'machineId',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _jobIdMeta = const VerificationMeta('jobId');
-  @override
-  late final GeneratedColumn<String> jobId = GeneratedColumn<String>(
-    'jobId',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _tagIdMeta = const VerificationMeta('tagId');
-  @override
-  late final GeneratedColumn<String> tagId = GeneratedColumn<String>(
-    'tagId',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _tagNameMeta = const VerificationMeta(
-    'tagName',
-  );
-  @override
-  late final GeneratedColumn<String> tagName = GeneratedColumn<String>(
-    'tagName',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _tagTypeMeta = const VerificationMeta(
-    'tagType',
-  );
-  @override
-  late final GeneratedColumn<String> tagType = GeneratedColumn<String>(
-    'tagType',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _tagGroupIdMeta = const VerificationMeta(
-    'tagGroupId',
-  );
-  @override
-  late final GeneratedColumn<String> tagGroupId = GeneratedColumn<String>(
-    'TagGroupId',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _tagGroupNameMeta = const VerificationMeta(
-    'tagGroupName',
-  );
-  @override
-  late final GeneratedColumn<String> tagGroupName = GeneratedColumn<String>(
-    'TagGroupName',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _tagSelectionValueMeta = const VerificationMeta(
-    'tagSelectionValue',
-  );
-  @override
-  late final GeneratedColumn<String> tagSelectionValue =
-      GeneratedColumn<String>(
-        'tagSelectionValue',
-        aliasedName,
-        true,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-      );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta(
-    'description',
-  );
-  @override
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-    'description',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _noteMeta = const VerificationMeta('note');
-  @override
-  late final GeneratedColumn<String> note = GeneratedColumn<String>(
-    'Note',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _specificationMeta = const VerificationMeta(
-    'specification',
-  );
-  @override
-  late final GeneratedColumn<String> specification = GeneratedColumn<String>(
-    'specification',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _specMinMeta = const VerificationMeta(
-    'specMin',
-  );
-  @override
-  late final GeneratedColumn<String> specMin = GeneratedColumn<String>(
-    'specMin',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _specMaxMeta = const VerificationMeta(
-    'specMax',
-  );
-  @override
-  late final GeneratedColumn<String> specMax = GeneratedColumn<String>(
-    'specMax',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _unitMeta = const VerificationMeta('unit');
-  @override
-  late final GeneratedColumn<String> unit = GeneratedColumn<String>(
-    'unit',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _queryStrMeta = const VerificationMeta(
-    'queryStr',
-  );
-  @override
-  late final GeneratedColumn<String> queryStr = GeneratedColumn<String>(
-    'queryStr',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _valueMeta = const VerificationMeta('value');
-  @override
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-    'value',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _valueTypeMeta = const VerificationMeta(
-    'valueType',
-  );
-  @override
-  late final GeneratedColumn<String> valueType = GeneratedColumn<String>(
-    'valueType',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _remarkMeta = const VerificationMeta('remark');
-  @override
-  late final GeneratedColumn<String> remark = GeneratedColumn<String>(
-    'remark',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _statusMeta = const VerificationMeta('status');
-  @override
-  late final GeneratedColumn<int> status = GeneratedColumn<int>(
-    'status',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _unReadableMeta = const VerificationMeta(
-    'unReadable',
-  );
-  @override
-  late final GeneratedColumn<String> unReadable = GeneratedColumn<String>(
-    'unReadable',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    defaultValue: const Constant('false'),
-  );
-  static const VerificationMeta _lastSyncMeta = const VerificationMeta(
-    'lastSync',
-  );
-  @override
-  late final GeneratedColumn<String> lastSync = GeneratedColumn<String>(
-    'lastSync',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _createByMeta = const VerificationMeta(
-    'createBy',
-  );
-  @override
-  late final GeneratedColumn<String> createBy = GeneratedColumn<String>(
-    'CreateBy',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
-    'syncStatus',
-  );
-  @override
-  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
-    'syncStatus',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultValue: const Constant(0),
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
-  @override
-  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
-    'updatedAt',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    uid,
-    documentId,
-    machineId,
-    jobId,
-    tagId,
-    tagName,
-    tagType,
-    tagGroupId,
-    tagGroupName,
-    tagSelectionValue,
-    description,
-    note,
-    specification,
-    specMin,
-    specMax,
-    unit,
-    queryStr,
-    value,
-    valueType,
-    remark,
-    status,
-    unReadable,
-    lastSync,
-    createBy,
-    syncStatus,
-    updatedAt,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'document_records';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<DbDocumentRecord> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('uid')) {
-      context.handle(
-        _uidMeta,
-        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
-      );
-    }
-    if (data.containsKey('documentId')) {
-      context.handle(
-        _documentIdMeta,
-        documentId.isAcceptableOrUnknown(data['documentId']!, _documentIdMeta),
-      );
-    }
-    if (data.containsKey('machineId')) {
-      context.handle(
-        _machineIdMeta,
-        machineId.isAcceptableOrUnknown(data['machineId']!, _machineIdMeta),
-      );
-    }
-    if (data.containsKey('jobId')) {
-      context.handle(
-        _jobIdMeta,
-        jobId.isAcceptableOrUnknown(data['jobId']!, _jobIdMeta),
-      );
-    }
-    if (data.containsKey('tagId')) {
-      context.handle(
-        _tagIdMeta,
-        tagId.isAcceptableOrUnknown(data['tagId']!, _tagIdMeta),
-      );
-    }
-    if (data.containsKey('tagName')) {
-      context.handle(
-        _tagNameMeta,
-        tagName.isAcceptableOrUnknown(data['tagName']!, _tagNameMeta),
-      );
-    }
-    if (data.containsKey('tagType')) {
-      context.handle(
-        _tagTypeMeta,
-        tagType.isAcceptableOrUnknown(data['tagType']!, _tagTypeMeta),
-      );
-    }
-    if (data.containsKey('TagGroupId')) {
-      context.handle(
-        _tagGroupIdMeta,
-        tagGroupId.isAcceptableOrUnknown(data['TagGroupId']!, _tagGroupIdMeta),
-      );
-    }
-    if (data.containsKey('TagGroupName')) {
-      context.handle(
-        _tagGroupNameMeta,
-        tagGroupName.isAcceptableOrUnknown(
-          data['TagGroupName']!,
-          _tagGroupNameMeta,
-        ),
-      );
-    }
-    if (data.containsKey('tagSelectionValue')) {
-      context.handle(
-        _tagSelectionValueMeta,
-        tagSelectionValue.isAcceptableOrUnknown(
-          data['tagSelectionValue']!,
-          _tagSelectionValueMeta,
-        ),
-      );
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-        _descriptionMeta,
-        description.isAcceptableOrUnknown(
-          data['description']!,
-          _descriptionMeta,
-        ),
-      );
-    }
-    if (data.containsKey('Note')) {
-      context.handle(
-        _noteMeta,
-        note.isAcceptableOrUnknown(data['Note']!, _noteMeta),
-      );
-    }
-    if (data.containsKey('specification')) {
-      context.handle(
-        _specificationMeta,
-        specification.isAcceptableOrUnknown(
-          data['specification']!,
-          _specificationMeta,
-        ),
-      );
-    }
-    if (data.containsKey('specMin')) {
-      context.handle(
-        _specMinMeta,
-        specMin.isAcceptableOrUnknown(data['specMin']!, _specMinMeta),
-      );
-    }
-    if (data.containsKey('specMax')) {
-      context.handle(
-        _specMaxMeta,
-        specMax.isAcceptableOrUnknown(data['specMax']!, _specMaxMeta),
-      );
-    }
-    if (data.containsKey('unit')) {
-      context.handle(
-        _unitMeta,
-        unit.isAcceptableOrUnknown(data['unit']!, _unitMeta),
-      );
-    }
-    if (data.containsKey('queryStr')) {
-      context.handle(
-        _queryStrMeta,
-        queryStr.isAcceptableOrUnknown(data['queryStr']!, _queryStrMeta),
-      );
-    }
-    if (data.containsKey('value')) {
-      context.handle(
-        _valueMeta,
-        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
-      );
-    }
-    if (data.containsKey('valueType')) {
-      context.handle(
-        _valueTypeMeta,
-        valueType.isAcceptableOrUnknown(data['valueType']!, _valueTypeMeta),
-      );
-    }
-    if (data.containsKey('remark')) {
-      context.handle(
-        _remarkMeta,
-        remark.isAcceptableOrUnknown(data['remark']!, _remarkMeta),
-      );
-    }
-    if (data.containsKey('status')) {
-      context.handle(
-        _statusMeta,
-        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
-      );
-    }
-    if (data.containsKey('unReadable')) {
-      context.handle(
-        _unReadableMeta,
-        unReadable.isAcceptableOrUnknown(data['unReadable']!, _unReadableMeta),
-      );
-    }
-    if (data.containsKey('lastSync')) {
-      context.handle(
-        _lastSyncMeta,
-        lastSync.isAcceptableOrUnknown(data['lastSync']!, _lastSyncMeta),
-      );
-    }
-    if (data.containsKey('CreateBy')) {
-      context.handle(
-        _createByMeta,
-        createBy.isAcceptableOrUnknown(data['CreateBy']!, _createByMeta),
-      );
-    }
-    if (data.containsKey('syncStatus')) {
-      context.handle(
-        _syncStatusMeta,
-        syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
-      );
-    }
-    if (data.containsKey('updatedAt')) {
-      context.handle(
-        _updatedAtMeta,
-        updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {uid};
-  @override
-  DbDocumentRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return DbDocumentRecord(
-      uid: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}uid'],
-      )!,
-      documentId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}documentId'],
-      ),
-      machineId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}machineId'],
-      ),
-      jobId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}jobId'],
-      ),
-      tagId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}tagId'],
-      ),
-      tagName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}tagName'],
-      ),
-      tagType: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}tagType'],
-      ),
-      tagGroupId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}TagGroupId'],
-      ),
-      tagGroupName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}TagGroupName'],
-      ),
-      tagSelectionValue: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}tagSelectionValue'],
-      ),
-      description: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description'],
-      ),
-      note: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}Note'],
-      ),
-      specification: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}specification'],
-      ),
-      specMin: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}specMin'],
-      ),
-      specMax: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}specMax'],
-      ),
-      unit: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}unit'],
-      ),
-      queryStr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}queryStr'],
-      ),
-      value: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}value'],
-      ),
-      valueType: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}valueType'],
-      ),
-      remark: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}remark'],
-      ),
-      status: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}status'],
-      )!,
-      unReadable: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}unReadable'],
-      )!,
-      lastSync: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}lastSync'],
-      ),
-      createBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}CreateBy'],
-      ),
-      syncStatus: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}syncStatus'],
-      )!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}updatedAt'],
-      ),
-    );
-  }
-
-  @override
-  $DocumentRecordsTable createAlias(String alias) {
-    return $DocumentRecordsTable(attachedDatabase, alias);
-  }
-}
-
-class DbDocumentRecord extends DataClass
-    implements Insertable<DbDocumentRecord> {
-  final int uid;
-  final String? documentId;
-  final String? machineId;
-  final String? jobId;
-  final String? tagId;
-  final String? tagName;
-  final String? tagType;
-  final String? tagGroupId;
-  final String? tagGroupName;
-  final String? tagSelectionValue;
-  final String? description;
-  final String? note;
-  final String? specification;
-  final String? specMin;
-  final String? specMax;
-  final String? unit;
-  final String? queryStr;
-  final String? value;
-  final String? valueType;
-  final String? remark;
-  final int status;
-  final String unReadable;
-  final String? lastSync;
-  final String? createBy;
-  final int syncStatus;
-  final String? updatedAt;
-  const DbDocumentRecord({
-    required this.uid,
-    this.documentId,
-    this.machineId,
-    this.jobId,
-    this.tagId,
-    this.tagName,
-    this.tagType,
-    this.tagGroupId,
-    this.tagGroupName,
-    this.tagSelectionValue,
-    this.description,
-    this.note,
-    this.specification,
-    this.specMin,
-    this.specMax,
-    this.unit,
-    this.queryStr,
-    this.value,
-    this.valueType,
-    this.remark,
-    required this.status,
-    required this.unReadable,
-    this.lastSync,
-    this.createBy,
-    required this.syncStatus,
-    this.updatedAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['uid'] = Variable<int>(uid);
-    if (!nullToAbsent || documentId != null) {
-      map['documentId'] = Variable<String>(documentId);
-    }
-    if (!nullToAbsent || machineId != null) {
-      map['machineId'] = Variable<String>(machineId);
-    }
-    if (!nullToAbsent || jobId != null) {
-      map['jobId'] = Variable<String>(jobId);
-    }
-    if (!nullToAbsent || tagId != null) {
-      map['tagId'] = Variable<String>(tagId);
-    }
-    if (!nullToAbsent || tagName != null) {
-      map['tagName'] = Variable<String>(tagName);
-    }
-    if (!nullToAbsent || tagType != null) {
-      map['tagType'] = Variable<String>(tagType);
-    }
-    if (!nullToAbsent || tagGroupId != null) {
-      map['TagGroupId'] = Variable<String>(tagGroupId);
-    }
-    if (!nullToAbsent || tagGroupName != null) {
-      map['TagGroupName'] = Variable<String>(tagGroupName);
-    }
-    if (!nullToAbsent || tagSelectionValue != null) {
-      map['tagSelectionValue'] = Variable<String>(tagSelectionValue);
-    }
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
-    }
-    if (!nullToAbsent || note != null) {
-      map['Note'] = Variable<String>(note);
-    }
-    if (!nullToAbsent || specification != null) {
-      map['specification'] = Variable<String>(specification);
-    }
-    if (!nullToAbsent || specMin != null) {
-      map['specMin'] = Variable<String>(specMin);
-    }
-    if (!nullToAbsent || specMax != null) {
-      map['specMax'] = Variable<String>(specMax);
-    }
-    if (!nullToAbsent || unit != null) {
-      map['unit'] = Variable<String>(unit);
-    }
-    if (!nullToAbsent || queryStr != null) {
-      map['queryStr'] = Variable<String>(queryStr);
-    }
-    if (!nullToAbsent || value != null) {
-      map['value'] = Variable<String>(value);
-    }
-    if (!nullToAbsent || valueType != null) {
-      map['valueType'] = Variable<String>(valueType);
-    }
-    if (!nullToAbsent || remark != null) {
-      map['remark'] = Variable<String>(remark);
-    }
-    map['status'] = Variable<int>(status);
-    map['unReadable'] = Variable<String>(unReadable);
-    if (!nullToAbsent || lastSync != null) {
-      map['lastSync'] = Variable<String>(lastSync);
-    }
-    if (!nullToAbsent || createBy != null) {
-      map['CreateBy'] = Variable<String>(createBy);
-    }
-    map['syncStatus'] = Variable<int>(syncStatus);
-    if (!nullToAbsent || updatedAt != null) {
-      map['updatedAt'] = Variable<String>(updatedAt);
-    }
-    return map;
-  }
-
-  DocumentRecordsCompanion toCompanion(bool nullToAbsent) {
-    return DocumentRecordsCompanion(
-      uid: Value(uid),
-      documentId: documentId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(documentId),
-      machineId: machineId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(machineId),
-      jobId: jobId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(jobId),
-      tagId: tagId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(tagId),
-      tagName: tagName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(tagName),
-      tagType: tagType == null && nullToAbsent
-          ? const Value.absent()
-          : Value(tagType),
-      tagGroupId: tagGroupId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(tagGroupId),
-      tagGroupName: tagGroupName == null && nullToAbsent
-          ? const Value.absent()
-          : Value(tagGroupName),
-      tagSelectionValue: tagSelectionValue == null && nullToAbsent
-          ? const Value.absent()
-          : Value(tagSelectionValue),
-      description: description == null && nullToAbsent
-          ? const Value.absent()
-          : Value(description),
-      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
-      specification: specification == null && nullToAbsent
-          ? const Value.absent()
-          : Value(specification),
-      specMin: specMin == null && nullToAbsent
-          ? const Value.absent()
-          : Value(specMin),
-      specMax: specMax == null && nullToAbsent
-          ? const Value.absent()
-          : Value(specMax),
-      unit: unit == null && nullToAbsent ? const Value.absent() : Value(unit),
-      queryStr: queryStr == null && nullToAbsent
-          ? const Value.absent()
-          : Value(queryStr),
-      value: value == null && nullToAbsent
-          ? const Value.absent()
-          : Value(value),
-      valueType: valueType == null && nullToAbsent
-          ? const Value.absent()
-          : Value(valueType),
-      remark: remark == null && nullToAbsent
-          ? const Value.absent()
-          : Value(remark),
-      status: Value(status),
-      unReadable: Value(unReadable),
-      lastSync: lastSync == null && nullToAbsent
-          ? const Value.absent()
-          : Value(lastSync),
-      createBy: createBy == null && nullToAbsent
-          ? const Value.absent()
-          : Value(createBy),
-      syncStatus: Value(syncStatus),
-      updatedAt: updatedAt == null && nullToAbsent
-          ? const Value.absent()
-          : Value(updatedAt),
-    );
-  }
-
-  factory DbDocumentRecord.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return DbDocumentRecord(
-      uid: serializer.fromJson<int>(json['uid']),
-      documentId: serializer.fromJson<String?>(json['documentId']),
-      machineId: serializer.fromJson<String?>(json['machineId']),
-      jobId: serializer.fromJson<String?>(json['jobId']),
-      tagId: serializer.fromJson<String?>(json['tagId']),
-      tagName: serializer.fromJson<String?>(json['tagName']),
-      tagType: serializer.fromJson<String?>(json['tagType']),
-      tagGroupId: serializer.fromJson<String?>(json['tagGroupId']),
-      tagGroupName: serializer.fromJson<String?>(json['tagGroupName']),
-      tagSelectionValue: serializer.fromJson<String?>(
-        json['tagSelectionValue'],
-      ),
-      description: serializer.fromJson<String?>(json['description']),
-      note: serializer.fromJson<String?>(json['note']),
-      specification: serializer.fromJson<String?>(json['specification']),
-      specMin: serializer.fromJson<String?>(json['specMin']),
-      specMax: serializer.fromJson<String?>(json['specMax']),
-      unit: serializer.fromJson<String?>(json['unit']),
-      queryStr: serializer.fromJson<String?>(json['queryStr']),
-      value: serializer.fromJson<String?>(json['value']),
-      valueType: serializer.fromJson<String?>(json['valueType']),
-      remark: serializer.fromJson<String?>(json['remark']),
-      status: serializer.fromJson<int>(json['status']),
-      unReadable: serializer.fromJson<String>(json['unReadable']),
-      lastSync: serializer.fromJson<String?>(json['lastSync']),
-      createBy: serializer.fromJson<String?>(json['createBy']),
-      syncStatus: serializer.fromJson<int>(json['syncStatus']),
-      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'uid': serializer.toJson<int>(uid),
-      'documentId': serializer.toJson<String?>(documentId),
-      'machineId': serializer.toJson<String?>(machineId),
-      'jobId': serializer.toJson<String?>(jobId),
-      'tagId': serializer.toJson<String?>(tagId),
-      'tagName': serializer.toJson<String?>(tagName),
-      'tagType': serializer.toJson<String?>(tagType),
-      'tagGroupId': serializer.toJson<String?>(tagGroupId),
-      'tagGroupName': serializer.toJson<String?>(tagGroupName),
-      'tagSelectionValue': serializer.toJson<String?>(tagSelectionValue),
-      'description': serializer.toJson<String?>(description),
-      'note': serializer.toJson<String?>(note),
-      'specification': serializer.toJson<String?>(specification),
-      'specMin': serializer.toJson<String?>(specMin),
-      'specMax': serializer.toJson<String?>(specMax),
-      'unit': serializer.toJson<String?>(unit),
-      'queryStr': serializer.toJson<String?>(queryStr),
-      'value': serializer.toJson<String?>(value),
-      'valueType': serializer.toJson<String?>(valueType),
-      'remark': serializer.toJson<String?>(remark),
-      'status': serializer.toJson<int>(status),
-      'unReadable': serializer.toJson<String>(unReadable),
-      'lastSync': serializer.toJson<String?>(lastSync),
-      'createBy': serializer.toJson<String?>(createBy),
-      'syncStatus': serializer.toJson<int>(syncStatus),
-      'updatedAt': serializer.toJson<String?>(updatedAt),
-    };
-  }
-
-  DbDocumentRecord copyWith({
-    int? uid,
-    Value<String?> documentId = const Value.absent(),
-    Value<String?> machineId = const Value.absent(),
-    Value<String?> jobId = const Value.absent(),
-    Value<String?> tagId = const Value.absent(),
-    Value<String?> tagName = const Value.absent(),
-    Value<String?> tagType = const Value.absent(),
-    Value<String?> tagGroupId = const Value.absent(),
-    Value<String?> tagGroupName = const Value.absent(),
-    Value<String?> tagSelectionValue = const Value.absent(),
-    Value<String?> description = const Value.absent(),
-    Value<String?> note = const Value.absent(),
-    Value<String?> specification = const Value.absent(),
-    Value<String?> specMin = const Value.absent(),
-    Value<String?> specMax = const Value.absent(),
-    Value<String?> unit = const Value.absent(),
-    Value<String?> queryStr = const Value.absent(),
-    Value<String?> value = const Value.absent(),
-    Value<String?> valueType = const Value.absent(),
-    Value<String?> remark = const Value.absent(),
-    int? status,
-    String? unReadable,
-    Value<String?> lastSync = const Value.absent(),
-    Value<String?> createBy = const Value.absent(),
-    int? syncStatus,
-    Value<String?> updatedAt = const Value.absent(),
-  }) => DbDocumentRecord(
-    uid: uid ?? this.uid,
-    documentId: documentId.present ? documentId.value : this.documentId,
-    machineId: machineId.present ? machineId.value : this.machineId,
-    jobId: jobId.present ? jobId.value : this.jobId,
-    tagId: tagId.present ? tagId.value : this.tagId,
-    tagName: tagName.present ? tagName.value : this.tagName,
-    tagType: tagType.present ? tagType.value : this.tagType,
-    tagGroupId: tagGroupId.present ? tagGroupId.value : this.tagGroupId,
-    tagGroupName: tagGroupName.present ? tagGroupName.value : this.tagGroupName,
-    tagSelectionValue: tagSelectionValue.present
-        ? tagSelectionValue.value
-        : this.tagSelectionValue,
-    description: description.present ? description.value : this.description,
-    note: note.present ? note.value : this.note,
-    specification: specification.present
-        ? specification.value
-        : this.specification,
-    specMin: specMin.present ? specMin.value : this.specMin,
-    specMax: specMax.present ? specMax.value : this.specMax,
-    unit: unit.present ? unit.value : this.unit,
-    queryStr: queryStr.present ? queryStr.value : this.queryStr,
-    value: value.present ? value.value : this.value,
-    valueType: valueType.present ? valueType.value : this.valueType,
-    remark: remark.present ? remark.value : this.remark,
-    status: status ?? this.status,
-    unReadable: unReadable ?? this.unReadable,
-    lastSync: lastSync.present ? lastSync.value : this.lastSync,
-    createBy: createBy.present ? createBy.value : this.createBy,
-    syncStatus: syncStatus ?? this.syncStatus,
-    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
-  );
-  DbDocumentRecord copyWithCompanion(DocumentRecordsCompanion data) {
-    return DbDocumentRecord(
-      uid: data.uid.present ? data.uid.value : this.uid,
-      documentId: data.documentId.present
-          ? data.documentId.value
-          : this.documentId,
-      machineId: data.machineId.present ? data.machineId.value : this.machineId,
-      jobId: data.jobId.present ? data.jobId.value : this.jobId,
-      tagId: data.tagId.present ? data.tagId.value : this.tagId,
-      tagName: data.tagName.present ? data.tagName.value : this.tagName,
-      tagType: data.tagType.present ? data.tagType.value : this.tagType,
-      tagGroupId: data.tagGroupId.present
-          ? data.tagGroupId.value
-          : this.tagGroupId,
-      tagGroupName: data.tagGroupName.present
-          ? data.tagGroupName.value
-          : this.tagGroupName,
-      tagSelectionValue: data.tagSelectionValue.present
-          ? data.tagSelectionValue.value
-          : this.tagSelectionValue,
-      description: data.description.present
-          ? data.description.value
-          : this.description,
-      note: data.note.present ? data.note.value : this.note,
-      specification: data.specification.present
-          ? data.specification.value
-          : this.specification,
-      specMin: data.specMin.present ? data.specMin.value : this.specMin,
-      specMax: data.specMax.present ? data.specMax.value : this.specMax,
-      unit: data.unit.present ? data.unit.value : this.unit,
-      queryStr: data.queryStr.present ? data.queryStr.value : this.queryStr,
-      value: data.value.present ? data.value.value : this.value,
-      valueType: data.valueType.present ? data.valueType.value : this.valueType,
-      remark: data.remark.present ? data.remark.value : this.remark,
-      status: data.status.present ? data.status.value : this.status,
-      unReadable: data.unReadable.present
-          ? data.unReadable.value
-          : this.unReadable,
-      lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
-      createBy: data.createBy.present ? data.createBy.value : this.createBy,
-      syncStatus: data.syncStatus.present
-          ? data.syncStatus.value
-          : this.syncStatus,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DbDocumentRecord(')
-          ..write('uid: $uid, ')
-          ..write('documentId: $documentId, ')
-          ..write('machineId: $machineId, ')
-          ..write('jobId: $jobId, ')
-          ..write('tagId: $tagId, ')
-          ..write('tagName: $tagName, ')
-          ..write('tagType: $tagType, ')
-          ..write('tagGroupId: $tagGroupId, ')
-          ..write('tagGroupName: $tagGroupName, ')
-          ..write('tagSelectionValue: $tagSelectionValue, ')
-          ..write('description: $description, ')
-          ..write('note: $note, ')
-          ..write('specification: $specification, ')
-          ..write('specMin: $specMin, ')
-          ..write('specMax: $specMax, ')
-          ..write('unit: $unit, ')
-          ..write('queryStr: $queryStr, ')
-          ..write('value: $value, ')
-          ..write('valueType: $valueType, ')
-          ..write('remark: $remark, ')
-          ..write('status: $status, ')
-          ..write('unReadable: $unReadable, ')
-          ..write('lastSync: $lastSync, ')
-          ..write('createBy: $createBy, ')
-          ..write('syncStatus: $syncStatus, ')
-          ..write('updatedAt: $updatedAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hashAll([
-    uid,
-    documentId,
-    machineId,
-    jobId,
-    tagId,
-    tagName,
-    tagType,
-    tagGroupId,
-    tagGroupName,
-    tagSelectionValue,
-    description,
-    note,
-    specification,
-    specMin,
-    specMax,
-    unit,
-    queryStr,
-    value,
-    valueType,
-    remark,
-    status,
-    unReadable,
-    lastSync,
-    createBy,
-    syncStatus,
-    updatedAt,
-  ]);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DbDocumentRecord &&
-          other.uid == this.uid &&
-          other.documentId == this.documentId &&
-          other.machineId == this.machineId &&
-          other.jobId == this.jobId &&
-          other.tagId == this.tagId &&
-          other.tagName == this.tagName &&
-          other.tagType == this.tagType &&
-          other.tagGroupId == this.tagGroupId &&
-          other.tagGroupName == this.tagGroupName &&
-          other.tagSelectionValue == this.tagSelectionValue &&
-          other.description == this.description &&
-          other.note == this.note &&
-          other.specification == this.specification &&
-          other.specMin == this.specMin &&
-          other.specMax == this.specMax &&
-          other.unit == this.unit &&
-          other.queryStr == this.queryStr &&
-          other.value == this.value &&
-          other.valueType == this.valueType &&
-          other.remark == this.remark &&
-          other.status == this.status &&
-          other.unReadable == this.unReadable &&
-          other.lastSync == this.lastSync &&
-          other.createBy == this.createBy &&
-          other.syncStatus == this.syncStatus &&
-          other.updatedAt == this.updatedAt);
-}
-
-class DocumentRecordsCompanion extends UpdateCompanion<DbDocumentRecord> {
-  final Value<int> uid;
-  final Value<String?> documentId;
-  final Value<String?> machineId;
-  final Value<String?> jobId;
-  final Value<String?> tagId;
-  final Value<String?> tagName;
-  final Value<String?> tagType;
-  final Value<String?> tagGroupId;
-  final Value<String?> tagGroupName;
-  final Value<String?> tagSelectionValue;
-  final Value<String?> description;
-  final Value<String?> note;
-  final Value<String?> specification;
-  final Value<String?> specMin;
-  final Value<String?> specMax;
-  final Value<String?> unit;
-  final Value<String?> queryStr;
-  final Value<String?> value;
-  final Value<String?> valueType;
-  final Value<String?> remark;
-  final Value<int> status;
-  final Value<String> unReadable;
-  final Value<String?> lastSync;
-  final Value<String?> createBy;
-  final Value<int> syncStatus;
-  final Value<String?> updatedAt;
-  const DocumentRecordsCompanion({
-    this.uid = const Value.absent(),
-    this.documentId = const Value.absent(),
-    this.machineId = const Value.absent(),
-    this.jobId = const Value.absent(),
-    this.tagId = const Value.absent(),
-    this.tagName = const Value.absent(),
-    this.tagType = const Value.absent(),
-    this.tagGroupId = const Value.absent(),
-    this.tagGroupName = const Value.absent(),
-    this.tagSelectionValue = const Value.absent(),
-    this.description = const Value.absent(),
-    this.note = const Value.absent(),
-    this.specification = const Value.absent(),
-    this.specMin = const Value.absent(),
-    this.specMax = const Value.absent(),
-    this.unit = const Value.absent(),
-    this.queryStr = const Value.absent(),
-    this.value = const Value.absent(),
-    this.valueType = const Value.absent(),
-    this.remark = const Value.absent(),
-    this.status = const Value.absent(),
-    this.unReadable = const Value.absent(),
-    this.lastSync = const Value.absent(),
-    this.createBy = const Value.absent(),
-    this.syncStatus = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  });
-  DocumentRecordsCompanion.insert({
-    this.uid = const Value.absent(),
-    this.documentId = const Value.absent(),
-    this.machineId = const Value.absent(),
-    this.jobId = const Value.absent(),
-    this.tagId = const Value.absent(),
-    this.tagName = const Value.absent(),
-    this.tagType = const Value.absent(),
-    this.tagGroupId = const Value.absent(),
-    this.tagGroupName = const Value.absent(),
-    this.tagSelectionValue = const Value.absent(),
-    this.description = const Value.absent(),
-    this.note = const Value.absent(),
-    this.specification = const Value.absent(),
-    this.specMin = const Value.absent(),
-    this.specMax = const Value.absent(),
-    this.unit = const Value.absent(),
-    this.queryStr = const Value.absent(),
-    this.value = const Value.absent(),
-    this.valueType = const Value.absent(),
-    this.remark = const Value.absent(),
-    this.status = const Value.absent(),
-    this.unReadable = const Value.absent(),
-    this.lastSync = const Value.absent(),
-    this.createBy = const Value.absent(),
-    this.syncStatus = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  });
-  static Insertable<DbDocumentRecord> custom({
-    Expression<int>? uid,
-    Expression<String>? documentId,
-    Expression<String>? machineId,
-    Expression<String>? jobId,
-    Expression<String>? tagId,
-    Expression<String>? tagName,
-    Expression<String>? tagType,
-    Expression<String>? tagGroupId,
-    Expression<String>? tagGroupName,
-    Expression<String>? tagSelectionValue,
-    Expression<String>? description,
-    Expression<String>? note,
-    Expression<String>? specification,
-    Expression<String>? specMin,
-    Expression<String>? specMax,
-    Expression<String>? unit,
-    Expression<String>? queryStr,
-    Expression<String>? value,
-    Expression<String>? valueType,
-    Expression<String>? remark,
-    Expression<int>? status,
-    Expression<String>? unReadable,
-    Expression<String>? lastSync,
-    Expression<String>? createBy,
-    Expression<int>? syncStatus,
-    Expression<String>? updatedAt,
-  }) {
-    return RawValuesInsertable({
-      if (uid != null) 'uid': uid,
-      if (documentId != null) 'documentId': documentId,
-      if (machineId != null) 'machineId': machineId,
-      if (jobId != null) 'jobId': jobId,
-      if (tagId != null) 'tagId': tagId,
-      if (tagName != null) 'tagName': tagName,
-      if (tagType != null) 'tagType': tagType,
-      if (tagGroupId != null) 'TagGroupId': tagGroupId,
-      if (tagGroupName != null) 'TagGroupName': tagGroupName,
-      if (tagSelectionValue != null) 'tagSelectionValue': tagSelectionValue,
-      if (description != null) 'description': description,
-      if (note != null) 'Note': note,
-      if (specification != null) 'specification': specification,
-      if (specMin != null) 'specMin': specMin,
-      if (specMax != null) 'specMax': specMax,
-      if (unit != null) 'unit': unit,
-      if (queryStr != null) 'queryStr': queryStr,
-      if (value != null) 'value': value,
-      if (valueType != null) 'valueType': valueType,
-      if (remark != null) 'remark': remark,
-      if (status != null) 'status': status,
-      if (unReadable != null) 'unReadable': unReadable,
-      if (lastSync != null) 'lastSync': lastSync,
-      if (createBy != null) 'CreateBy': createBy,
-      if (syncStatus != null) 'syncStatus': syncStatus,
-      if (updatedAt != null) 'updatedAt': updatedAt,
-    });
-  }
-
-  DocumentRecordsCompanion copyWith({
-    Value<int>? uid,
-    Value<String?>? documentId,
-    Value<String?>? machineId,
-    Value<String?>? jobId,
-    Value<String?>? tagId,
-    Value<String?>? tagName,
-    Value<String?>? tagType,
-    Value<String?>? tagGroupId,
-    Value<String?>? tagGroupName,
-    Value<String?>? tagSelectionValue,
-    Value<String?>? description,
-    Value<String?>? note,
-    Value<String?>? specification,
-    Value<String?>? specMin,
-    Value<String?>? specMax,
-    Value<String?>? unit,
-    Value<String?>? queryStr,
-    Value<String?>? value,
-    Value<String?>? valueType,
-    Value<String?>? remark,
-    Value<int>? status,
-    Value<String>? unReadable,
-    Value<String?>? lastSync,
-    Value<String?>? createBy,
-    Value<int>? syncStatus,
-    Value<String?>? updatedAt,
-  }) {
-    return DocumentRecordsCompanion(
-      uid: uid ?? this.uid,
-      documentId: documentId ?? this.documentId,
-      machineId: machineId ?? this.machineId,
-      jobId: jobId ?? this.jobId,
-      tagId: tagId ?? this.tagId,
-      tagName: tagName ?? this.tagName,
-      tagType: tagType ?? this.tagType,
-      tagGroupId: tagGroupId ?? this.tagGroupId,
-      tagGroupName: tagGroupName ?? this.tagGroupName,
-      tagSelectionValue: tagSelectionValue ?? this.tagSelectionValue,
-      description: description ?? this.description,
-      note: note ?? this.note,
-      specification: specification ?? this.specification,
-      specMin: specMin ?? this.specMin,
-      specMax: specMax ?? this.specMax,
-      unit: unit ?? this.unit,
-      queryStr: queryStr ?? this.queryStr,
-      value: value ?? this.value,
-      valueType: valueType ?? this.valueType,
-      remark: remark ?? this.remark,
-      status: status ?? this.status,
-      unReadable: unReadable ?? this.unReadable,
-      lastSync: lastSync ?? this.lastSync,
-      createBy: createBy ?? this.createBy,
-      syncStatus: syncStatus ?? this.syncStatus,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (uid.present) {
-      map['uid'] = Variable<int>(uid.value);
-    }
-    if (documentId.present) {
-      map['documentId'] = Variable<String>(documentId.value);
-    }
-    if (machineId.present) {
-      map['machineId'] = Variable<String>(machineId.value);
-    }
-    if (jobId.present) {
-      map['jobId'] = Variable<String>(jobId.value);
-    }
-    if (tagId.present) {
-      map['tagId'] = Variable<String>(tagId.value);
-    }
-    if (tagName.present) {
-      map['tagName'] = Variable<String>(tagName.value);
-    }
-    if (tagType.present) {
-      map['tagType'] = Variable<String>(tagType.value);
-    }
-    if (tagGroupId.present) {
-      map['TagGroupId'] = Variable<String>(tagGroupId.value);
-    }
-    if (tagGroupName.present) {
-      map['TagGroupName'] = Variable<String>(tagGroupName.value);
-    }
-    if (tagSelectionValue.present) {
-      map['tagSelectionValue'] = Variable<String>(tagSelectionValue.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    if (note.present) {
-      map['Note'] = Variable<String>(note.value);
-    }
-    if (specification.present) {
-      map['specification'] = Variable<String>(specification.value);
-    }
-    if (specMin.present) {
-      map['specMin'] = Variable<String>(specMin.value);
-    }
-    if (specMax.present) {
-      map['specMax'] = Variable<String>(specMax.value);
-    }
-    if (unit.present) {
-      map['unit'] = Variable<String>(unit.value);
-    }
-    if (queryStr.present) {
-      map['queryStr'] = Variable<String>(queryStr.value);
-    }
-    if (value.present) {
-      map['value'] = Variable<String>(value.value);
-    }
-    if (valueType.present) {
-      map['valueType'] = Variable<String>(valueType.value);
-    }
-    if (remark.present) {
-      map['remark'] = Variable<String>(remark.value);
-    }
-    if (status.present) {
-      map['status'] = Variable<int>(status.value);
-    }
-    if (unReadable.present) {
-      map['unReadable'] = Variable<String>(unReadable.value);
-    }
-    if (lastSync.present) {
-      map['lastSync'] = Variable<String>(lastSync.value);
-    }
-    if (createBy.present) {
-      map['CreateBy'] = Variable<String>(createBy.value);
-    }
-    if (syncStatus.present) {
-      map['syncStatus'] = Variable<int>(syncStatus.value);
-    }
-    if (updatedAt.present) {
-      map['updatedAt'] = Variable<String>(updatedAt.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DocumentRecordsCompanion(')
-          ..write('uid: $uid, ')
-          ..write('documentId: $documentId, ')
-          ..write('machineId: $machineId, ')
-          ..write('jobId: $jobId, ')
-          ..write('tagId: $tagId, ')
-          ..write('tagName: $tagName, ')
-          ..write('tagType: $tagType, ')
-          ..write('tagGroupId: $tagGroupId, ')
-          ..write('tagGroupName: $tagGroupName, ')
-          ..write('tagSelectionValue: $tagSelectionValue, ')
-          ..write('description: $description, ')
-          ..write('note: $note, ')
-          ..write('specification: $specification, ')
-          ..write('specMin: $specMin, ')
-          ..write('specMax: $specMax, ')
-          ..write('unit: $unit, ')
-          ..write('queryStr: $queryStr, ')
-          ..write('value: $value, ')
-          ..write('valueType: $valueType, ')
-          ..write('remark: $remark, ')
-          ..write('status: $status, ')
-          ..write('unReadable: $unReadable, ')
-          ..write('lastSync: $lastSync, ')
-          ..write('createBy: $createBy, ')
-          ..write('syncStatus: $syncStatus, ')
-          ..write('updatedAt: $updatedAt')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $UsersTable extends Users with TableInfo<$UsersTable, DbUser> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -5730,6 +4326,17 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _recordUserIdMeta = const VerificationMeta(
+    'recordUserId',
+  );
+  @override
+  late final GeneratedColumn<String> recordUserId = GeneratedColumn<String>(
+    'RecordUserId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _startTimeMeta = const VerificationMeta(
     'startTime',
   );
@@ -5824,6 +4431,7 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
     uid,
     recId,
     jobMachineRecId,
+    recordUserId,
     startTime,
     endTime,
     eventType,
@@ -5865,6 +4473,15 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
         jobMachineRecId.isAcceptableOrUnknown(
           data['JobMachineRef']!,
           _jobMachineRecIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('RecordUserId')) {
+      context.handle(
+        _recordUserIdMeta,
+        recordUserId.isAcceptableOrUnknown(
+          data['RecordUserId']!,
+          _recordUserIdMeta,
         ),
       );
     }
@@ -5940,6 +4557,10 @@ class $JobMachineEventLogsTable extends JobMachineEventLogs
         DriftSqlType.string,
         data['${effectivePrefix}JobMachineRef'],
       ),
+      recordUserId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}RecordUserId'],
+      ),
       startTime: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}StartTime'],
@@ -5986,6 +4607,7 @@ class DbJobMachineEventLog extends DataClass
   final int uid;
   final String recId;
   final String? jobMachineRecId;
+  final String? recordUserId;
   final String? startTime;
   final String? endTime;
   final String? eventType;
@@ -5998,6 +4620,7 @@ class DbJobMachineEventLog extends DataClass
     required this.uid,
     required this.recId,
     this.jobMachineRecId,
+    this.recordUserId,
     this.startTime,
     this.endTime,
     this.eventType,
@@ -6014,6 +4637,9 @@ class DbJobMachineEventLog extends DataClass
     map['recID'] = Variable<String>(recId);
     if (!nullToAbsent || jobMachineRecId != null) {
       map['JobMachineRef'] = Variable<String>(jobMachineRecId);
+    }
+    if (!nullToAbsent || recordUserId != null) {
+      map['RecordUserId'] = Variable<String>(recordUserId);
     }
     if (!nullToAbsent || startTime != null) {
       map['StartTime'] = Variable<String>(startTime);
@@ -6043,6 +4669,9 @@ class DbJobMachineEventLog extends DataClass
       jobMachineRecId: jobMachineRecId == null && nullToAbsent
           ? const Value.absent()
           : Value(jobMachineRecId),
+      recordUserId: recordUserId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recordUserId),
       startTime: startTime == null && nullToAbsent
           ? const Value.absent()
           : Value(startTime),
@@ -6073,6 +4702,7 @@ class DbJobMachineEventLog extends DataClass
       uid: serializer.fromJson<int>(json['uid']),
       recId: serializer.fromJson<String>(json['recId']),
       jobMachineRecId: serializer.fromJson<String?>(json['jobMachineRecId']),
+      recordUserId: serializer.fromJson<String?>(json['recordUserId']),
       startTime: serializer.fromJson<String?>(json['startTime']),
       endTime: serializer.fromJson<String?>(json['endTime']),
       eventType: serializer.fromJson<String?>(json['eventType']),
@@ -6090,6 +4720,7 @@ class DbJobMachineEventLog extends DataClass
       'uid': serializer.toJson<int>(uid),
       'recId': serializer.toJson<String>(recId),
       'jobMachineRecId': serializer.toJson<String?>(jobMachineRecId),
+      'recordUserId': serializer.toJson<String?>(recordUserId),
       'startTime': serializer.toJson<String?>(startTime),
       'endTime': serializer.toJson<String?>(endTime),
       'eventType': serializer.toJson<String?>(eventType),
@@ -6105,6 +4736,7 @@ class DbJobMachineEventLog extends DataClass
     int? uid,
     String? recId,
     Value<String?> jobMachineRecId = const Value.absent(),
+    Value<String?> recordUserId = const Value.absent(),
     Value<String?> startTime = const Value.absent(),
     Value<String?> endTime = const Value.absent(),
     Value<String?> eventType = const Value.absent(),
@@ -6119,6 +4751,7 @@ class DbJobMachineEventLog extends DataClass
     jobMachineRecId: jobMachineRecId.present
         ? jobMachineRecId.value
         : this.jobMachineRecId,
+    recordUserId: recordUserId.present ? recordUserId.value : this.recordUserId,
     startTime: startTime.present ? startTime.value : this.startTime,
     endTime: endTime.present ? endTime.value : this.endTime,
     eventType: eventType.present ? eventType.value : this.eventType,
@@ -6135,6 +4768,9 @@ class DbJobMachineEventLog extends DataClass
       jobMachineRecId: data.jobMachineRecId.present
           ? data.jobMachineRecId.value
           : this.jobMachineRecId,
+      recordUserId: data.recordUserId.present
+          ? data.recordUserId.value
+          : this.recordUserId,
       startTime: data.startTime.present ? data.startTime.value : this.startTime,
       endTime: data.endTime.present ? data.endTime.value : this.endTime,
       eventType: data.eventType.present ? data.eventType.value : this.eventType,
@@ -6156,6 +4792,7 @@ class DbJobMachineEventLog extends DataClass
           ..write('uid: $uid, ')
           ..write('recId: $recId, ')
           ..write('jobMachineRecId: $jobMachineRecId, ')
+          ..write('recordUserId: $recordUserId, ')
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
           ..write('eventType: $eventType, ')
@@ -6173,6 +4810,7 @@ class DbJobMachineEventLog extends DataClass
     uid,
     recId,
     jobMachineRecId,
+    recordUserId,
     startTime,
     endTime,
     eventType,
@@ -6189,6 +4827,7 @@ class DbJobMachineEventLog extends DataClass
           other.uid == this.uid &&
           other.recId == this.recId &&
           other.jobMachineRecId == this.jobMachineRecId &&
+          other.recordUserId == this.recordUserId &&
           other.startTime == this.startTime &&
           other.endTime == this.endTime &&
           other.eventType == this.eventType &&
@@ -6204,6 +4843,7 @@ class JobMachineEventLogsCompanion
   final Value<int> uid;
   final Value<String> recId;
   final Value<String?> jobMachineRecId;
+  final Value<String?> recordUserId;
   final Value<String?> startTime;
   final Value<String?> endTime;
   final Value<String?> eventType;
@@ -6216,6 +4856,7 @@ class JobMachineEventLogsCompanion
     this.uid = const Value.absent(),
     this.recId = const Value.absent(),
     this.jobMachineRecId = const Value.absent(),
+    this.recordUserId = const Value.absent(),
     this.startTime = const Value.absent(),
     this.endTime = const Value.absent(),
     this.eventType = const Value.absent(),
@@ -6229,6 +4870,7 @@ class JobMachineEventLogsCompanion
     this.uid = const Value.absent(),
     required String recId,
     this.jobMachineRecId = const Value.absent(),
+    this.recordUserId = const Value.absent(),
     this.startTime = const Value.absent(),
     this.endTime = const Value.absent(),
     this.eventType = const Value.absent(),
@@ -6242,6 +4884,7 @@ class JobMachineEventLogsCompanion
     Expression<int>? uid,
     Expression<String>? recId,
     Expression<String>? jobMachineRecId,
+    Expression<String>? recordUserId,
     Expression<String>? startTime,
     Expression<String>? endTime,
     Expression<String>? eventType,
@@ -6255,6 +4898,7 @@ class JobMachineEventLogsCompanion
       if (uid != null) 'uid': uid,
       if (recId != null) 'recID': recId,
       if (jobMachineRecId != null) 'JobMachineRef': jobMachineRecId,
+      if (recordUserId != null) 'RecordUserId': recordUserId,
       if (startTime != null) 'StartTime': startTime,
       if (endTime != null) 'EndTime': endTime,
       if (eventType != null) 'EventType': eventType,
@@ -6270,6 +4914,7 @@ class JobMachineEventLogsCompanion
     Value<int>? uid,
     Value<String>? recId,
     Value<String?>? jobMachineRecId,
+    Value<String?>? recordUserId,
     Value<String?>? startTime,
     Value<String?>? endTime,
     Value<String?>? eventType,
@@ -6283,6 +4928,7 @@ class JobMachineEventLogsCompanion
       uid: uid ?? this.uid,
       recId: recId ?? this.recId,
       jobMachineRecId: jobMachineRecId ?? this.jobMachineRecId,
+      recordUserId: recordUserId ?? this.recordUserId,
       startTime: startTime ?? this.startTime,
       endTime: endTime ?? this.endTime,
       eventType: eventType ?? this.eventType,
@@ -6305,6 +4951,9 @@ class JobMachineEventLogsCompanion
     }
     if (jobMachineRecId.present) {
       map['JobMachineRef'] = Variable<String>(jobMachineRecId.value);
+    }
+    if (recordUserId.present) {
+      map['RecordUserId'] = Variable<String>(recordUserId.value);
     }
     if (startTime.present) {
       map['StartTime'] = Variable<String>(startTime.value);
@@ -6339,6 +4988,7 @@ class JobMachineEventLogsCompanion
           ..write('uid: $uid, ')
           ..write('recId: $recId, ')
           ..write('jobMachineRecId: $jobMachineRecId, ')
+          ..write('recordUserId: $recordUserId, ')
           ..write('startTime: $startTime, ')
           ..write('endTime: $endTime, ')
           ..write('eventType: $eventType, ')
@@ -9548,14 +8198,365 @@ class MachinesCompanion extends UpdateCompanion<DbMachine> {
   }
 }
 
+class $SyncLogsTable extends SyncLogs
+    with TableInfo<$SyncLogsTable, DbSyncLog> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SyncLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _syncTypeMeta = const VerificationMeta(
+    'syncType',
+  );
+  @override
+  late final GeneratedColumn<String> syncType = GeneratedColumn<String>(
+    'SyncType',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'Status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _messageMeta = const VerificationMeta(
+    'message',
+  );
+  @override
+  late final GeneratedColumn<String> message = GeneratedColumn<String>(
+    'Message',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _timestampMeta = const VerificationMeta(
+    'timestamp',
+  );
+  @override
+  late final GeneratedColumn<String> timestamp = GeneratedColumn<String>(
+    'Timestamp',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    syncType,
+    status,
+    message,
+    timestamp,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_logs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbSyncLog> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('SyncType')) {
+      context.handle(
+        _syncTypeMeta,
+        syncType.isAcceptableOrUnknown(data['SyncType']!, _syncTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_syncTypeMeta);
+    }
+    if (data.containsKey('Status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['Status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('Message')) {
+      context.handle(
+        _messageMeta,
+        message.isAcceptableOrUnknown(data['Message']!, _messageMeta),
+      );
+    }
+    if (data.containsKey('Timestamp')) {
+      context.handle(
+        _timestampMeta,
+        timestamp.isAcceptableOrUnknown(data['Timestamp']!, _timestampMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_timestampMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbSyncLog map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbSyncLog(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      syncType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}SyncType'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}Status'],
+      )!,
+      message: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}Message'],
+      ),
+      timestamp: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}Timestamp'],
+      )!,
+    );
+  }
+
+  @override
+  $SyncLogsTable createAlias(String alias) {
+    return $SyncLogsTable(attachedDatabase, alias);
+  }
+}
+
+class DbSyncLog extends DataClass implements Insertable<DbSyncLog> {
+  final int uid;
+  final String syncType;
+  final int status;
+  final String? message;
+  final String timestamp;
+  const DbSyncLog({
+    required this.uid,
+    required this.syncType,
+    required this.status,
+    this.message,
+    required this.timestamp,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    map['SyncType'] = Variable<String>(syncType);
+    map['Status'] = Variable<int>(status);
+    if (!nullToAbsent || message != null) {
+      map['Message'] = Variable<String>(message);
+    }
+    map['Timestamp'] = Variable<String>(timestamp);
+    return map;
+  }
+
+  SyncLogsCompanion toCompanion(bool nullToAbsent) {
+    return SyncLogsCompanion(
+      uid: Value(uid),
+      syncType: Value(syncType),
+      status: Value(status),
+      message: message == null && nullToAbsent
+          ? const Value.absent()
+          : Value(message),
+      timestamp: Value(timestamp),
+    );
+  }
+
+  factory DbSyncLog.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbSyncLog(
+      uid: serializer.fromJson<int>(json['uid']),
+      syncType: serializer.fromJson<String>(json['syncType']),
+      status: serializer.fromJson<int>(json['status']),
+      message: serializer.fromJson<String?>(json['message']),
+      timestamp: serializer.fromJson<String>(json['timestamp']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'syncType': serializer.toJson<String>(syncType),
+      'status': serializer.toJson<int>(status),
+      'message': serializer.toJson<String?>(message),
+      'timestamp': serializer.toJson<String>(timestamp),
+    };
+  }
+
+  DbSyncLog copyWith({
+    int? uid,
+    String? syncType,
+    int? status,
+    Value<String?> message = const Value.absent(),
+    String? timestamp,
+  }) => DbSyncLog(
+    uid: uid ?? this.uid,
+    syncType: syncType ?? this.syncType,
+    status: status ?? this.status,
+    message: message.present ? message.value : this.message,
+    timestamp: timestamp ?? this.timestamp,
+  );
+  DbSyncLog copyWithCompanion(SyncLogsCompanion data) {
+    return DbSyncLog(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      syncType: data.syncType.present ? data.syncType.value : this.syncType,
+      status: data.status.present ? data.status.value : this.status,
+      message: data.message.present ? data.message.value : this.message,
+      timestamp: data.timestamp.present ? data.timestamp.value : this.timestamp,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbSyncLog(')
+          ..write('uid: $uid, ')
+          ..write('syncType: $syncType, ')
+          ..write('status: $status, ')
+          ..write('message: $message, ')
+          ..write('timestamp: $timestamp')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(uid, syncType, status, message, timestamp);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbSyncLog &&
+          other.uid == this.uid &&
+          other.syncType == this.syncType &&
+          other.status == this.status &&
+          other.message == this.message &&
+          other.timestamp == this.timestamp);
+}
+
+class SyncLogsCompanion extends UpdateCompanion<DbSyncLog> {
+  final Value<int> uid;
+  final Value<String> syncType;
+  final Value<int> status;
+  final Value<String?> message;
+  final Value<String> timestamp;
+  const SyncLogsCompanion({
+    this.uid = const Value.absent(),
+    this.syncType = const Value.absent(),
+    this.status = const Value.absent(),
+    this.message = const Value.absent(),
+    this.timestamp = const Value.absent(),
+  });
+  SyncLogsCompanion.insert({
+    this.uid = const Value.absent(),
+    required String syncType,
+    required int status,
+    this.message = const Value.absent(),
+    required String timestamp,
+  }) : syncType = Value(syncType),
+       status = Value(status),
+       timestamp = Value(timestamp);
+  static Insertable<DbSyncLog> custom({
+    Expression<int>? uid,
+    Expression<String>? syncType,
+    Expression<int>? status,
+    Expression<String>? message,
+    Expression<String>? timestamp,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (syncType != null) 'SyncType': syncType,
+      if (status != null) 'Status': status,
+      if (message != null) 'Message': message,
+      if (timestamp != null) 'Timestamp': timestamp,
+    });
+  }
+
+  SyncLogsCompanion copyWith({
+    Value<int>? uid,
+    Value<String>? syncType,
+    Value<int>? status,
+    Value<String?>? message,
+    Value<String>? timestamp,
+  }) {
+    return SyncLogsCompanion(
+      uid: uid ?? this.uid,
+      syncType: syncType ?? this.syncType,
+      status: status ?? this.status,
+      message: message ?? this.message,
+      timestamp: timestamp ?? this.timestamp,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (syncType.present) {
+      map['SyncType'] = Variable<String>(syncType.value);
+    }
+    if (status.present) {
+      map['Status'] = Variable<int>(status.value);
+    }
+    if (message.present) {
+      map['Message'] = Variable<String>(message.value);
+    }
+    if (timestamp.present) {
+      map['Timestamp'] = Variable<String>(timestamp.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncLogsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('syncType: $syncType, ')
+          ..write('status: $status, ')
+          ..write('message: $message, ')
+          ..write('timestamp: $timestamp')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $JobsTable jobs = $JobsTable(this);
   late final $DocumentsTable documents = $DocumentsTable(this);
-  late final $DocumentRecordsTable documentRecords = $DocumentRecordsTable(
-    this,
-  );
   late final $UsersTable users = $UsersTable(this);
   late final $JobTestSetsTable jobTestSets = $JobTestSetsTable(this);
   late final $RunningJobMachinesTable runningJobMachines =
@@ -9574,11 +8575,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $CheckInLogsTable checkInLogs = $CheckInLogsTable(this);
   late final $ActivityLogsTable activityLogs = $ActivityLogsTable(this);
   late final $MachinesTable machines = $MachinesTable(this);
+  late final $SyncLogsTable syncLogs = $SyncLogsTable(this);
   late final JobDao jobDao = JobDao(this as AppDatabase);
   late final DocumentDao documentDao = DocumentDao(this as AppDatabase);
-  late final DocumentRecordDao documentRecordDao = DocumentRecordDao(
-    this as AppDatabase,
-  );
   late final UserDao userDao = UserDao(this as AppDatabase);
   late final RunningJobDetailsDao runningJobDetailsDao = RunningJobDetailsDao(
     this as AppDatabase,
@@ -9591,6 +8590,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final MachineDao machineDao = MachineDao(this as AppDatabase);
+  late final SyncLogDao syncLogDao = SyncLogDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -9598,7 +8598,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     jobs,
     documents,
-    documentRecords,
     users,
     jobTestSets,
     runningJobMachines,
@@ -9610,6 +8609,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     checkInLogs,
     activityLogs,
     machines,
+    syncLogs,
   ];
 }
 
@@ -10333,621 +9333,6 @@ typedef $$DocumentsTableProcessedTableManager =
       $$DocumentsTableUpdateCompanionBuilder,
       (DbDocument, BaseReferences<_$AppDatabase, $DocumentsTable, DbDocument>),
       DbDocument,
-      PrefetchHooks Function()
-    >;
-typedef $$DocumentRecordsTableCreateCompanionBuilder =
-    DocumentRecordsCompanion Function({
-      Value<int> uid,
-      Value<String?> documentId,
-      Value<String?> machineId,
-      Value<String?> jobId,
-      Value<String?> tagId,
-      Value<String?> tagName,
-      Value<String?> tagType,
-      Value<String?> tagGroupId,
-      Value<String?> tagGroupName,
-      Value<String?> tagSelectionValue,
-      Value<String?> description,
-      Value<String?> note,
-      Value<String?> specification,
-      Value<String?> specMin,
-      Value<String?> specMax,
-      Value<String?> unit,
-      Value<String?> queryStr,
-      Value<String?> value,
-      Value<String?> valueType,
-      Value<String?> remark,
-      Value<int> status,
-      Value<String> unReadable,
-      Value<String?> lastSync,
-      Value<String?> createBy,
-      Value<int> syncStatus,
-      Value<String?> updatedAt,
-    });
-typedef $$DocumentRecordsTableUpdateCompanionBuilder =
-    DocumentRecordsCompanion Function({
-      Value<int> uid,
-      Value<String?> documentId,
-      Value<String?> machineId,
-      Value<String?> jobId,
-      Value<String?> tagId,
-      Value<String?> tagName,
-      Value<String?> tagType,
-      Value<String?> tagGroupId,
-      Value<String?> tagGroupName,
-      Value<String?> tagSelectionValue,
-      Value<String?> description,
-      Value<String?> note,
-      Value<String?> specification,
-      Value<String?> specMin,
-      Value<String?> specMax,
-      Value<String?> unit,
-      Value<String?> queryStr,
-      Value<String?> value,
-      Value<String?> valueType,
-      Value<String?> remark,
-      Value<int> status,
-      Value<String> unReadable,
-      Value<String?> lastSync,
-      Value<String?> createBy,
-      Value<int> syncStatus,
-      Value<String?> updatedAt,
-    });
-
-class $$DocumentRecordsTableFilterComposer
-    extends Composer<_$AppDatabase, $DocumentRecordsTable> {
-  $$DocumentRecordsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get uid => $composableBuilder(
-    column: $table.uid,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get documentId => $composableBuilder(
-    column: $table.documentId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get machineId => $composableBuilder(
-    column: $table.machineId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get jobId => $composableBuilder(
-    column: $table.jobId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get tagId => $composableBuilder(
-    column: $table.tagId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get tagName => $composableBuilder(
-    column: $table.tagName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get tagType => $composableBuilder(
-    column: $table.tagType,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get tagGroupId => $composableBuilder(
-    column: $table.tagGroupId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get tagGroupName => $composableBuilder(
-    column: $table.tagGroupName,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get tagSelectionValue => $composableBuilder(
-    column: $table.tagSelectionValue,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get note => $composableBuilder(
-    column: $table.note,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get specification => $composableBuilder(
-    column: $table.specification,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get specMin => $composableBuilder(
-    column: $table.specMin,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get specMax => $composableBuilder(
-    column: $table.specMax,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get unit => $composableBuilder(
-    column: $table.unit,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get queryStr => $composableBuilder(
-    column: $table.queryStr,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get valueType => $composableBuilder(
-    column: $table.valueType,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get remark => $composableBuilder(
-    column: $table.remark,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get status => $composableBuilder(
-    column: $table.status,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get unReadable => $composableBuilder(
-    column: $table.unReadable,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get lastSync => $composableBuilder(
-    column: $table.lastSync,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get createBy => $composableBuilder(
-    column: $table.createBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
-}
-
-class $$DocumentRecordsTableOrderingComposer
-    extends Composer<_$AppDatabase, $DocumentRecordsTable> {
-  $$DocumentRecordsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get uid => $composableBuilder(
-    column: $table.uid,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get documentId => $composableBuilder(
-    column: $table.documentId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get machineId => $composableBuilder(
-    column: $table.machineId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get jobId => $composableBuilder(
-    column: $table.jobId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get tagId => $composableBuilder(
-    column: $table.tagId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get tagName => $composableBuilder(
-    column: $table.tagName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get tagType => $composableBuilder(
-    column: $table.tagType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get tagGroupId => $composableBuilder(
-    column: $table.tagGroupId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get tagGroupName => $composableBuilder(
-    column: $table.tagGroupName,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get tagSelectionValue => $composableBuilder(
-    column: $table.tagSelectionValue,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get note => $composableBuilder(
-    column: $table.note,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get specification => $composableBuilder(
-    column: $table.specification,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get specMin => $composableBuilder(
-    column: $table.specMin,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get specMax => $composableBuilder(
-    column: $table.specMax,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get unit => $composableBuilder(
-    column: $table.unit,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get queryStr => $composableBuilder(
-    column: $table.queryStr,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get valueType => $composableBuilder(
-    column: $table.valueType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get remark => $composableBuilder(
-    column: $table.remark,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get status => $composableBuilder(
-    column: $table.status,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get unReadable => $composableBuilder(
-    column: $table.unReadable,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get lastSync => $composableBuilder(
-    column: $table.lastSync,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get createBy => $composableBuilder(
-    column: $table.createBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
-}
-
-class $$DocumentRecordsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $DocumentRecordsTable> {
-  $$DocumentRecordsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get uid =>
-      $composableBuilder(column: $table.uid, builder: (column) => column);
-
-  GeneratedColumn<String> get documentId => $composableBuilder(
-    column: $table.documentId,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get machineId =>
-      $composableBuilder(column: $table.machineId, builder: (column) => column);
-
-  GeneratedColumn<String> get jobId =>
-      $composableBuilder(column: $table.jobId, builder: (column) => column);
-
-  GeneratedColumn<String> get tagId =>
-      $composableBuilder(column: $table.tagId, builder: (column) => column);
-
-  GeneratedColumn<String> get tagName =>
-      $composableBuilder(column: $table.tagName, builder: (column) => column);
-
-  GeneratedColumn<String> get tagType =>
-      $composableBuilder(column: $table.tagType, builder: (column) => column);
-
-  GeneratedColumn<String> get tagGroupId => $composableBuilder(
-    column: $table.tagGroupId,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get tagGroupName => $composableBuilder(
-    column: $table.tagGroupName,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get tagSelectionValue => $composableBuilder(
-    column: $table.tagSelectionValue,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get note =>
-      $composableBuilder(column: $table.note, builder: (column) => column);
-
-  GeneratedColumn<String> get specification => $composableBuilder(
-    column: $table.specification,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get specMin =>
-      $composableBuilder(column: $table.specMin, builder: (column) => column);
-
-  GeneratedColumn<String> get specMax =>
-      $composableBuilder(column: $table.specMax, builder: (column) => column);
-
-  GeneratedColumn<String> get unit =>
-      $composableBuilder(column: $table.unit, builder: (column) => column);
-
-  GeneratedColumn<String> get queryStr =>
-      $composableBuilder(column: $table.queryStr, builder: (column) => column);
-
-  GeneratedColumn<String> get value =>
-      $composableBuilder(column: $table.value, builder: (column) => column);
-
-  GeneratedColumn<String> get valueType =>
-      $composableBuilder(column: $table.valueType, builder: (column) => column);
-
-  GeneratedColumn<String> get remark =>
-      $composableBuilder(column: $table.remark, builder: (column) => column);
-
-  GeneratedColumn<int> get status =>
-      $composableBuilder(column: $table.status, builder: (column) => column);
-
-  GeneratedColumn<String> get unReadable => $composableBuilder(
-    column: $table.unReadable,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get lastSync =>
-      $composableBuilder(column: $table.lastSync, builder: (column) => column);
-
-  GeneratedColumn<String> get createBy =>
-      $composableBuilder(column: $table.createBy, builder: (column) => column);
-
-  GeneratedColumn<int> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-}
-
-class $$DocumentRecordsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $DocumentRecordsTable,
-          DbDocumentRecord,
-          $$DocumentRecordsTableFilterComposer,
-          $$DocumentRecordsTableOrderingComposer,
-          $$DocumentRecordsTableAnnotationComposer,
-          $$DocumentRecordsTableCreateCompanionBuilder,
-          $$DocumentRecordsTableUpdateCompanionBuilder,
-          (
-            DbDocumentRecord,
-            BaseReferences<
-              _$AppDatabase,
-              $DocumentRecordsTable,
-              DbDocumentRecord
-            >,
-          ),
-          DbDocumentRecord,
-          PrefetchHooks Function()
-        > {
-  $$DocumentRecordsTableTableManager(
-    _$AppDatabase db,
-    $DocumentRecordsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$DocumentRecordsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$DocumentRecordsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$DocumentRecordsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> uid = const Value.absent(),
-                Value<String?> documentId = const Value.absent(),
-                Value<String?> machineId = const Value.absent(),
-                Value<String?> jobId = const Value.absent(),
-                Value<String?> tagId = const Value.absent(),
-                Value<String?> tagName = const Value.absent(),
-                Value<String?> tagType = const Value.absent(),
-                Value<String?> tagGroupId = const Value.absent(),
-                Value<String?> tagGroupName = const Value.absent(),
-                Value<String?> tagSelectionValue = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<String?> note = const Value.absent(),
-                Value<String?> specification = const Value.absent(),
-                Value<String?> specMin = const Value.absent(),
-                Value<String?> specMax = const Value.absent(),
-                Value<String?> unit = const Value.absent(),
-                Value<String?> queryStr = const Value.absent(),
-                Value<String?> value = const Value.absent(),
-                Value<String?> valueType = const Value.absent(),
-                Value<String?> remark = const Value.absent(),
-                Value<int> status = const Value.absent(),
-                Value<String> unReadable = const Value.absent(),
-                Value<String?> lastSync = const Value.absent(),
-                Value<String?> createBy = const Value.absent(),
-                Value<int> syncStatus = const Value.absent(),
-                Value<String?> updatedAt = const Value.absent(),
-              }) => DocumentRecordsCompanion(
-                uid: uid,
-                documentId: documentId,
-                machineId: machineId,
-                jobId: jobId,
-                tagId: tagId,
-                tagName: tagName,
-                tagType: tagType,
-                tagGroupId: tagGroupId,
-                tagGroupName: tagGroupName,
-                tagSelectionValue: tagSelectionValue,
-                description: description,
-                note: note,
-                specification: specification,
-                specMin: specMin,
-                specMax: specMax,
-                unit: unit,
-                queryStr: queryStr,
-                value: value,
-                valueType: valueType,
-                remark: remark,
-                status: status,
-                unReadable: unReadable,
-                lastSync: lastSync,
-                createBy: createBy,
-                syncStatus: syncStatus,
-                updatedAt: updatedAt,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> uid = const Value.absent(),
-                Value<String?> documentId = const Value.absent(),
-                Value<String?> machineId = const Value.absent(),
-                Value<String?> jobId = const Value.absent(),
-                Value<String?> tagId = const Value.absent(),
-                Value<String?> tagName = const Value.absent(),
-                Value<String?> tagType = const Value.absent(),
-                Value<String?> tagGroupId = const Value.absent(),
-                Value<String?> tagGroupName = const Value.absent(),
-                Value<String?> tagSelectionValue = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<String?> note = const Value.absent(),
-                Value<String?> specification = const Value.absent(),
-                Value<String?> specMin = const Value.absent(),
-                Value<String?> specMax = const Value.absent(),
-                Value<String?> unit = const Value.absent(),
-                Value<String?> queryStr = const Value.absent(),
-                Value<String?> value = const Value.absent(),
-                Value<String?> valueType = const Value.absent(),
-                Value<String?> remark = const Value.absent(),
-                Value<int> status = const Value.absent(),
-                Value<String> unReadable = const Value.absent(),
-                Value<String?> lastSync = const Value.absent(),
-                Value<String?> createBy = const Value.absent(),
-                Value<int> syncStatus = const Value.absent(),
-                Value<String?> updatedAt = const Value.absent(),
-              }) => DocumentRecordsCompanion.insert(
-                uid: uid,
-                documentId: documentId,
-                machineId: machineId,
-                jobId: jobId,
-                tagId: tagId,
-                tagName: tagName,
-                tagType: tagType,
-                tagGroupId: tagGroupId,
-                tagGroupName: tagGroupName,
-                tagSelectionValue: tagSelectionValue,
-                description: description,
-                note: note,
-                specification: specification,
-                specMin: specMin,
-                specMax: specMax,
-                unit: unit,
-                queryStr: queryStr,
-                value: value,
-                valueType: valueType,
-                remark: remark,
-                status: status,
-                unReadable: unReadable,
-                lastSync: lastSync,
-                createBy: createBy,
-                syncStatus: syncStatus,
-                updatedAt: updatedAt,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ),
-      );
-}
-
-typedef $$DocumentRecordsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $DocumentRecordsTable,
-      DbDocumentRecord,
-      $$DocumentRecordsTableFilterComposer,
-      $$DocumentRecordsTableOrderingComposer,
-      $$DocumentRecordsTableAnnotationComposer,
-      $$DocumentRecordsTableCreateCompanionBuilder,
-      $$DocumentRecordsTableUpdateCompanionBuilder,
-      (
-        DbDocumentRecord,
-        BaseReferences<_$AppDatabase, $DocumentRecordsTable, DbDocumentRecord>,
-      ),
-      DbDocumentRecord,
       PrefetchHooks Function()
     >;
 typedef $$UsersTableCreateCompanionBuilder =
@@ -12250,6 +10635,7 @@ typedef $$JobMachineEventLogsTableCreateCompanionBuilder =
       Value<int> uid,
       required String recId,
       Value<String?> jobMachineRecId,
+      Value<String?> recordUserId,
       Value<String?> startTime,
       Value<String?> endTime,
       Value<String?> eventType,
@@ -12264,6 +10650,7 @@ typedef $$JobMachineEventLogsTableUpdateCompanionBuilder =
       Value<int> uid,
       Value<String> recId,
       Value<String?> jobMachineRecId,
+      Value<String?> recordUserId,
       Value<String?> startTime,
       Value<String?> endTime,
       Value<String?> eventType,
@@ -12295,6 +10682,11 @@ class $$JobMachineEventLogsTableFilterComposer
 
   ColumnFilters<String> get jobMachineRecId => $composableBuilder(
     column: $table.jobMachineRecId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordUserId => $composableBuilder(
+    column: $table.recordUserId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12363,6 +10755,11 @@ class $$JobMachineEventLogsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get recordUserId => $composableBuilder(
+    column: $table.recordUserId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get startTime => $composableBuilder(
     column: $table.startTime,
     builder: (column) => ColumnOrderings(column),
@@ -12421,6 +10818,11 @@ class $$JobMachineEventLogsTableAnnotationComposer
 
   GeneratedColumn<String> get jobMachineRecId => $composableBuilder(
     column: $table.jobMachineRecId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recordUserId => $composableBuilder(
+    column: $table.recordUserId,
     builder: (column) => column,
   );
 
@@ -12499,6 +10901,7 @@ class $$JobMachineEventLogsTableTableManager
                 Value<int> uid = const Value.absent(),
                 Value<String> recId = const Value.absent(),
                 Value<String?> jobMachineRecId = const Value.absent(),
+                Value<String?> recordUserId = const Value.absent(),
                 Value<String?> startTime = const Value.absent(),
                 Value<String?> endTime = const Value.absent(),
                 Value<String?> eventType = const Value.absent(),
@@ -12511,6 +10914,7 @@ class $$JobMachineEventLogsTableTableManager
                 uid: uid,
                 recId: recId,
                 jobMachineRecId: jobMachineRecId,
+                recordUserId: recordUserId,
                 startTime: startTime,
                 endTime: endTime,
                 eventType: eventType,
@@ -12525,6 +10929,7 @@ class $$JobMachineEventLogsTableTableManager
                 Value<int> uid = const Value.absent(),
                 required String recId,
                 Value<String?> jobMachineRecId = const Value.absent(),
+                Value<String?> recordUserId = const Value.absent(),
                 Value<String?> startTime = const Value.absent(),
                 Value<String?> endTime = const Value.absent(),
                 Value<String?> eventType = const Value.absent(),
@@ -12537,6 +10942,7 @@ class $$JobMachineEventLogsTableTableManager
                 uid: uid,
                 recId: recId,
                 jobMachineRecId: jobMachineRecId,
+                recordUserId: recordUserId,
                 startTime: startTime,
                 endTime: endTime,
                 eventType: eventType,
@@ -14176,6 +12582,194 @@ typedef $$MachinesTableProcessedTableManager =
       DbMachine,
       PrefetchHooks Function()
     >;
+typedef $$SyncLogsTableCreateCompanionBuilder =
+    SyncLogsCompanion Function({
+      Value<int> uid,
+      required String syncType,
+      required int status,
+      Value<String?> message,
+      required String timestamp,
+    });
+typedef $$SyncLogsTableUpdateCompanionBuilder =
+    SyncLogsCompanion Function({
+      Value<int> uid,
+      Value<String> syncType,
+      Value<int> status,
+      Value<String?> message,
+      Value<String> timestamp,
+    });
+
+class $$SyncLogsTableFilterComposer
+    extends Composer<_$AppDatabase, $SyncLogsTable> {
+  $$SyncLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get syncType => $composableBuilder(
+    column: $table.syncType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get message => $composableBuilder(
+    column: $table.message,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SyncLogsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SyncLogsTable> {
+  $$SyncLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncType => $composableBuilder(
+    column: $table.syncType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get message => $composableBuilder(
+    column: $table.message,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get timestamp => $composableBuilder(
+    column: $table.timestamp,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SyncLogsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SyncLogsTable> {
+  $$SyncLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get syncType =>
+      $composableBuilder(column: $table.syncType, builder: (column) => column);
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get message =>
+      $composableBuilder(column: $table.message, builder: (column) => column);
+
+  GeneratedColumn<String> get timestamp =>
+      $composableBuilder(column: $table.timestamp, builder: (column) => column);
+}
+
+class $$SyncLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SyncLogsTable,
+          DbSyncLog,
+          $$SyncLogsTableFilterComposer,
+          $$SyncLogsTableOrderingComposer,
+          $$SyncLogsTableAnnotationComposer,
+          $$SyncLogsTableCreateCompanionBuilder,
+          $$SyncLogsTableUpdateCompanionBuilder,
+          (DbSyncLog, BaseReferences<_$AppDatabase, $SyncLogsTable, DbSyncLog>),
+          DbSyncLog,
+          PrefetchHooks Function()
+        > {
+  $$SyncLogsTableTableManager(_$AppDatabase db, $SyncLogsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SyncLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SyncLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SyncLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String> syncType = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> message = const Value.absent(),
+                Value<String> timestamp = const Value.absent(),
+              }) => SyncLogsCompanion(
+                uid: uid,
+                syncType: syncType,
+                status: status,
+                message: message,
+                timestamp: timestamp,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                required String syncType,
+                required int status,
+                Value<String?> message = const Value.absent(),
+                required String timestamp,
+              }) => SyncLogsCompanion.insert(
+                uid: uid,
+                syncType: syncType,
+                status: status,
+                message: message,
+                timestamp: timestamp,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SyncLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SyncLogsTable,
+      DbSyncLog,
+      $$SyncLogsTableFilterComposer,
+      $$SyncLogsTableOrderingComposer,
+      $$SyncLogsTableAnnotationComposer,
+      $$SyncLogsTableCreateCompanionBuilder,
+      $$SyncLogsTableUpdateCompanionBuilder,
+      (DbSyncLog, BaseReferences<_$AppDatabase, $SyncLogsTable, DbSyncLog>),
+      DbSyncLog,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -14183,8 +12777,6 @@ class $AppDatabaseManager {
   $$JobsTableTableManager get jobs => $$JobsTableTableManager(_db, _db.jobs);
   $$DocumentsTableTableManager get documents =>
       $$DocumentsTableTableManager(_db, _db.documents);
-  $$DocumentRecordsTableTableManager get documentRecords =>
-      $$DocumentRecordsTableTableManager(_db, _db.documentRecords);
   $$UsersTableTableManager get users =>
       $$UsersTableTableManager(_db, _db.users);
   $$JobTestSetsTableTableManager get jobTestSets =>
@@ -14207,4 +12799,6 @@ class $AppDatabaseManager {
       $$ActivityLogsTableTableManager(_db, _db.activityLogs);
   $$MachinesTableTableManager get machines =>
       $$MachinesTableTableManager(_db, _db.machines);
+  $$SyncLogsTableTableManager get syncLogs =>
+      $$SyncLogsTableTableManager(_db, _db.syncLogs);
 }

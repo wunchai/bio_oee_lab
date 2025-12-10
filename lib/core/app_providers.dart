@@ -9,6 +9,7 @@ import 'package:bio_oee_lab/data/services/device_info_service.dart';
 import 'package:bio_oee_lab/data/network/sync_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/sync_repository.dart';
 import 'package:bio_oee_lab/data/network/job_api_service.dart';
+import 'package:bio_oee_lab/data/network/job_sync_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/job_repository.dart';
 import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 import 'package:bio_oee_lab/data/repositories/check_in_repository.dart';
@@ -17,6 +18,7 @@ import 'package:bio_oee_lab/data/network/machine_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/machine_repository.dart';
 import 'package:bio_oee_lab/data/network/activity_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/info_repository.dart';
+import 'package:bio_oee_lab/data/repositories/job_sync_repository.dart';
 
 Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final deviceInfoService = DeviceInfoService();
@@ -24,6 +26,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final syncApiService = SyncApiService();
   final jobApiService = JobApiService();
   final machineApiService = MachineApiService();
+  final jobSyncApiService = JobSyncApiService();
 
   final dbProvider = Provider<AppDatabase>.value(value: appDatabase);
 
@@ -38,28 +41,37 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     deviceInfoService: deviceInfoService,
   );
 
-  final syncRepository = SyncRepository(
-    syncApiService: syncApiService,
-    userDao: appDatabase.userDao,
-  );
-
   final jobRepository = JobRepository(
     apiService: jobApiService,
     jobDao: appDatabase.jobDao,
   );
 
-  final documentRepository = DocumentRepository(appDatabase: appDatabase);
-  final checkInRepository = CheckInRepository(appDatabase: appDatabase);
-
-  final activityApiService = ActivityApiService(); // Import this
-  final activityRepository = ActivityRepository(
-    appDatabase: appDatabase,
-    apiService: activityApiService,
-  );
-
   final machineRepository = MachineRepository(
     apiService: machineApiService,
     machineDao: appDatabase.machineDao,
+  );
+
+  final jobSyncRepository = JobSyncRepository(
+    appDatabase: appDatabase,
+    apiService: jobSyncApiService,
+  );
+
+  final syncRepository = SyncRepository(
+    syncApiService: syncApiService,
+    userDao: appDatabase.userDao,
+    syncLogDao: appDatabase.syncLogDao,
+    jobRepository: jobRepository,
+    machineRepository: machineRepository,
+    jobSyncRepository: jobSyncRepository,
+  );
+
+  final documentRepository = DocumentRepository(appDatabase: appDatabase);
+  final checkInRepository = CheckInRepository(appDatabase: appDatabase);
+
+  final activityApiService = ActivityApiService();
+  final activityRepository = ActivityRepository(
+    appDatabase: appDatabase,
+    apiService: activityApiService,
   );
 
   return [
@@ -74,12 +86,11 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     ChangeNotifierProvider<LoginRepository>(
       create: (context) => loginRepository,
     ),
-    ChangeNotifierProvider<SyncRepository>(create: (context) => syncRepository),
     ChangeNotifierProvider.value(value: jobRepository),
+    ChangeNotifierProvider.value(value: machineRepository),
+    Provider.value(value: jobSyncRepository),
+    ChangeNotifierProvider.value(value: syncRepository),
     Provider<DocumentRepository>.value(value: documentRepository),
-    ChangeNotifierProvider<MachineRepository>(
-      create: (context) => machineRepository,
-    ),
     Provider<InfoRepository>(
       create: (context) => InfoRepository(
         appDatabase: appDatabase,
