@@ -742,12 +742,25 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                       subtitle: Text(
                         'Registered by: ${item.registerUser ?? '-'}',
                       ),
-                      trailing: item.syncStatus == 0
-                          ? const Icon(
-                              Icons.cloud_upload_outlined,
-                              color: Colors.grey,
-                            )
-                          : const Icon(Icons.check_circle, color: Colors.green),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          item.syncStatus == 0
+                              ? const Icon(
+                                  Icons.cloud_upload_outlined,
+                                  color: Colors.grey,
+                                )
+                              : const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green,
+                                ),
+                          IconButton(
+                            onPressed: () => _confirmDeleteTestSet(item),
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            tooltip: 'Delete',
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -856,7 +869,17 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                       subtitle: Text(
                         'Registered by: ${item.registerUser ?? '-'}',
                       ),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            onPressed: () => _confirmDeleteMachine(item),
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            tooltip: 'Delete',
+                          ),
+                          const Icon(Icons.arrow_forward_ios, size: 16),
+                        ],
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -954,6 +977,85 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
 
     if (result != null && result.isNotEmpty) {
       await _saveMachine(result);
+    }
+  }
+
+  // 4. Delete Confirmations (Soft Delete)
+  Future<void> _confirmDeleteTestSet(DbJobTestSet item) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Test Set'),
+        content: Text('Delete Test Set "${item.setItemNo}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final db = Provider.of<AppDatabase>(context, listen: false);
+      try {
+        await db.runningJobDetailsDao.deleteJobTestSet(item.recId);
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Test Set deleted.')));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _confirmDeleteMachine(DbRunningJobMachine item) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Machine'),
+        content: Text('Delete Machine "${item.machineNo}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      final db = Provider.of<AppDatabase>(context, listen: false);
+      try {
+        await db.runningJobDetailsDao.deleteRunningJobMachine(item.recId);
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Machine deleted.')));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+          );
+        }
+      }
     }
   }
 }

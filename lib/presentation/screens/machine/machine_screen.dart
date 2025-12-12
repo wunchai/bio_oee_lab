@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
+import 'package:bio_oee_lab/presentation/screens/machine/machine_summary_screen.dart';
 
 class MachineScreen extends StatefulWidget {
   const MachineScreen({super.key});
@@ -311,57 +312,77 @@ class _MachineScreenState extends State<MachineScreen> {
       elevation: 2,
       margin: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      child: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Row(
-          children: [
-            // Status Icon
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: statusColor.withOpacity(0.1),
-                shape: BoxShape.circle,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MachineSummaryScreen(
+                machineId: machine.machineId ?? '',
+                machineName: machine.machineName ?? 'Unknown',
               ),
-              child: Icon(statusIcon, color: statusColor, size: 28),
             ),
-            const SizedBox(width: 16),
-            // Machine Info
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    machine.machineName ?? 'Unknown Name',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Row(
+            children: [
+              // Status Icon
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(statusIcon, color: statusColor, size: 28),
+              ),
+              const SizedBox(width: 16),
+              // Machine Info
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      machine.machineName ?? 'Unknown Name',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${machine.machineNo} (${machine.machineId})',
-                    style: TextStyle(color: Colors.grey.shade700, fontSize: 13),
-                  ),
-                ],
-              ),
-            ),
-            // Status Badge
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: statusColor,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                machine.status ?? 'Unknown',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
+                    const SizedBox(height: 4),
+                    Text(
+                      '${machine.machineNo} (${machine.machineId})',
+                      style: TextStyle(
+                        color: Colors.grey.shade700,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              // Status Badge
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  machine.status ?? 'Unknown',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

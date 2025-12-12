@@ -8552,6 +8552,1784 @@ class SyncLogsCompanion extends UpdateCompanion<DbSyncLog> {
   }
 }
 
+class $MachineSummariesTable extends MachineSummaries
+    with TableInfo<$MachineSummariesTable, DbMachineSummary> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MachineSummariesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _machineIdMeta = const VerificationMeta(
+    'machineId',
+  );
+  @override
+  late final GeneratedColumn<String> machineId = GeneratedColumn<String>(
+    'MachineID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _machineNameMeta = const VerificationMeta(
+    'machineName',
+  );
+  @override
+  late final GeneratedColumn<String> machineName = GeneratedColumn<String>(
+    'MachineName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'Status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _currentJobIdMeta = const VerificationMeta(
+    'currentJobId',
+  );
+  @override
+  late final GeneratedColumn<String> currentJobId = GeneratedColumn<String>(
+    'CurrentJobID',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _currentJobNameMeta = const VerificationMeta(
+    'currentJobName',
+  );
+  @override
+  late final GeneratedColumn<String> currentJobName = GeneratedColumn<String>(
+    'CurrentJobName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _oeePercentMeta = const VerificationMeta(
+    'oeePercent',
+  );
+  @override
+  late final GeneratedColumn<double> oeePercent = GeneratedColumn<double>(
+    'OEE',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _availabilityMeta = const VerificationMeta(
+    'availability',
+  );
+  @override
+  late final GeneratedColumn<double> availability = GeneratedColumn<double>(
+    'Availability',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _performanceMeta = const VerificationMeta(
+    'performance',
+  );
+  @override
+  late final GeneratedColumn<double> performance = GeneratedColumn<double>(
+    'Performance',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _qualityMeta = const VerificationMeta(
+    'quality',
+  );
+  @override
+  late final GeneratedColumn<double> quality = GeneratedColumn<double>(
+    'Quality',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0.0),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'UpdatedAt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    machineId,
+    machineName,
+    status,
+    currentJobId,
+    currentJobName,
+    oeePercent,
+    availability,
+    performance,
+    quality,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'machine_summaries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbMachineSummary> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('MachineID')) {
+      context.handle(
+        _machineIdMeta,
+        machineId.isAcceptableOrUnknown(data['MachineID']!, _machineIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_machineIdMeta);
+    }
+    if (data.containsKey('MachineName')) {
+      context.handle(
+        _machineNameMeta,
+        machineName.isAcceptableOrUnknown(
+          data['MachineName']!,
+          _machineNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('Status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['Status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('CurrentJobID')) {
+      context.handle(
+        _currentJobIdMeta,
+        currentJobId.isAcceptableOrUnknown(
+          data['CurrentJobID']!,
+          _currentJobIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('CurrentJobName')) {
+      context.handle(
+        _currentJobNameMeta,
+        currentJobName.isAcceptableOrUnknown(
+          data['CurrentJobName']!,
+          _currentJobNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('OEE')) {
+      context.handle(
+        _oeePercentMeta,
+        oeePercent.isAcceptableOrUnknown(data['OEE']!, _oeePercentMeta),
+      );
+    }
+    if (data.containsKey('Availability')) {
+      context.handle(
+        _availabilityMeta,
+        availability.isAcceptableOrUnknown(
+          data['Availability']!,
+          _availabilityMeta,
+        ),
+      );
+    }
+    if (data.containsKey('Performance')) {
+      context.handle(
+        _performanceMeta,
+        performance.isAcceptableOrUnknown(
+          data['Performance']!,
+          _performanceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('Quality')) {
+      context.handle(
+        _qualityMeta,
+        quality.isAcceptableOrUnknown(data['Quality']!, _qualityMeta),
+      );
+    }
+    if (data.containsKey('UpdatedAt')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['UpdatedAt']!, _updatedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbMachineSummary map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbMachineSummary(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      machineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}MachineID'],
+      )!,
+      machineName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}MachineName'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}Status'],
+      ),
+      currentJobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}CurrentJobID'],
+      ),
+      currentJobName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}CurrentJobName'],
+      ),
+      oeePercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}OEE'],
+      )!,
+      availability: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}Availability'],
+      )!,
+      performance: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}Performance'],
+      )!,
+      quality: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}Quality'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}UpdatedAt'],
+      ),
+    );
+  }
+
+  @override
+  $MachineSummariesTable createAlias(String alias) {
+    return $MachineSummariesTable(attachedDatabase, alias);
+  }
+}
+
+class DbMachineSummary extends DataClass
+    implements Insertable<DbMachineSummary> {
+  final int uid;
+  final String machineId;
+  final String? machineName;
+  final String? status;
+  final String? currentJobId;
+  final String? currentJobName;
+  final double oeePercent;
+  final double availability;
+  final double performance;
+  final double quality;
+  final String? updatedAt;
+  const DbMachineSummary({
+    required this.uid,
+    required this.machineId,
+    this.machineName,
+    this.status,
+    this.currentJobId,
+    this.currentJobName,
+    required this.oeePercent,
+    required this.availability,
+    required this.performance,
+    required this.quality,
+    this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    map['MachineID'] = Variable<String>(machineId);
+    if (!nullToAbsent || machineName != null) {
+      map['MachineName'] = Variable<String>(machineName);
+    }
+    if (!nullToAbsent || status != null) {
+      map['Status'] = Variable<String>(status);
+    }
+    if (!nullToAbsent || currentJobId != null) {
+      map['CurrentJobID'] = Variable<String>(currentJobId);
+    }
+    if (!nullToAbsent || currentJobName != null) {
+      map['CurrentJobName'] = Variable<String>(currentJobName);
+    }
+    map['OEE'] = Variable<double>(oeePercent);
+    map['Availability'] = Variable<double>(availability);
+    map['Performance'] = Variable<double>(performance);
+    map['Quality'] = Variable<double>(quality);
+    if (!nullToAbsent || updatedAt != null) {
+      map['UpdatedAt'] = Variable<String>(updatedAt);
+    }
+    return map;
+  }
+
+  MachineSummariesCompanion toCompanion(bool nullToAbsent) {
+    return MachineSummariesCompanion(
+      uid: Value(uid),
+      machineId: Value(machineId),
+      machineName: machineName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(machineName),
+      status: status == null && nullToAbsent
+          ? const Value.absent()
+          : Value(status),
+      currentJobId: currentJobId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(currentJobId),
+      currentJobName: currentJobName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(currentJobName),
+      oeePercent: Value(oeePercent),
+      availability: Value(availability),
+      performance: Value(performance),
+      quality: Value(quality),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+    );
+  }
+
+  factory DbMachineSummary.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbMachineSummary(
+      uid: serializer.fromJson<int>(json['uid']),
+      machineId: serializer.fromJson<String>(json['machineId']),
+      machineName: serializer.fromJson<String?>(json['machineName']),
+      status: serializer.fromJson<String?>(json['status']),
+      currentJobId: serializer.fromJson<String?>(json['currentJobId']),
+      currentJobName: serializer.fromJson<String?>(json['currentJobName']),
+      oeePercent: serializer.fromJson<double>(json['oeePercent']),
+      availability: serializer.fromJson<double>(json['availability']),
+      performance: serializer.fromJson<double>(json['performance']),
+      quality: serializer.fromJson<double>(json['quality']),
+      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'machineId': serializer.toJson<String>(machineId),
+      'machineName': serializer.toJson<String?>(machineName),
+      'status': serializer.toJson<String?>(status),
+      'currentJobId': serializer.toJson<String?>(currentJobId),
+      'currentJobName': serializer.toJson<String?>(currentJobName),
+      'oeePercent': serializer.toJson<double>(oeePercent),
+      'availability': serializer.toJson<double>(availability),
+      'performance': serializer.toJson<double>(performance),
+      'quality': serializer.toJson<double>(quality),
+      'updatedAt': serializer.toJson<String?>(updatedAt),
+    };
+  }
+
+  DbMachineSummary copyWith({
+    int? uid,
+    String? machineId,
+    Value<String?> machineName = const Value.absent(),
+    Value<String?> status = const Value.absent(),
+    Value<String?> currentJobId = const Value.absent(),
+    Value<String?> currentJobName = const Value.absent(),
+    double? oeePercent,
+    double? availability,
+    double? performance,
+    double? quality,
+    Value<String?> updatedAt = const Value.absent(),
+  }) => DbMachineSummary(
+    uid: uid ?? this.uid,
+    machineId: machineId ?? this.machineId,
+    machineName: machineName.present ? machineName.value : this.machineName,
+    status: status.present ? status.value : this.status,
+    currentJobId: currentJobId.present ? currentJobId.value : this.currentJobId,
+    currentJobName: currentJobName.present
+        ? currentJobName.value
+        : this.currentJobName,
+    oeePercent: oeePercent ?? this.oeePercent,
+    availability: availability ?? this.availability,
+    performance: performance ?? this.performance,
+    quality: quality ?? this.quality,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+  );
+  DbMachineSummary copyWithCompanion(MachineSummariesCompanion data) {
+    return DbMachineSummary(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      machineId: data.machineId.present ? data.machineId.value : this.machineId,
+      machineName: data.machineName.present
+          ? data.machineName.value
+          : this.machineName,
+      status: data.status.present ? data.status.value : this.status,
+      currentJobId: data.currentJobId.present
+          ? data.currentJobId.value
+          : this.currentJobId,
+      currentJobName: data.currentJobName.present
+          ? data.currentJobName.value
+          : this.currentJobName,
+      oeePercent: data.oeePercent.present
+          ? data.oeePercent.value
+          : this.oeePercent,
+      availability: data.availability.present
+          ? data.availability.value
+          : this.availability,
+      performance: data.performance.present
+          ? data.performance.value
+          : this.performance,
+      quality: data.quality.present ? data.quality.value : this.quality,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbMachineSummary(')
+          ..write('uid: $uid, ')
+          ..write('machineId: $machineId, ')
+          ..write('machineName: $machineName, ')
+          ..write('status: $status, ')
+          ..write('currentJobId: $currentJobId, ')
+          ..write('currentJobName: $currentJobName, ')
+          ..write('oeePercent: $oeePercent, ')
+          ..write('availability: $availability, ')
+          ..write('performance: $performance, ')
+          ..write('quality: $quality, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    machineId,
+    machineName,
+    status,
+    currentJobId,
+    currentJobName,
+    oeePercent,
+    availability,
+    performance,
+    quality,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbMachineSummary &&
+          other.uid == this.uid &&
+          other.machineId == this.machineId &&
+          other.machineName == this.machineName &&
+          other.status == this.status &&
+          other.currentJobId == this.currentJobId &&
+          other.currentJobName == this.currentJobName &&
+          other.oeePercent == this.oeePercent &&
+          other.availability == this.availability &&
+          other.performance == this.performance &&
+          other.quality == this.quality &&
+          other.updatedAt == this.updatedAt);
+}
+
+class MachineSummariesCompanion extends UpdateCompanion<DbMachineSummary> {
+  final Value<int> uid;
+  final Value<String> machineId;
+  final Value<String?> machineName;
+  final Value<String?> status;
+  final Value<String?> currentJobId;
+  final Value<String?> currentJobName;
+  final Value<double> oeePercent;
+  final Value<double> availability;
+  final Value<double> performance;
+  final Value<double> quality;
+  final Value<String?> updatedAt;
+  const MachineSummariesCompanion({
+    this.uid = const Value.absent(),
+    this.machineId = const Value.absent(),
+    this.machineName = const Value.absent(),
+    this.status = const Value.absent(),
+    this.currentJobId = const Value.absent(),
+    this.currentJobName = const Value.absent(),
+    this.oeePercent = const Value.absent(),
+    this.availability = const Value.absent(),
+    this.performance = const Value.absent(),
+    this.quality = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  MachineSummariesCompanion.insert({
+    this.uid = const Value.absent(),
+    required String machineId,
+    this.machineName = const Value.absent(),
+    this.status = const Value.absent(),
+    this.currentJobId = const Value.absent(),
+    this.currentJobName = const Value.absent(),
+    this.oeePercent = const Value.absent(),
+    this.availability = const Value.absent(),
+    this.performance = const Value.absent(),
+    this.quality = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : machineId = Value(machineId);
+  static Insertable<DbMachineSummary> custom({
+    Expression<int>? uid,
+    Expression<String>? machineId,
+    Expression<String>? machineName,
+    Expression<String>? status,
+    Expression<String>? currentJobId,
+    Expression<String>? currentJobName,
+    Expression<double>? oeePercent,
+    Expression<double>? availability,
+    Expression<double>? performance,
+    Expression<double>? quality,
+    Expression<String>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (machineId != null) 'MachineID': machineId,
+      if (machineName != null) 'MachineName': machineName,
+      if (status != null) 'Status': status,
+      if (currentJobId != null) 'CurrentJobID': currentJobId,
+      if (currentJobName != null) 'CurrentJobName': currentJobName,
+      if (oeePercent != null) 'OEE': oeePercent,
+      if (availability != null) 'Availability': availability,
+      if (performance != null) 'Performance': performance,
+      if (quality != null) 'Quality': quality,
+      if (updatedAt != null) 'UpdatedAt': updatedAt,
+    });
+  }
+
+  MachineSummariesCompanion copyWith({
+    Value<int>? uid,
+    Value<String>? machineId,
+    Value<String?>? machineName,
+    Value<String?>? status,
+    Value<String?>? currentJobId,
+    Value<String?>? currentJobName,
+    Value<double>? oeePercent,
+    Value<double>? availability,
+    Value<double>? performance,
+    Value<double>? quality,
+    Value<String?>? updatedAt,
+  }) {
+    return MachineSummariesCompanion(
+      uid: uid ?? this.uid,
+      machineId: machineId ?? this.machineId,
+      machineName: machineName ?? this.machineName,
+      status: status ?? this.status,
+      currentJobId: currentJobId ?? this.currentJobId,
+      currentJobName: currentJobName ?? this.currentJobName,
+      oeePercent: oeePercent ?? this.oeePercent,
+      availability: availability ?? this.availability,
+      performance: performance ?? this.performance,
+      quality: quality ?? this.quality,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (machineId.present) {
+      map['MachineID'] = Variable<String>(machineId.value);
+    }
+    if (machineName.present) {
+      map['MachineName'] = Variable<String>(machineName.value);
+    }
+    if (status.present) {
+      map['Status'] = Variable<String>(status.value);
+    }
+    if (currentJobId.present) {
+      map['CurrentJobID'] = Variable<String>(currentJobId.value);
+    }
+    if (currentJobName.present) {
+      map['CurrentJobName'] = Variable<String>(currentJobName.value);
+    }
+    if (oeePercent.present) {
+      map['OEE'] = Variable<double>(oeePercent.value);
+    }
+    if (availability.present) {
+      map['Availability'] = Variable<double>(availability.value);
+    }
+    if (performance.present) {
+      map['Performance'] = Variable<double>(performance.value);
+    }
+    if (quality.present) {
+      map['Quality'] = Variable<double>(quality.value);
+    }
+    if (updatedAt.present) {
+      map['UpdatedAt'] = Variable<String>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MachineSummariesCompanion(')
+          ..write('uid: $uid, ')
+          ..write('machineId: $machineId, ')
+          ..write('machineName: $machineName, ')
+          ..write('status: $status, ')
+          ..write('currentJobId: $currentJobId, ')
+          ..write('currentJobName: $currentJobName, ')
+          ..write('oeePercent: $oeePercent, ')
+          ..write('availability: $availability, ')
+          ..write('performance: $performance, ')
+          ..write('quality: $quality, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MachineSummaryItemsTable extends MachineSummaryItems
+    with TableInfo<$MachineSummaryItemsTable, DbMachineSummaryItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MachineSummaryItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _machineIdMeta = const VerificationMeta(
+    'machineId',
+  );
+  @override
+  late final GeneratedColumn<String> machineId = GeneratedColumn<String>(
+    'MachineID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'RecID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _jobTestSetRecIdMeta = const VerificationMeta(
+    'jobTestSetRecId',
+  );
+  @override
+  late final GeneratedColumn<String> jobTestSetRecId = GeneratedColumn<String>(
+    'JobTestSetRecID',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _testSetNameMeta = const VerificationMeta(
+    'testSetName',
+  );
+  @override
+  late final GeneratedColumn<String> testSetName = GeneratedColumn<String>(
+    'TestSetName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _jobNameMeta = const VerificationMeta(
+    'jobName',
+  );
+  @override
+  late final GeneratedColumn<String> jobName = GeneratedColumn<String>(
+    'JobName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _registerDateTimeMeta = const VerificationMeta(
+    'registerDateTime',
+  );
+  @override
+  late final GeneratedColumn<String> registerDateTime = GeneratedColumn<String>(
+    'RegisterDateTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _registerUserMeta = const VerificationMeta(
+    'registerUser',
+  );
+  @override
+  late final GeneratedColumn<String> registerUser = GeneratedColumn<String>(
+    'RegisterUser',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'Status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    machineId,
+    recId,
+    jobTestSetRecId,
+    testSetName,
+    jobName,
+    registerDateTime,
+    registerUser,
+    status,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'machine_summary_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbMachineSummaryItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('MachineID')) {
+      context.handle(
+        _machineIdMeta,
+        machineId.isAcceptableOrUnknown(data['MachineID']!, _machineIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_machineIdMeta);
+    }
+    if (data.containsKey('RecID')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['RecID']!, _recIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recIdMeta);
+    }
+    if (data.containsKey('JobTestSetRecID')) {
+      context.handle(
+        _jobTestSetRecIdMeta,
+        jobTestSetRecId.isAcceptableOrUnknown(
+          data['JobTestSetRecID']!,
+          _jobTestSetRecIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('TestSetName')) {
+      context.handle(
+        _testSetNameMeta,
+        testSetName.isAcceptableOrUnknown(
+          data['TestSetName']!,
+          _testSetNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('JobName')) {
+      context.handle(
+        _jobNameMeta,
+        jobName.isAcceptableOrUnknown(data['JobName']!, _jobNameMeta),
+      );
+    }
+    if (data.containsKey('RegisterDateTime')) {
+      context.handle(
+        _registerDateTimeMeta,
+        registerDateTime.isAcceptableOrUnknown(
+          data['RegisterDateTime']!,
+          _registerDateTimeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('RegisterUser')) {
+      context.handle(
+        _registerUserMeta,
+        registerUser.isAcceptableOrUnknown(
+          data['RegisterUser']!,
+          _registerUserMeta,
+        ),
+      );
+    }
+    if (data.containsKey('Status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['Status']!, _statusMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbMachineSummaryItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbMachineSummaryItem(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      machineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}MachineID'],
+      )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}RecID'],
+      )!,
+      jobTestSetRecId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}JobTestSetRecID'],
+      ),
+      testSetName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}TestSetName'],
+      ),
+      jobName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}JobName'],
+      ),
+      registerDateTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}RegisterDateTime'],
+      ),
+      registerUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}RegisterUser'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}Status'],
+      ),
+    );
+  }
+
+  @override
+  $MachineSummaryItemsTable createAlias(String alias) {
+    return $MachineSummaryItemsTable(attachedDatabase, alias);
+  }
+}
+
+class DbMachineSummaryItem extends DataClass
+    implements Insertable<DbMachineSummaryItem> {
+  final int uid;
+  final String machineId;
+  final String recId;
+  final String? jobTestSetRecId;
+  final String? testSetName;
+  final String? jobName;
+  final String? registerDateTime;
+  final String? registerUser;
+  final String? status;
+  const DbMachineSummaryItem({
+    required this.uid,
+    required this.machineId,
+    required this.recId,
+    this.jobTestSetRecId,
+    this.testSetName,
+    this.jobName,
+    this.registerDateTime,
+    this.registerUser,
+    this.status,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    map['MachineID'] = Variable<String>(machineId);
+    map['RecID'] = Variable<String>(recId);
+    if (!nullToAbsent || jobTestSetRecId != null) {
+      map['JobTestSetRecID'] = Variable<String>(jobTestSetRecId);
+    }
+    if (!nullToAbsent || testSetName != null) {
+      map['TestSetName'] = Variable<String>(testSetName);
+    }
+    if (!nullToAbsent || jobName != null) {
+      map['JobName'] = Variable<String>(jobName);
+    }
+    if (!nullToAbsent || registerDateTime != null) {
+      map['RegisterDateTime'] = Variable<String>(registerDateTime);
+    }
+    if (!nullToAbsent || registerUser != null) {
+      map['RegisterUser'] = Variable<String>(registerUser);
+    }
+    if (!nullToAbsent || status != null) {
+      map['Status'] = Variable<String>(status);
+    }
+    return map;
+  }
+
+  MachineSummaryItemsCompanion toCompanion(bool nullToAbsent) {
+    return MachineSummaryItemsCompanion(
+      uid: Value(uid),
+      machineId: Value(machineId),
+      recId: Value(recId),
+      jobTestSetRecId: jobTestSetRecId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobTestSetRecId),
+      testSetName: testSetName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(testSetName),
+      jobName: jobName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobName),
+      registerDateTime: registerDateTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registerDateTime),
+      registerUser: registerUser == null && nullToAbsent
+          ? const Value.absent()
+          : Value(registerUser),
+      status: status == null && nullToAbsent
+          ? const Value.absent()
+          : Value(status),
+    );
+  }
+
+  factory DbMachineSummaryItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbMachineSummaryItem(
+      uid: serializer.fromJson<int>(json['uid']),
+      machineId: serializer.fromJson<String>(json['machineId']),
+      recId: serializer.fromJson<String>(json['recId']),
+      jobTestSetRecId: serializer.fromJson<String?>(json['jobTestSetRecId']),
+      testSetName: serializer.fromJson<String?>(json['testSetName']),
+      jobName: serializer.fromJson<String?>(json['jobName']),
+      registerDateTime: serializer.fromJson<String?>(json['registerDateTime']),
+      registerUser: serializer.fromJson<String?>(json['registerUser']),
+      status: serializer.fromJson<String?>(json['status']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'machineId': serializer.toJson<String>(machineId),
+      'recId': serializer.toJson<String>(recId),
+      'jobTestSetRecId': serializer.toJson<String?>(jobTestSetRecId),
+      'testSetName': serializer.toJson<String?>(testSetName),
+      'jobName': serializer.toJson<String?>(jobName),
+      'registerDateTime': serializer.toJson<String?>(registerDateTime),
+      'registerUser': serializer.toJson<String?>(registerUser),
+      'status': serializer.toJson<String?>(status),
+    };
+  }
+
+  DbMachineSummaryItem copyWith({
+    int? uid,
+    String? machineId,
+    String? recId,
+    Value<String?> jobTestSetRecId = const Value.absent(),
+    Value<String?> testSetName = const Value.absent(),
+    Value<String?> jobName = const Value.absent(),
+    Value<String?> registerDateTime = const Value.absent(),
+    Value<String?> registerUser = const Value.absent(),
+    Value<String?> status = const Value.absent(),
+  }) => DbMachineSummaryItem(
+    uid: uid ?? this.uid,
+    machineId: machineId ?? this.machineId,
+    recId: recId ?? this.recId,
+    jobTestSetRecId: jobTestSetRecId.present
+        ? jobTestSetRecId.value
+        : this.jobTestSetRecId,
+    testSetName: testSetName.present ? testSetName.value : this.testSetName,
+    jobName: jobName.present ? jobName.value : this.jobName,
+    registerDateTime: registerDateTime.present
+        ? registerDateTime.value
+        : this.registerDateTime,
+    registerUser: registerUser.present ? registerUser.value : this.registerUser,
+    status: status.present ? status.value : this.status,
+  );
+  DbMachineSummaryItem copyWithCompanion(MachineSummaryItemsCompanion data) {
+    return DbMachineSummaryItem(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      machineId: data.machineId.present ? data.machineId.value : this.machineId,
+      recId: data.recId.present ? data.recId.value : this.recId,
+      jobTestSetRecId: data.jobTestSetRecId.present
+          ? data.jobTestSetRecId.value
+          : this.jobTestSetRecId,
+      testSetName: data.testSetName.present
+          ? data.testSetName.value
+          : this.testSetName,
+      jobName: data.jobName.present ? data.jobName.value : this.jobName,
+      registerDateTime: data.registerDateTime.present
+          ? data.registerDateTime.value
+          : this.registerDateTime,
+      registerUser: data.registerUser.present
+          ? data.registerUser.value
+          : this.registerUser,
+      status: data.status.present ? data.status.value : this.status,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbMachineSummaryItem(')
+          ..write('uid: $uid, ')
+          ..write('machineId: $machineId, ')
+          ..write('recId: $recId, ')
+          ..write('jobTestSetRecId: $jobTestSetRecId, ')
+          ..write('testSetName: $testSetName, ')
+          ..write('jobName: $jobName, ')
+          ..write('registerDateTime: $registerDateTime, ')
+          ..write('registerUser: $registerUser, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    machineId,
+    recId,
+    jobTestSetRecId,
+    testSetName,
+    jobName,
+    registerDateTime,
+    registerUser,
+    status,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbMachineSummaryItem &&
+          other.uid == this.uid &&
+          other.machineId == this.machineId &&
+          other.recId == this.recId &&
+          other.jobTestSetRecId == this.jobTestSetRecId &&
+          other.testSetName == this.testSetName &&
+          other.jobName == this.jobName &&
+          other.registerDateTime == this.registerDateTime &&
+          other.registerUser == this.registerUser &&
+          other.status == this.status);
+}
+
+class MachineSummaryItemsCompanion
+    extends UpdateCompanion<DbMachineSummaryItem> {
+  final Value<int> uid;
+  final Value<String> machineId;
+  final Value<String> recId;
+  final Value<String?> jobTestSetRecId;
+  final Value<String?> testSetName;
+  final Value<String?> jobName;
+  final Value<String?> registerDateTime;
+  final Value<String?> registerUser;
+  final Value<String?> status;
+  const MachineSummaryItemsCompanion({
+    this.uid = const Value.absent(),
+    this.machineId = const Value.absent(),
+    this.recId = const Value.absent(),
+    this.jobTestSetRecId = const Value.absent(),
+    this.testSetName = const Value.absent(),
+    this.jobName = const Value.absent(),
+    this.registerDateTime = const Value.absent(),
+    this.registerUser = const Value.absent(),
+    this.status = const Value.absent(),
+  });
+  MachineSummaryItemsCompanion.insert({
+    this.uid = const Value.absent(),
+    required String machineId,
+    required String recId,
+    this.jobTestSetRecId = const Value.absent(),
+    this.testSetName = const Value.absent(),
+    this.jobName = const Value.absent(),
+    this.registerDateTime = const Value.absent(),
+    this.registerUser = const Value.absent(),
+    this.status = const Value.absent(),
+  }) : machineId = Value(machineId),
+       recId = Value(recId);
+  static Insertable<DbMachineSummaryItem> custom({
+    Expression<int>? uid,
+    Expression<String>? machineId,
+    Expression<String>? recId,
+    Expression<String>? jobTestSetRecId,
+    Expression<String>? testSetName,
+    Expression<String>? jobName,
+    Expression<String>? registerDateTime,
+    Expression<String>? registerUser,
+    Expression<String>? status,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (machineId != null) 'MachineID': machineId,
+      if (recId != null) 'RecID': recId,
+      if (jobTestSetRecId != null) 'JobTestSetRecID': jobTestSetRecId,
+      if (testSetName != null) 'TestSetName': testSetName,
+      if (jobName != null) 'JobName': jobName,
+      if (registerDateTime != null) 'RegisterDateTime': registerDateTime,
+      if (registerUser != null) 'RegisterUser': registerUser,
+      if (status != null) 'Status': status,
+    });
+  }
+
+  MachineSummaryItemsCompanion copyWith({
+    Value<int>? uid,
+    Value<String>? machineId,
+    Value<String>? recId,
+    Value<String?>? jobTestSetRecId,
+    Value<String?>? testSetName,
+    Value<String?>? jobName,
+    Value<String?>? registerDateTime,
+    Value<String?>? registerUser,
+    Value<String?>? status,
+  }) {
+    return MachineSummaryItemsCompanion(
+      uid: uid ?? this.uid,
+      machineId: machineId ?? this.machineId,
+      recId: recId ?? this.recId,
+      jobTestSetRecId: jobTestSetRecId ?? this.jobTestSetRecId,
+      testSetName: testSetName ?? this.testSetName,
+      jobName: jobName ?? this.jobName,
+      registerDateTime: registerDateTime ?? this.registerDateTime,
+      registerUser: registerUser ?? this.registerUser,
+      status: status ?? this.status,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (machineId.present) {
+      map['MachineID'] = Variable<String>(machineId.value);
+    }
+    if (recId.present) {
+      map['RecID'] = Variable<String>(recId.value);
+    }
+    if (jobTestSetRecId.present) {
+      map['JobTestSetRecID'] = Variable<String>(jobTestSetRecId.value);
+    }
+    if (testSetName.present) {
+      map['TestSetName'] = Variable<String>(testSetName.value);
+    }
+    if (jobName.present) {
+      map['JobName'] = Variable<String>(jobName.value);
+    }
+    if (registerDateTime.present) {
+      map['RegisterDateTime'] = Variable<String>(registerDateTime.value);
+    }
+    if (registerUser.present) {
+      map['RegisterUser'] = Variable<String>(registerUser.value);
+    }
+    if (status.present) {
+      map['Status'] = Variable<String>(status.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MachineSummaryItemsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('machineId: $machineId, ')
+          ..write('recId: $recId, ')
+          ..write('jobTestSetRecId: $jobTestSetRecId, ')
+          ..write('testSetName: $testSetName, ')
+          ..write('jobName: $jobName, ')
+          ..write('registerDateTime: $registerDateTime, ')
+          ..write('registerUser: $registerUser, ')
+          ..write('status: $status')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MachineSummaryEventsTable extends MachineSummaryEvents
+    with TableInfo<$MachineSummaryEventsTable, DbMachineSummaryEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MachineSummaryEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _machineIdMeta = const VerificationMeta(
+    'machineId',
+  );
+  @override
+  late final GeneratedColumn<String> machineId = GeneratedColumn<String>(
+    'MachineID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'RecID',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _eventTypeMeta = const VerificationMeta(
+    'eventType',
+  );
+  @override
+  late final GeneratedColumn<String> eventType = GeneratedColumn<String>(
+    'EventType',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _startTimeMeta = const VerificationMeta(
+    'startTime',
+  );
+  @override
+  late final GeneratedColumn<String> startTime = GeneratedColumn<String>(
+    'StartTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _endTimeMeta = const VerificationMeta(
+    'endTime',
+  );
+  @override
+  late final GeneratedColumn<String> endTime = GeneratedColumn<String>(
+    'EndTime',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationSecondsMeta = const VerificationMeta(
+    'durationSeconds',
+  );
+  @override
+  late final GeneratedColumn<int> durationSeconds = GeneratedColumn<int>(
+    'DurationSeconds',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recordUserIdMeta = const VerificationMeta(
+    'recordUserId',
+  );
+  @override
+  late final GeneratedColumn<String> recordUserId = GeneratedColumn<String>(
+    'RecordUserId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    machineId,
+    recId,
+    eventType,
+    startTime,
+    endTime,
+    durationSeconds,
+    recordUserId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'machine_summary_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbMachineSummaryEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('MachineID')) {
+      context.handle(
+        _machineIdMeta,
+        machineId.isAcceptableOrUnknown(data['MachineID']!, _machineIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_machineIdMeta);
+    }
+    if (data.containsKey('RecID')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['RecID']!, _recIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_recIdMeta);
+    }
+    if (data.containsKey('EventType')) {
+      context.handle(
+        _eventTypeMeta,
+        eventType.isAcceptableOrUnknown(data['EventType']!, _eventTypeMeta),
+      );
+    }
+    if (data.containsKey('StartTime')) {
+      context.handle(
+        _startTimeMeta,
+        startTime.isAcceptableOrUnknown(data['StartTime']!, _startTimeMeta),
+      );
+    }
+    if (data.containsKey('EndTime')) {
+      context.handle(
+        _endTimeMeta,
+        endTime.isAcceptableOrUnknown(data['EndTime']!, _endTimeMeta),
+      );
+    }
+    if (data.containsKey('DurationSeconds')) {
+      context.handle(
+        _durationSecondsMeta,
+        durationSeconds.isAcceptableOrUnknown(
+          data['DurationSeconds']!,
+          _durationSecondsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('RecordUserId')) {
+      context.handle(
+        _recordUserIdMeta,
+        recordUserId.isAcceptableOrUnknown(
+          data['RecordUserId']!,
+          _recordUserIdMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbMachineSummaryEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbMachineSummaryEvent(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      machineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}MachineID'],
+      )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}RecID'],
+      )!,
+      eventType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}EventType'],
+      ),
+      startTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}StartTime'],
+      ),
+      endTime: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}EndTime'],
+      ),
+      durationSeconds: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}DurationSeconds'],
+      ),
+      recordUserId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}RecordUserId'],
+      ),
+    );
+  }
+
+  @override
+  $MachineSummaryEventsTable createAlias(String alias) {
+    return $MachineSummaryEventsTable(attachedDatabase, alias);
+  }
+}
+
+class DbMachineSummaryEvent extends DataClass
+    implements Insertable<DbMachineSummaryEvent> {
+  final int uid;
+  final String machineId;
+  final String recId;
+  final String? eventType;
+  final String? startTime;
+  final String? endTime;
+  final int? durationSeconds;
+  final String? recordUserId;
+  const DbMachineSummaryEvent({
+    required this.uid,
+    required this.machineId,
+    required this.recId,
+    this.eventType,
+    this.startTime,
+    this.endTime,
+    this.durationSeconds,
+    this.recordUserId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    map['MachineID'] = Variable<String>(machineId);
+    map['RecID'] = Variable<String>(recId);
+    if (!nullToAbsent || eventType != null) {
+      map['EventType'] = Variable<String>(eventType);
+    }
+    if (!nullToAbsent || startTime != null) {
+      map['StartTime'] = Variable<String>(startTime);
+    }
+    if (!nullToAbsent || endTime != null) {
+      map['EndTime'] = Variable<String>(endTime);
+    }
+    if (!nullToAbsent || durationSeconds != null) {
+      map['DurationSeconds'] = Variable<int>(durationSeconds);
+    }
+    if (!nullToAbsent || recordUserId != null) {
+      map['RecordUserId'] = Variable<String>(recordUserId);
+    }
+    return map;
+  }
+
+  MachineSummaryEventsCompanion toCompanion(bool nullToAbsent) {
+    return MachineSummaryEventsCompanion(
+      uid: Value(uid),
+      machineId: Value(machineId),
+      recId: Value(recId),
+      eventType: eventType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(eventType),
+      startTime: startTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startTime),
+      endTime: endTime == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endTime),
+      durationSeconds: durationSeconds == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationSeconds),
+      recordUserId: recordUserId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recordUserId),
+    );
+  }
+
+  factory DbMachineSummaryEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbMachineSummaryEvent(
+      uid: serializer.fromJson<int>(json['uid']),
+      machineId: serializer.fromJson<String>(json['machineId']),
+      recId: serializer.fromJson<String>(json['recId']),
+      eventType: serializer.fromJson<String?>(json['eventType']),
+      startTime: serializer.fromJson<String?>(json['startTime']),
+      endTime: serializer.fromJson<String?>(json['endTime']),
+      durationSeconds: serializer.fromJson<int?>(json['durationSeconds']),
+      recordUserId: serializer.fromJson<String?>(json['recordUserId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'machineId': serializer.toJson<String>(machineId),
+      'recId': serializer.toJson<String>(recId),
+      'eventType': serializer.toJson<String?>(eventType),
+      'startTime': serializer.toJson<String?>(startTime),
+      'endTime': serializer.toJson<String?>(endTime),
+      'durationSeconds': serializer.toJson<int?>(durationSeconds),
+      'recordUserId': serializer.toJson<String?>(recordUserId),
+    };
+  }
+
+  DbMachineSummaryEvent copyWith({
+    int? uid,
+    String? machineId,
+    String? recId,
+    Value<String?> eventType = const Value.absent(),
+    Value<String?> startTime = const Value.absent(),
+    Value<String?> endTime = const Value.absent(),
+    Value<int?> durationSeconds = const Value.absent(),
+    Value<String?> recordUserId = const Value.absent(),
+  }) => DbMachineSummaryEvent(
+    uid: uid ?? this.uid,
+    machineId: machineId ?? this.machineId,
+    recId: recId ?? this.recId,
+    eventType: eventType.present ? eventType.value : this.eventType,
+    startTime: startTime.present ? startTime.value : this.startTime,
+    endTime: endTime.present ? endTime.value : this.endTime,
+    durationSeconds: durationSeconds.present
+        ? durationSeconds.value
+        : this.durationSeconds,
+    recordUserId: recordUserId.present ? recordUserId.value : this.recordUserId,
+  );
+  DbMachineSummaryEvent copyWithCompanion(MachineSummaryEventsCompanion data) {
+    return DbMachineSummaryEvent(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      machineId: data.machineId.present ? data.machineId.value : this.machineId,
+      recId: data.recId.present ? data.recId.value : this.recId,
+      eventType: data.eventType.present ? data.eventType.value : this.eventType,
+      startTime: data.startTime.present ? data.startTime.value : this.startTime,
+      endTime: data.endTime.present ? data.endTime.value : this.endTime,
+      durationSeconds: data.durationSeconds.present
+          ? data.durationSeconds.value
+          : this.durationSeconds,
+      recordUserId: data.recordUserId.present
+          ? data.recordUserId.value
+          : this.recordUserId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbMachineSummaryEvent(')
+          ..write('uid: $uid, ')
+          ..write('machineId: $machineId, ')
+          ..write('recId: $recId, ')
+          ..write('eventType: $eventType, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('recordUserId: $recordUserId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    machineId,
+    recId,
+    eventType,
+    startTime,
+    endTime,
+    durationSeconds,
+    recordUserId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbMachineSummaryEvent &&
+          other.uid == this.uid &&
+          other.machineId == this.machineId &&
+          other.recId == this.recId &&
+          other.eventType == this.eventType &&
+          other.startTime == this.startTime &&
+          other.endTime == this.endTime &&
+          other.durationSeconds == this.durationSeconds &&
+          other.recordUserId == this.recordUserId);
+}
+
+class MachineSummaryEventsCompanion
+    extends UpdateCompanion<DbMachineSummaryEvent> {
+  final Value<int> uid;
+  final Value<String> machineId;
+  final Value<String> recId;
+  final Value<String?> eventType;
+  final Value<String?> startTime;
+  final Value<String?> endTime;
+  final Value<int?> durationSeconds;
+  final Value<String?> recordUserId;
+  const MachineSummaryEventsCompanion({
+    this.uid = const Value.absent(),
+    this.machineId = const Value.absent(),
+    this.recId = const Value.absent(),
+    this.eventType = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.recordUserId = const Value.absent(),
+  });
+  MachineSummaryEventsCompanion.insert({
+    this.uid = const Value.absent(),
+    required String machineId,
+    required String recId,
+    this.eventType = const Value.absent(),
+    this.startTime = const Value.absent(),
+    this.endTime = const Value.absent(),
+    this.durationSeconds = const Value.absent(),
+    this.recordUserId = const Value.absent(),
+  }) : machineId = Value(machineId),
+       recId = Value(recId);
+  static Insertable<DbMachineSummaryEvent> custom({
+    Expression<int>? uid,
+    Expression<String>? machineId,
+    Expression<String>? recId,
+    Expression<String>? eventType,
+    Expression<String>? startTime,
+    Expression<String>? endTime,
+    Expression<int>? durationSeconds,
+    Expression<String>? recordUserId,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (machineId != null) 'MachineID': machineId,
+      if (recId != null) 'RecID': recId,
+      if (eventType != null) 'EventType': eventType,
+      if (startTime != null) 'StartTime': startTime,
+      if (endTime != null) 'EndTime': endTime,
+      if (durationSeconds != null) 'DurationSeconds': durationSeconds,
+      if (recordUserId != null) 'RecordUserId': recordUserId,
+    });
+  }
+
+  MachineSummaryEventsCompanion copyWith({
+    Value<int>? uid,
+    Value<String>? machineId,
+    Value<String>? recId,
+    Value<String?>? eventType,
+    Value<String?>? startTime,
+    Value<String?>? endTime,
+    Value<int?>? durationSeconds,
+    Value<String?>? recordUserId,
+  }) {
+    return MachineSummaryEventsCompanion(
+      uid: uid ?? this.uid,
+      machineId: machineId ?? this.machineId,
+      recId: recId ?? this.recId,
+      eventType: eventType ?? this.eventType,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      recordUserId: recordUserId ?? this.recordUserId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (machineId.present) {
+      map['MachineID'] = Variable<String>(machineId.value);
+    }
+    if (recId.present) {
+      map['RecID'] = Variable<String>(recId.value);
+    }
+    if (eventType.present) {
+      map['EventType'] = Variable<String>(eventType.value);
+    }
+    if (startTime.present) {
+      map['StartTime'] = Variable<String>(startTime.value);
+    }
+    if (endTime.present) {
+      map['EndTime'] = Variable<String>(endTime.value);
+    }
+    if (durationSeconds.present) {
+      map['DurationSeconds'] = Variable<int>(durationSeconds.value);
+    }
+    if (recordUserId.present) {
+      map['RecordUserId'] = Variable<String>(recordUserId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MachineSummaryEventsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('machineId: $machineId, ')
+          ..write('recId: $recId, ')
+          ..write('eventType: $eventType, ')
+          ..write('startTime: $startTime, ')
+          ..write('endTime: $endTime, ')
+          ..write('durationSeconds: $durationSeconds, ')
+          ..write('recordUserId: $recordUserId')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -8576,6 +10354,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $ActivityLogsTable activityLogs = $ActivityLogsTable(this);
   late final $MachinesTable machines = $MachinesTable(this);
   late final $SyncLogsTable syncLogs = $SyncLogsTable(this);
+  late final $MachineSummariesTable machineSummaries = $MachineSummariesTable(
+    this,
+  );
+  late final $MachineSummaryItemsTable machineSummaryItems =
+      $MachineSummaryItemsTable(this);
+  late final $MachineSummaryEventsTable machineSummaryEvents =
+      $MachineSummaryEventsTable(this);
   late final JobDao jobDao = JobDao(this as AppDatabase);
   late final DocumentDao documentDao = DocumentDao(this as AppDatabase);
   late final UserDao userDao = UserDao(this as AppDatabase);
@@ -8591,6 +10376,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final MachineDao machineDao = MachineDao(this as AppDatabase);
   late final SyncLogDao syncLogDao = SyncLogDao(this as AppDatabase);
+  late final MachineSummaryDao machineSummaryDao = MachineSummaryDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -8610,6 +10398,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     activityLogs,
     machines,
     syncLogs,
+    machineSummaries,
+    machineSummaryItems,
+    machineSummaryEvents,
   ];
 }
 
@@ -12770,6 +14561,897 @@ typedef $$SyncLogsTableProcessedTableManager =
       DbSyncLog,
       PrefetchHooks Function()
     >;
+typedef $$MachineSummariesTableCreateCompanionBuilder =
+    MachineSummariesCompanion Function({
+      Value<int> uid,
+      required String machineId,
+      Value<String?> machineName,
+      Value<String?> status,
+      Value<String?> currentJobId,
+      Value<String?> currentJobName,
+      Value<double> oeePercent,
+      Value<double> availability,
+      Value<double> performance,
+      Value<double> quality,
+      Value<String?> updatedAt,
+    });
+typedef $$MachineSummariesTableUpdateCompanionBuilder =
+    MachineSummariesCompanion Function({
+      Value<int> uid,
+      Value<String> machineId,
+      Value<String?> machineName,
+      Value<String?> status,
+      Value<String?> currentJobId,
+      Value<String?> currentJobName,
+      Value<double> oeePercent,
+      Value<double> availability,
+      Value<double> performance,
+      Value<double> quality,
+      Value<String?> updatedAt,
+    });
+
+class $$MachineSummariesTableFilterComposer
+    extends Composer<_$AppDatabase, $MachineSummariesTable> {
+  $$MachineSummariesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get machineId => $composableBuilder(
+    column: $table.machineId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get machineName => $composableBuilder(
+    column: $table.machineName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currentJobId => $composableBuilder(
+    column: $table.currentJobId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get currentJobName => $composableBuilder(
+    column: $table.currentJobName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get oeePercent => $composableBuilder(
+    column: $table.oeePercent,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get availability => $composableBuilder(
+    column: $table.availability,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get performance => $composableBuilder(
+    column: $table.performance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get quality => $composableBuilder(
+    column: $table.quality,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MachineSummariesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MachineSummariesTable> {
+  $$MachineSummariesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get machineId => $composableBuilder(
+    column: $table.machineId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get machineName => $composableBuilder(
+    column: $table.machineName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currentJobId => $composableBuilder(
+    column: $table.currentJobId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get currentJobName => $composableBuilder(
+    column: $table.currentJobName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get oeePercent => $composableBuilder(
+    column: $table.oeePercent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get availability => $composableBuilder(
+    column: $table.availability,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get performance => $composableBuilder(
+    column: $table.performance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get quality => $composableBuilder(
+    column: $table.quality,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MachineSummariesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MachineSummariesTable> {
+  $$MachineSummariesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get machineId =>
+      $composableBuilder(column: $table.machineId, builder: (column) => column);
+
+  GeneratedColumn<String> get machineName => $composableBuilder(
+    column: $table.machineName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get currentJobId => $composableBuilder(
+    column: $table.currentJobId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get currentJobName => $composableBuilder(
+    column: $table.currentJobName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get oeePercent => $composableBuilder(
+    column: $table.oeePercent,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get availability => $composableBuilder(
+    column: $table.availability,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get performance => $composableBuilder(
+    column: $table.performance,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get quality =>
+      $composableBuilder(column: $table.quality, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$MachineSummariesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MachineSummariesTable,
+          DbMachineSummary,
+          $$MachineSummariesTableFilterComposer,
+          $$MachineSummariesTableOrderingComposer,
+          $$MachineSummariesTableAnnotationComposer,
+          $$MachineSummariesTableCreateCompanionBuilder,
+          $$MachineSummariesTableUpdateCompanionBuilder,
+          (
+            DbMachineSummary,
+            BaseReferences<
+              _$AppDatabase,
+              $MachineSummariesTable,
+              DbMachineSummary
+            >,
+          ),
+          DbMachineSummary,
+          PrefetchHooks Function()
+        > {
+  $$MachineSummariesTableTableManager(
+    _$AppDatabase db,
+    $MachineSummariesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MachineSummariesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MachineSummariesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MachineSummariesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String> machineId = const Value.absent(),
+                Value<String?> machineName = const Value.absent(),
+                Value<String?> status = const Value.absent(),
+                Value<String?> currentJobId = const Value.absent(),
+                Value<String?> currentJobName = const Value.absent(),
+                Value<double> oeePercent = const Value.absent(),
+                Value<double> availability = const Value.absent(),
+                Value<double> performance = const Value.absent(),
+                Value<double> quality = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+              }) => MachineSummariesCompanion(
+                uid: uid,
+                machineId: machineId,
+                machineName: machineName,
+                status: status,
+                currentJobId: currentJobId,
+                currentJobName: currentJobName,
+                oeePercent: oeePercent,
+                availability: availability,
+                performance: performance,
+                quality: quality,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                required String machineId,
+                Value<String?> machineName = const Value.absent(),
+                Value<String?> status = const Value.absent(),
+                Value<String?> currentJobId = const Value.absent(),
+                Value<String?> currentJobName = const Value.absent(),
+                Value<double> oeePercent = const Value.absent(),
+                Value<double> availability = const Value.absent(),
+                Value<double> performance = const Value.absent(),
+                Value<double> quality = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+              }) => MachineSummariesCompanion.insert(
+                uid: uid,
+                machineId: machineId,
+                machineName: machineName,
+                status: status,
+                currentJobId: currentJobId,
+                currentJobName: currentJobName,
+                oeePercent: oeePercent,
+                availability: availability,
+                performance: performance,
+                quality: quality,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MachineSummariesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MachineSummariesTable,
+      DbMachineSummary,
+      $$MachineSummariesTableFilterComposer,
+      $$MachineSummariesTableOrderingComposer,
+      $$MachineSummariesTableAnnotationComposer,
+      $$MachineSummariesTableCreateCompanionBuilder,
+      $$MachineSummariesTableUpdateCompanionBuilder,
+      (
+        DbMachineSummary,
+        BaseReferences<_$AppDatabase, $MachineSummariesTable, DbMachineSummary>,
+      ),
+      DbMachineSummary,
+      PrefetchHooks Function()
+    >;
+typedef $$MachineSummaryItemsTableCreateCompanionBuilder =
+    MachineSummaryItemsCompanion Function({
+      Value<int> uid,
+      required String machineId,
+      required String recId,
+      Value<String?> jobTestSetRecId,
+      Value<String?> testSetName,
+      Value<String?> jobName,
+      Value<String?> registerDateTime,
+      Value<String?> registerUser,
+      Value<String?> status,
+    });
+typedef $$MachineSummaryItemsTableUpdateCompanionBuilder =
+    MachineSummaryItemsCompanion Function({
+      Value<int> uid,
+      Value<String> machineId,
+      Value<String> recId,
+      Value<String?> jobTestSetRecId,
+      Value<String?> testSetName,
+      Value<String?> jobName,
+      Value<String?> registerDateTime,
+      Value<String?> registerUser,
+      Value<String?> status,
+    });
+
+class $$MachineSummaryItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $MachineSummaryItemsTable> {
+  $$MachineSummaryItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get machineId => $composableBuilder(
+    column: $table.machineId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testSetName => $composableBuilder(
+    column: $table.testSetName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobName => $composableBuilder(
+    column: $table.jobName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MachineSummaryItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MachineSummaryItemsTable> {
+  $$MachineSummaryItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get machineId => $composableBuilder(
+    column: $table.machineId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testSetName => $composableBuilder(
+    column: $table.testSetName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jobName => $composableBuilder(
+    column: $table.jobName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MachineSummaryItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MachineSummaryItemsTable> {
+  $$MachineSummaryItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get machineId =>
+      $composableBuilder(column: $table.machineId, builder: (column) => column);
+
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
+
+  GeneratedColumn<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get testSetName => $composableBuilder(
+    column: $table.testSetName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get jobName =>
+      $composableBuilder(column: $table.jobName, builder: (column) => column);
+
+  GeneratedColumn<String> get registerDateTime => $composableBuilder(
+    column: $table.registerDateTime,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get registerUser => $composableBuilder(
+    column: $table.registerUser,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+}
+
+class $$MachineSummaryItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MachineSummaryItemsTable,
+          DbMachineSummaryItem,
+          $$MachineSummaryItemsTableFilterComposer,
+          $$MachineSummaryItemsTableOrderingComposer,
+          $$MachineSummaryItemsTableAnnotationComposer,
+          $$MachineSummaryItemsTableCreateCompanionBuilder,
+          $$MachineSummaryItemsTableUpdateCompanionBuilder,
+          (
+            DbMachineSummaryItem,
+            BaseReferences<
+              _$AppDatabase,
+              $MachineSummaryItemsTable,
+              DbMachineSummaryItem
+            >,
+          ),
+          DbMachineSummaryItem,
+          PrefetchHooks Function()
+        > {
+  $$MachineSummaryItemsTableTableManager(
+    _$AppDatabase db,
+    $MachineSummaryItemsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MachineSummaryItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MachineSummaryItemsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$MachineSummaryItemsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String> machineId = const Value.absent(),
+                Value<String> recId = const Value.absent(),
+                Value<String?> jobTestSetRecId = const Value.absent(),
+                Value<String?> testSetName = const Value.absent(),
+                Value<String?> jobName = const Value.absent(),
+                Value<String?> registerDateTime = const Value.absent(),
+                Value<String?> registerUser = const Value.absent(),
+                Value<String?> status = const Value.absent(),
+              }) => MachineSummaryItemsCompanion(
+                uid: uid,
+                machineId: machineId,
+                recId: recId,
+                jobTestSetRecId: jobTestSetRecId,
+                testSetName: testSetName,
+                jobName: jobName,
+                registerDateTime: registerDateTime,
+                registerUser: registerUser,
+                status: status,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                required String machineId,
+                required String recId,
+                Value<String?> jobTestSetRecId = const Value.absent(),
+                Value<String?> testSetName = const Value.absent(),
+                Value<String?> jobName = const Value.absent(),
+                Value<String?> registerDateTime = const Value.absent(),
+                Value<String?> registerUser = const Value.absent(),
+                Value<String?> status = const Value.absent(),
+              }) => MachineSummaryItemsCompanion.insert(
+                uid: uid,
+                machineId: machineId,
+                recId: recId,
+                jobTestSetRecId: jobTestSetRecId,
+                testSetName: testSetName,
+                jobName: jobName,
+                registerDateTime: registerDateTime,
+                registerUser: registerUser,
+                status: status,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MachineSummaryItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MachineSummaryItemsTable,
+      DbMachineSummaryItem,
+      $$MachineSummaryItemsTableFilterComposer,
+      $$MachineSummaryItemsTableOrderingComposer,
+      $$MachineSummaryItemsTableAnnotationComposer,
+      $$MachineSummaryItemsTableCreateCompanionBuilder,
+      $$MachineSummaryItemsTableUpdateCompanionBuilder,
+      (
+        DbMachineSummaryItem,
+        BaseReferences<
+          _$AppDatabase,
+          $MachineSummaryItemsTable,
+          DbMachineSummaryItem
+        >,
+      ),
+      DbMachineSummaryItem,
+      PrefetchHooks Function()
+    >;
+typedef $$MachineSummaryEventsTableCreateCompanionBuilder =
+    MachineSummaryEventsCompanion Function({
+      Value<int> uid,
+      required String machineId,
+      required String recId,
+      Value<String?> eventType,
+      Value<String?> startTime,
+      Value<String?> endTime,
+      Value<int?> durationSeconds,
+      Value<String?> recordUserId,
+    });
+typedef $$MachineSummaryEventsTableUpdateCompanionBuilder =
+    MachineSummaryEventsCompanion Function({
+      Value<int> uid,
+      Value<String> machineId,
+      Value<String> recId,
+      Value<String?> eventType,
+      Value<String?> startTime,
+      Value<String?> endTime,
+      Value<int?> durationSeconds,
+      Value<String?> recordUserId,
+    });
+
+class $$MachineSummaryEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $MachineSummaryEventsTable> {
+  $$MachineSummaryEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get machineId => $composableBuilder(
+    column: $table.machineId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get eventType => $composableBuilder(
+    column: $table.eventType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recordUserId => $composableBuilder(
+    column: $table.recordUserId,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$MachineSummaryEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MachineSummaryEventsTable> {
+  $$MachineSummaryEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get machineId => $composableBuilder(
+    column: $table.machineId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get eventType => $composableBuilder(
+    column: $table.eventType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get startTime => $composableBuilder(
+    column: $table.startTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get endTime => $composableBuilder(
+    column: $table.endTime,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recordUserId => $composableBuilder(
+    column: $table.recordUserId,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MachineSummaryEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MachineSummaryEventsTable> {
+  $$MachineSummaryEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get machineId =>
+      $composableBuilder(column: $table.machineId, builder: (column) => column);
+
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
+
+  GeneratedColumn<String> get eventType =>
+      $composableBuilder(column: $table.eventType, builder: (column) => column);
+
+  GeneratedColumn<String> get startTime =>
+      $composableBuilder(column: $table.startTime, builder: (column) => column);
+
+  GeneratedColumn<String> get endTime =>
+      $composableBuilder(column: $table.endTime, builder: (column) => column);
+
+  GeneratedColumn<int> get durationSeconds => $composableBuilder(
+    column: $table.durationSeconds,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get recordUserId => $composableBuilder(
+    column: $table.recordUserId,
+    builder: (column) => column,
+  );
+}
+
+class $$MachineSummaryEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MachineSummaryEventsTable,
+          DbMachineSummaryEvent,
+          $$MachineSummaryEventsTableFilterComposer,
+          $$MachineSummaryEventsTableOrderingComposer,
+          $$MachineSummaryEventsTableAnnotationComposer,
+          $$MachineSummaryEventsTableCreateCompanionBuilder,
+          $$MachineSummaryEventsTableUpdateCompanionBuilder,
+          (
+            DbMachineSummaryEvent,
+            BaseReferences<
+              _$AppDatabase,
+              $MachineSummaryEventsTable,
+              DbMachineSummaryEvent
+            >,
+          ),
+          DbMachineSummaryEvent,
+          PrefetchHooks Function()
+        > {
+  $$MachineSummaryEventsTableTableManager(
+    _$AppDatabase db,
+    $MachineSummaryEventsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MachineSummaryEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MachineSummaryEventsTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$MachineSummaryEventsTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String> machineId = const Value.absent(),
+                Value<String> recId = const Value.absent(),
+                Value<String?> eventType = const Value.absent(),
+                Value<String?> startTime = const Value.absent(),
+                Value<String?> endTime = const Value.absent(),
+                Value<int?> durationSeconds = const Value.absent(),
+                Value<String?> recordUserId = const Value.absent(),
+              }) => MachineSummaryEventsCompanion(
+                uid: uid,
+                machineId: machineId,
+                recId: recId,
+                eventType: eventType,
+                startTime: startTime,
+                endTime: endTime,
+                durationSeconds: durationSeconds,
+                recordUserId: recordUserId,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                required String machineId,
+                required String recId,
+                Value<String?> eventType = const Value.absent(),
+                Value<String?> startTime = const Value.absent(),
+                Value<String?> endTime = const Value.absent(),
+                Value<int?> durationSeconds = const Value.absent(),
+                Value<String?> recordUserId = const Value.absent(),
+              }) => MachineSummaryEventsCompanion.insert(
+                uid: uid,
+                machineId: machineId,
+                recId: recId,
+                eventType: eventType,
+                startTime: startTime,
+                endTime: endTime,
+                durationSeconds: durationSeconds,
+                recordUserId: recordUserId,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$MachineSummaryEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MachineSummaryEventsTable,
+      DbMachineSummaryEvent,
+      $$MachineSummaryEventsTableFilterComposer,
+      $$MachineSummaryEventsTableOrderingComposer,
+      $$MachineSummaryEventsTableAnnotationComposer,
+      $$MachineSummaryEventsTableCreateCompanionBuilder,
+      $$MachineSummaryEventsTableUpdateCompanionBuilder,
+      (
+        DbMachineSummaryEvent,
+        BaseReferences<
+          _$AppDatabase,
+          $MachineSummaryEventsTable,
+          DbMachineSummaryEvent
+        >,
+      ),
+      DbMachineSummaryEvent,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -12801,4 +15483,10 @@ class $AppDatabaseManager {
       $$MachinesTableTableManager(_db, _db.machines);
   $$SyncLogsTableTableManager get syncLogs =>
       $$SyncLogsTableTableManager(_db, _db.syncLogs);
+  $$MachineSummariesTableTableManager get machineSummaries =>
+      $$MachineSummariesTableTableManager(_db, _db.machineSummaries);
+  $$MachineSummaryItemsTableTableManager get machineSummaryItems =>
+      $$MachineSummaryItemsTableTableManager(_db, _db.machineSummaryItems);
+  $$MachineSummaryEventsTableTableManager get machineSummaryEvents =>
+      $$MachineSummaryEventsTableTableManager(_db, _db.machineSummaryEvents);
 }

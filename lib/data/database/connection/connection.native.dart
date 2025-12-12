@@ -13,7 +13,7 @@ DatabaseConnection connect() {
   return DatabaseConnection.delayed(
     Future(() async {
       final dbFolder = await getApplicationDocumentsDirectory();
-      final file = File(p.join(dbFolder.path, 'db.sqlite'));
+      final file = File(p.join(dbFolder.path, 'bio_oee_lab.sqlite'));
 
       // The NativeDatabase constructor now correctly returns a QueryExecutor
       // which is then wrapped in a DatabaseConnection as required.

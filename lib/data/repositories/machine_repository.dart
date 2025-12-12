@@ -3,11 +3,14 @@ import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/daos/machine_dao.dart';
 import 'package:bio_oee_lab/data/network/machine_api_service.dart';
 
+import 'package:bio_oee_lab/data/database/daos/machine_summary_dao.dart';
+
 enum MachineSyncStatus { idle, syncing, success, failure }
 
 class MachineRepository with ChangeNotifier {
   final MachineApiService _apiService;
   final MachineDao _machineDao;
+  final MachineSummaryDao _machineSummaryDao;
 
   MachineSyncStatus _status = MachineSyncStatus.idle;
   String _syncMessage = '';
@@ -18,8 +21,10 @@ class MachineRepository with ChangeNotifier {
   MachineRepository({
     required MachineApiService apiService,
     required MachineDao machineDao,
+    required MachineSummaryDao machineSummaryDao,
   }) : _apiService = apiService,
-       _machineDao = machineDao;
+       _machineDao = machineDao,
+       _machineSummaryDao = machineSummaryDao;
 
   // Watch machines from database
   Stream<List<DbMachine>> watchMachines(String query) {
@@ -93,6 +98,40 @@ class MachineRepository with ChangeNotifier {
       return false;
     } finally {
       await Future.delayed(const Duration(seconds: 2));
+      _status = MachineSyncStatus.idle;
+      notifyListeners();
+    }
+  }
+
+  // --- Machine Summary Sync ---
+  Future<bool> syncMachineSummary(String userId, String machineId) async {
+    _status = MachineSyncStatus.syncing;
+    _syncMessage = 'Fetching summary for $machineId...';
+    notifyListeners();
+
+    try {
+      final response = await _apiService.getMachineSummary(userId, machineId);
+
+      await _machineSummaryDao.updateMachineSummary(
+        machineId: machineId,
+        summary: response.summary,
+        items: response.items,
+        events: response.events,
+      );
+
+      _status = MachineSyncStatus.success;
+      _syncMessage = 'Summary updated.';
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _status = MachineSyncStatus.failure;
+      _syncMessage = 'Summary sync failed: $e';
+      notifyListeners();
+      return false;
+    } finally {
+      await Future.delayed(
+        const Duration(seconds: 1),
+      ); // Short delay to show success
       _status = MachineSyncStatus.idle;
       notifyListeners();
     }

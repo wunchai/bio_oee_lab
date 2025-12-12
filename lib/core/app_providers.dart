@@ -49,6 +49,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final machineRepository = MachineRepository(
     apiService: machineApiService,
     machineDao: appDatabase.machineDao,
+    machineSummaryDao: appDatabase.machineSummaryDao,
   );
 
   final jobSyncRepository = JobSyncRepository(

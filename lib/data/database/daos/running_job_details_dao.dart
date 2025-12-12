@@ -29,18 +29,44 @@ class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
   Future<int> insertTestSet(JobTestSetsCompanion entry) =>
       into(jobTestSets).insert(entry);
   Stream<List<DbJobTestSet>> watchTestSetsByDocId(String docId) {
-    return (select(
-      jobTestSets,
-    )..where((tbl) => tbl.documentId.equals(docId))).watch();
+    return (select(jobTestSets)..where(
+          (tbl) => tbl.documentId.equals(docId) & tbl.status.isNotValue(9),
+        ))
+        .watch();
   }
 
   // --- RunningJobMachine ---
   Future<int> insertMachine(RunningJobMachinesCompanion entry) =>
       into(runningJobMachines).insert(entry);
   Stream<List<DbRunningJobMachine>> watchMachinesByDocId(String docId) {
-    return (select(
+    return (select(runningJobMachines)..where(
+          (tbl) => tbl.documentId.equals(docId) & tbl.status.isNotValue(9),
+        ))
+        .watch();
+  }
+
+  // Delete Job Test Set (Soft Delete)
+  Future<void> deleteJobTestSet(String recId) {
+    return (update(jobTestSets)..where((t) => t.recId.equals(recId))).write(
+      JobTestSetsCompanion(
+        status: const Value(9),
+        syncStatus: const Value(0),
+        recordVersion: Value(DateTime.now().millisecondsSinceEpoch),
+      ),
+    );
+  }
+
+  // Delete Running Job Machine (Soft Delete)
+  Future<void> deleteRunningJobMachine(String recId) {
+    return (update(
       runningJobMachines,
-    )..where((tbl) => tbl.documentId.equals(docId))).watch();
+    )..where((t) => t.recId.equals(recId))).write(
+      RunningJobMachinesCompanion(
+        status: const Value(9),
+        syncStatus: const Value(0),
+        recordVersion: Value(DateTime.now().millisecondsSinceEpoch),
+      ),
+    );
   }
 
   // --- JobWorkingTime (User Logs) ---

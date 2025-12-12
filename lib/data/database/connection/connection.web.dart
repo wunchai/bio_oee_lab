@@ -4,7 +4,7 @@ import 'package:drift/drift.dart';
 
 Future<DatabaseConnection> connect() async {
   final result = await WasmDatabase.open(
-    databaseName: 'db.sqlite',
+    databaseName: 'bio_oee_lab.sqlite',
     sqlite3Uri: Uri.parse('sqlite3.wasm'),
     driftWorkerUri: Uri.parse('drift.worker.js'),
   );

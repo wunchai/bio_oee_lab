@@ -8,7 +8,7 @@ import 'package:bio_oee_lab/data/database/connection/connection.dart'
     as platform_connection; // <<< เปลี่ยนเป็น platform_connection
 
 // Import all table definitions (should be present from previous steps)
-// Import all table definitions (should be present from previous steps)
+// Table Imports
 import 'package:bio_oee_lab/data/database/tables/job_table.dart';
 import 'package:bio_oee_lab/data/database/tables/document_table.dart';
 import 'package:bio_oee_lab/data/database/tables/user_table.dart';
@@ -21,9 +21,12 @@ import 'package:bio_oee_lab/data/database/tables/pause_reason_table.dart';
 import 'package:bio_oee_lab/data/database/tables/check_in_table.dart';
 import 'package:bio_oee_lab/data/database/tables/activity_log_table.dart';
 import 'package:bio_oee_lab/data/database/tables/machine_table.dart';
-import 'package:bio_oee_lab/data/database/tables/sync_log_table.dart'; // <<< NEW
+import 'package:bio_oee_lab/data/database/tables/sync_log_table.dart';
+import 'package:bio_oee_lab/data/database/tables/machine_summary_table.dart';
+import 'package:bio_oee_lab/data/database/tables/machine_summary_item_table.dart';
+import 'package:bio_oee_lab/data/database/tables/machine_summary_event_table.dart';
 
-// Import DAO definitions
+// DAO Imports
 import 'package:bio_oee_lab/data/database/daos/job_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/user_dao.dart';
@@ -32,9 +35,9 @@ import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/check_in_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/machine_dao.dart';
-import 'package:bio_oee_lab/data/database/daos/sync_log_dao.dart'; // <<< NEW
+import 'package:bio_oee_lab/data/database/daos/sync_log_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/machine_summary_dao.dart';
 
-// This line tells drift to generate a file named app_database.g.dart
 part 'app_database.g.dart';
 
 @DriftDatabase(
@@ -51,9 +54,11 @@ part 'app_database.g.dart';
     CheckInActivities,
     CheckInLogs,
     ActivityLogs,
-    ActivityLogs,
     Machines,
-    SyncLogs, // <<< NEW: Add SyncLogs table
+    SyncLogs,
+    MachineSummaries, // <<< NEW
+    MachineSummaryItems, // <<< NEW
+    MachineSummaryEvents, // <<< NEW
   ],
   daos: [
     JobDao,
@@ -64,7 +69,8 @@ part 'app_database.g.dart';
     CheckInDao,
     ActivityLogDao,
     MachineDao,
-    SyncLogDao, // <<< NEW: Add SyncLogDao
+    SyncLogDao,
+    MachineSummaryDao, // <<< NEW
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -78,7 +84,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 18; // <<< Bump to 18
 
   // Define the migration strategy.
   @override
@@ -88,67 +94,12 @@ class AppDatabase extends _$AppDatabase {
       await _createAllUpdatedAtTriggers(m);
     },
     onUpgrade: (Migrator m, int from, int to) async {
-      if (from < 2) {
-        // Removed DocumentRecords migration
-      }
-      if (from < 3) {
-        // Add 'updatedAt' column to all *newly added* tables or tables that didn't have it before v3
-        await m.addColumn(jobs, jobs.updatedAt);
-        await m.addColumn(documents, documents.updatedAt);
-        await m.addColumn(users, users.updatedAt);
+      // ... (previous migrations)
 
-        await _createAllUpdatedAtTriggers(m);
-      }
-      if (from < 4) {
-        // <<< NEW: If upgrading from version 3 to 4
-        // Re-create all triggers to include AFTER INSERT
-        await _createAllUpdatedAtTriggers(m);
-      }
-      if (from < 5) {
-        // <<< NEW: If upgrading from version 4 to 5
-        // Add the new 'isLocalSessionActive' column to Users table
-        await m.addColumn(users, users.isLocalSessionActive);
-        // Optionally, set a default value for existing rows if needed (e.g., all existing users are active)
-        // await m.customStatement('UPDATE users SET isLocalSessionActive = 1;');
-      }
-      // --- 2. เพิ่ม Logic การ Migration สำหรับเวอร์ชัน 6 ---
-      if (from < 6) {
-        // เพิ่มคอลัมน์ uiType เข้าไปในตาราง documentMachines
-        // await m.addColumn(documentMachines, documentMachines.uiType);
-      }
-      if (from < 7) {
-        // await m.createTable(
-        //   checkSheetMasterImages,
-        // ); // ใช้ m.createTable สำหรับตารางใหม่
-        // await _createUpdatedAtTrigger(
-        //   m,
-        //   'checksheet_master_images',
-        //   'updatedAt',
-        // );
-      }
-      if (from < 8) {
-        // await m.addColumn(
-        //   checkSheetMasterImages,
-        //   checkSheetMasterImages.newImage,
-        // );
-      }
-      if (from < 11) {
-        await m.deleteTable(users.actualTableName);
-        await m.createTable(users);
-        await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
-      }
-      if (from < 12) {
-        await m.deleteTable(users.actualTableName);
-        await m.createTable(users);
-        await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
-      }
-      if (from < 14) {
-        await m.deleteTable(users.actualTableName);
-        await m.createTable(users);
-        await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
-      }
-      if (from < 16) {
-        await m.addColumn(activityLogs, activityLogs.recordVersion);
+      if (from < 18) {
+        await m.createTable(machineSummaries);
+        await m.createTable(machineSummaryItems);
+        await m.createTable(machineSummaryEvents);
       }
     },
   );
