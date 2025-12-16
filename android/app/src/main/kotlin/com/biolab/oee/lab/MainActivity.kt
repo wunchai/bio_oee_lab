@@ -1,4 +1,4 @@
-package com.example.bio_oee_lab
+package com.biolab.oee.lab
 
 import io.flutter.embedding.android.FlutterActivity
 
