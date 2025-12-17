@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:bio_oee_lab/data/database/daos/job_dao.dart';
 import 'package:bio_oee_lab/data/network/job_api_service.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart'; // For DbJob
+import 'package:drift/drift.dart'; // For Value and Companions
 
 enum JobSyncStatus { idle, syncing, success, failure }
 
@@ -20,8 +21,8 @@ class JobRepository with ChangeNotifier {
       _jobDao = jobDao;
 
   // ฟังก์ชันดึงงานจาก Database เพื่อแสดงผล
-  Stream<List<DbJob>> watchJobs(String query) {
-    return _jobDao.watchJobs(query: query);
+  Stream<List<DbJob>> watchJobs({String query = '', bool? isManual}) {
+    return _jobDao.watchJobs(query: query, isManual: isManual);
   }
 
   // --- ฟังก์ชัน Sync หลัก (หัวใจสำคัญ) ---
@@ -47,8 +48,37 @@ class JobRepository with ChangeNotifier {
       );
       totalPages = firstPage.totalPages;
 
-      // 2. ‼️ จุดสำคัญ: ลบข้อมูลเก่าทิ้งทั้งหมดก่อนเขียนใหม่ ‼️
-      await _jobDao.deleteAllJobs();
+      // 1.5 Sync Manual Jobs (Upload)
+      // 1.5 Sync Manual Jobs (Upload) - Batched Loop
+      while (true) {
+        final unsyncedJobs = await _jobDao.getUnsyncedManualJobs(limit: 10);
+        if (unsyncedJobs.isEmpty) break;
+
+        _syncMessage = 'Uploading ${unsyncedJobs.length} manual jobs...';
+        notifyListeners();
+
+        int uploadedCount = 0;
+        for (final job in unsyncedJobs) {
+          final success = await _apiService.createJob(job);
+          if (success) {
+            await _jobDao.markJobAsSynced(job.jobId!);
+            uploadedCount++;
+          }
+        }
+
+        // Safety Break: If we failed to upload ANY jobs in this batch, we might be stuck in a loop if we don't handle retry logic properly.
+        // For simple retry: if uploadedCount == 0 && unsyncedJobs.isNotEmpty, we should probably break to avoid infinite loop on persistent failure.
+        if (uploadedCount == 0) {
+          if (kDebugMode)
+            print(
+              "Warning: Failed to upload any jobs in batch. Stopping upload loop.",
+            );
+          break;
+        }
+      }
+
+      // 2. ‼️ จุดสำคัญ: ลบเฉพาะข้อมูลที่ Sync มา (Manual Job เก็บไว้) ‼️
+      await _jobDao.deleteSyncedJobs();
 
       // 3. บันทึกหน้าแรก
       if (firstPage.jobs.isNotEmpty) {
@@ -99,5 +129,23 @@ class JobRepository with ChangeNotifier {
       _status = JobSyncStatus.idle;
       notifyListeners();
     }
+  }
+
+  // --- ฟังก์ชันสร้างงานแบบ Manual ---
+  Future<void> createManualJob(DbJob job) async {
+    await _jobDao.insertJob(
+      JobsCompanion(
+        jobId: Value(job.jobId),
+        jobName: Value(job.jobName),
+        machineName: Value(job.machineName),
+        location: Value(job.location),
+        jobStatus: Value(job.jobStatus),
+        isManual: Value(true), // Explicitly set as manual
+        isSynced: Value(false), // Needs sync
+        createDate: Value(DateTime.now().toIso8601String()),
+        createBy: Value('Manual'),
+      ),
+    );
+    notifyListeners(); // Refresh list
   }
 }

@@ -130,6 +130,36 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _isManualMeta = const VerificationMeta(
+    'isManual',
+  );
+  @override
+  late final GeneratedColumn<bool> isManual = GeneratedColumn<bool>(
+    'IsManual',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("IsManual" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'IsSynced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("IsSynced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
@@ -143,6 +173,8 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
     createDate,
     createBy,
     updatedAt,
+    isManual,
+    isSynced,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -225,6 +257,18 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
         updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
       );
     }
+    if (data.containsKey('IsManual')) {
+      context.handle(
+        _isManualMeta,
+        isManual.isAcceptableOrUnknown(data['IsManual']!, _isManualMeta),
+      );
+    }
+    if (data.containsKey('IsSynced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['IsSynced']!, _isSyncedMeta),
+      );
+    }
     return context;
   }
 
@@ -278,6 +322,14 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
         DriftSqlType.string,
         data['${effectivePrefix}updatedAt'],
       ),
+      isManual: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}IsManual'],
+      )!,
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}IsSynced'],
+      )!,
     );
   }
 
@@ -299,6 +351,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
   final String? createDate;
   final String? createBy;
   final String? updatedAt;
+  final bool isManual;
+  final bool isSynced;
   const DbJob({
     required this.uid,
     this.jobId,
@@ -311,6 +365,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     this.createDate,
     this.createBy,
     this.updatedAt,
+    required this.isManual,
+    required this.isSynced,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -344,6 +400,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     if (!nullToAbsent || updatedAt != null) {
       map['updatedAt'] = Variable<String>(updatedAt);
     }
+    map['IsManual'] = Variable<bool>(isManual);
+    map['IsSynced'] = Variable<bool>(isSynced);
     return map;
   }
 
@@ -378,6 +436,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       updatedAt: updatedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(updatedAt),
+      isManual: Value(isManual),
+      isSynced: Value(isSynced),
     );
   }
 
@@ -398,6 +458,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       createDate: serializer.fromJson<String?>(json['createDate']),
       createBy: serializer.fromJson<String?>(json['createBy']),
       updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+      isManual: serializer.fromJson<bool>(json['isManual']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
     );
   }
   @override
@@ -415,6 +477,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       'createDate': serializer.toJson<String?>(createDate),
       'createBy': serializer.toJson<String?>(createBy),
       'updatedAt': serializer.toJson<String?>(updatedAt),
+      'isManual': serializer.toJson<bool>(isManual),
+      'isSynced': serializer.toJson<bool>(isSynced),
     };
   }
 
@@ -430,6 +494,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     Value<String?> createDate = const Value.absent(),
     Value<String?> createBy = const Value.absent(),
     Value<String?> updatedAt = const Value.absent(),
+    bool? isManual,
+    bool? isSynced,
   }) => DbJob(
     uid: uid ?? this.uid,
     jobId: jobId.present ? jobId.value : this.jobId,
@@ -442,6 +508,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     createDate: createDate.present ? createDate.value : this.createDate,
     createBy: createBy.present ? createBy.value : this.createBy,
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    isManual: isManual ?? this.isManual,
+    isSynced: isSynced ?? this.isSynced,
   );
   DbJob copyWithCompanion(JobsCompanion data) {
     return DbJob(
@@ -462,6 +530,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
           : this.createDate,
       createBy: data.createBy.present ? data.createBy.value : this.createBy,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      isManual: data.isManual.present ? data.isManual.value : this.isManual,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
     );
   }
 
@@ -478,7 +548,9 @@ class DbJob extends DataClass implements Insertable<DbJob> {
           ..write('lastSync: $lastSync, ')
           ..write('createDate: $createDate, ')
           ..write('createBy: $createBy, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('isManual: $isManual, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
@@ -496,6 +568,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     createDate,
     createBy,
     updatedAt,
+    isManual,
+    isSynced,
   );
   @override
   bool operator ==(Object other) =>
@@ -511,7 +585,9 @@ class DbJob extends DataClass implements Insertable<DbJob> {
           other.lastSync == this.lastSync &&
           other.createDate == this.createDate &&
           other.createBy == this.createBy &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.isManual == this.isManual &&
+          other.isSynced == this.isSynced);
 }
 
 class JobsCompanion extends UpdateCompanion<DbJob> {
@@ -526,6 +602,8 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
   final Value<String?> createDate;
   final Value<String?> createBy;
   final Value<String?> updatedAt;
+  final Value<bool> isManual;
+  final Value<bool> isSynced;
   const JobsCompanion({
     this.uid = const Value.absent(),
     this.jobId = const Value.absent(),
@@ -538,6 +616,8 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     this.createDate = const Value.absent(),
     this.createBy = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.isManual = const Value.absent(),
+    this.isSynced = const Value.absent(),
   });
   JobsCompanion.insert({
     this.uid = const Value.absent(),
@@ -551,6 +631,8 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     this.createDate = const Value.absent(),
     this.createBy = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.isManual = const Value.absent(),
+    this.isSynced = const Value.absent(),
   });
   static Insertable<DbJob> custom({
     Expression<int>? uid,
@@ -564,6 +646,8 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     Expression<String>? createDate,
     Expression<String>? createBy,
     Expression<String>? updatedAt,
+    Expression<bool>? isManual,
+    Expression<bool>? isSynced,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
@@ -577,6 +661,8 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
       if (createDate != null) 'CreateDate': createDate,
       if (createBy != null) 'CreateBy': createBy,
       if (updatedAt != null) 'updatedAt': updatedAt,
+      if (isManual != null) 'IsManual': isManual,
+      if (isSynced != null) 'IsSynced': isSynced,
     });
   }
 
@@ -592,6 +678,8 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     Value<String?>? createDate,
     Value<String?>? createBy,
     Value<String?>? updatedAt,
+    Value<bool>? isManual,
+    Value<bool>? isSynced,
   }) {
     return JobsCompanion(
       uid: uid ?? this.uid,
@@ -605,6 +693,8 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
       createDate: createDate ?? this.createDate,
       createBy: createBy ?? this.createBy,
       updatedAt: updatedAt ?? this.updatedAt,
+      isManual: isManual ?? this.isManual,
+      isSynced: isSynced ?? this.isSynced,
     );
   }
 
@@ -644,6 +734,12 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     if (updatedAt.present) {
       map['updatedAt'] = Variable<String>(updatedAt.value);
     }
+    if (isManual.present) {
+      map['IsManual'] = Variable<bool>(isManual.value);
+    }
+    if (isSynced.present) {
+      map['IsSynced'] = Variable<bool>(isSynced.value);
+    }
     return map;
   }
 
@@ -660,7 +756,9 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
           ..write('lastSync: $lastSync, ')
           ..write('createDate: $createDate, ')
           ..write('createBy: $createBy, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('isManual: $isManual, ')
+          ..write('isSynced: $isSynced')
           ..write(')'))
         .toString();
   }
@@ -10417,6 +10515,8 @@ typedef $$JobsTableCreateCompanionBuilder =
       Value<String?> createDate,
       Value<String?> createBy,
       Value<String?> updatedAt,
+      Value<bool> isManual,
+      Value<bool> isSynced,
     });
 typedef $$JobsTableUpdateCompanionBuilder =
     JobsCompanion Function({
@@ -10431,6 +10531,8 @@ typedef $$JobsTableUpdateCompanionBuilder =
       Value<String?> createDate,
       Value<String?> createBy,
       Value<String?> updatedAt,
+      Value<bool> isManual,
+      Value<bool> isSynced,
     });
 
 class $$JobsTableFilterComposer extends Composer<_$AppDatabase, $JobsTable> {
@@ -10493,6 +10595,16 @@ class $$JobsTableFilterComposer extends Composer<_$AppDatabase, $JobsTable> {
 
   ColumnFilters<String> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isManual => $composableBuilder(
+    column: $table.isManual,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -10559,6 +10671,16 @@ class $$JobsTableOrderingComposer extends Composer<_$AppDatabase, $JobsTable> {
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get isManual => $composableBuilder(
+    column: $table.isManual,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$JobsTableAnnotationComposer
@@ -10608,6 +10730,12 @@ class $$JobsTableAnnotationComposer
 
   GeneratedColumn<String> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<bool> get isManual =>
+      $composableBuilder(column: $table.isManual, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
 }
 
 class $$JobsTableTableManager
@@ -10649,6 +10777,8 @@ class $$JobsTableTableManager
                 Value<String?> createDate = const Value.absent(),
                 Value<String?> createBy = const Value.absent(),
                 Value<String?> updatedAt = const Value.absent(),
+                Value<bool> isManual = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
               }) => JobsCompanion(
                 uid: uid,
                 jobId: jobId,
@@ -10661,6 +10791,8 @@ class $$JobsTableTableManager
                 createDate: createDate,
                 createBy: createBy,
                 updatedAt: updatedAt,
+                isManual: isManual,
+                isSynced: isSynced,
               ),
           createCompanionCallback:
               ({
@@ -10675,6 +10807,8 @@ class $$JobsTableTableManager
                 Value<String?> createDate = const Value.absent(),
                 Value<String?> createBy = const Value.absent(),
                 Value<String?> updatedAt = const Value.absent(),
+                Value<bool> isManual = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
               }) => JobsCompanion.insert(
                 uid: uid,
                 jobId: jobId,
@@ -10687,6 +10821,8 @@ class $$JobsTableTableManager
                 createDate: createDate,
                 createBy: createBy,
                 updatedAt: updatedAt,
+                isManual: isManual,
+                isSynced: isSynced,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

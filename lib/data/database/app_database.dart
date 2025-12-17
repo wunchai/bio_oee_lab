@@ -84,7 +84,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 18; // <<< Bump to 18
+  int get schemaVersion => 20; // <<< Bump to 20
 
   // Define the migration strategy.
   @override
@@ -100,6 +100,14 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(machineSummaries);
         await m.createTable(machineSummaryItems);
         await m.createTable(machineSummaryEvents);
+      }
+
+      if (from < 19) {
+        await m.addColumn(jobs, jobs.isManual);
+      }
+
+      if (from < 20) {
+        await m.addColumn(jobs, jobs.isSynced);
       }
     },
   );

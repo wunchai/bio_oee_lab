@@ -43,6 +43,11 @@ class JobDao extends DatabaseAccessor<AppDatabase> with _$JobDaoMixin {
     return delete(jobs).go();
   }
 
+  // NEW: Deletes ONLY synced jobs (isManual = false)
+  Future<int> deleteSyncedJobs() {
+    return (delete(jobs)..where((tbl) => tbl.isManual.equals(false))).go();
+  }
+
   // NEW: Inserts multiple job records in a single batch.
   Future<void> insertAllJobs(List<JobsCompanion> entries) async {
     await batch((batch) {
@@ -71,16 +76,47 @@ class JobDao extends DatabaseAccessor<AppDatabase> with _$JobDaoMixin {
     });
   }
 
-  // ฟังก์ชันสำหรับแสดงผลในหน้าจอ พร้อมค้นหา (Search)
-  Stream<List<DbJob>> watchJobs({String? query}) {
-    if (query != null && query.isNotEmpty) {
-      // ถ้ามีคำค้นหา ให้กรองตามชื่อ หรือ รหัสงาน
-      return (select(jobs)..where(
-            (tbl) => tbl.jobName.contains(query) | tbl.jobId.contains(query),
-          ))
-          .watch();
+  // ฟังก์ชันสำหรับแสดงผลในหน้าจอ พร้อมค้นหา (Search) และ Filter (Manual/All)
+  Stream<List<DbJob>> watchJobs({String? query, bool? isManual}) {
+    // เริ่มต้น Query Table
+    var stmt = select(jobs);
+
+    // Filter by isManual if provided
+    if (isManual != null) {
+      stmt = stmt..where((tbl) => tbl.isManual.equals(isManual));
     }
-    // ถ้าไม่มีคำค้นหา ให้แสดงทั้งหมด
-    return select(jobs).watch();
+
+    // Filter by Search Query
+    if (query != null && query.isNotEmpty) {
+      stmt = stmt
+        ..where(
+          (tbl) => tbl.jobName.contains(query) | tbl.jobId.contains(query),
+        );
+    }
+
+    // Order by createDate descending (optional but good for UI)
+    stmt = stmt
+      ..orderBy([
+        (t) => OrderingTerm(expression: t.createDate, mode: OrderingMode.desc),
+      ]);
+
+    return stmt.watch();
+  }
+
+  // NEW: Fetch unsynced manual jobs
+  Future<List<DbJob>> getUnsyncedManualJobs({int limit = 10}) {
+    return (select(jobs)
+          ..where(
+            (tbl) => tbl.isManual.equals(true) & tbl.isSynced.equals(false),
+          )
+          ..limit(limit))
+        .get();
+  }
+
+  // NEW: Mark a job as synced
+  Future<void> markJobAsSynced(String jobId) {
+    return (update(jobs)..where((tbl) => tbl.jobId.equals(jobId))).write(
+      const JobsCompanion(isSynced: Value(true)),
+    );
   }
 }

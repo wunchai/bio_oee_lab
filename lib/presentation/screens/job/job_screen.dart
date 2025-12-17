@@ -21,11 +21,15 @@ class JobScreen extends StatefulWidget {
 
 class _JobScreenState extends State<JobScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _manualJobNameController =
+      TextEditingController();
   String _searchQuery = '';
+  bool _showManualOnly = true;
 
   @override
   void dispose() {
     _searchController.dispose();
+    _manualJobNameController.dispose();
     super.dispose();
   }
 
@@ -119,7 +123,7 @@ class _JobScreenState extends State<JobScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  Future<void> _handleSync(BuildContext context) async {
+  Future<void> _handleSync() async {
     final jobRepo = context.read<JobRepository>();
     final loginRepo = context.read<LoginRepository>();
 
@@ -161,22 +165,83 @@ class _JobScreenState extends State<JobScreen> {
     }
   }
 
-  void _handleClaimJob() {
-    showDialog(
+  Future<void> _showCreateManualJobDialog() async {
+    final loginRepo = context.read<LoginRepository>();
+    final userId = loginRepo.loggedInUser?.userId ?? 'User';
+
+    // Default Job Name: UserId-yyyyMMddHHmmss
+    final now = DateTime.now();
+    final defaultJobName =
+        '$userId-${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}${now.second.toString().padLeft(2, '0')}';
+
+    _manualJobNameController.text = defaultJobName;
+
+    await showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Claim Job'),
-        content: const Text(
-          'This feature requires online connection.\n(Enter Job ID to claim from other users)',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Close'),
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Create Manual Job'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _manualJobNameController,
+                decoration: const InputDecoration(
+                  labelText: 'Job Name',
+                  hintText: 'Enter Job Name',
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Note: Machine & Location will be empty.',
+                style: TextStyle(color: Colors.grey, fontSize: 12),
+              ),
+            ],
           ),
-        ],
-      ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_manualJobNameController.text.isNotEmpty) {
+                  Navigator.pop(ctx);
+                  _createManualJob(_manualJobNameController.text, userId);
+                }
+              },
+              child: const Text('Create'),
+            ),
+          ],
+        );
+      },
     );
+  }
+
+  void _createManualJob(String jobName, String userId) {
+    // Generate a GUID for manual job (Simulated)
+    final jobId = DateTime.now().millisecondsSinceEpoch
+        .toString(); // Using timestamp as simple unique ID for now, or use uuid package if available
+
+    final newJob = DbJob(
+      uid: 0, // Auto-increment
+      jobId: jobId,
+      jobName: jobName,
+      machineName: '',
+      location: '',
+      jobStatus: 0,
+      isManual: true,
+      createDate: DateTime.now().toIso8601String(),
+      createBy: userId,
+      documentId: jobId, // Using same unique ID
+      isSynced: false, // Manual jobs start as unsynced
+    );
+
+    context.read<JobRepository>().createManualJob(newJob);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('Manual Job "$jobName" created.')));
   }
 
   @override
@@ -193,10 +258,45 @@ class _JobScreenState extends State<JobScreen> {
         title: const Text('All Jobs'),
         centerTitle: true,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(60),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: _buildSearchBar(),
+          preferredSize: const Size.fromHeight(100),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                child: _buildSearchBar(),
+              ),
+              // Filter Toggle
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FilterChip(
+                      label: const Text('Manual Jobs'),
+                      selected: _showManualOnly,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _showManualOnly = true;
+                        });
+                      },
+                      checkmarkColor: Colors.white,
+                      selectedColor: Colors.green.shade100,
+                    ),
+                    const SizedBox(width: 12),
+                    FilterChip(
+                      label: const Text('All Jobs'),
+                      selected: !_showManualOnly,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _showManualOnly = false;
+                        });
+                      },
+                      selectedColor: Colors.blue.shade100,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
         actions: [
@@ -211,7 +311,7 @@ class _JobScreenState extends State<JobScreen> {
                     ),
                   )
                 : const Icon(Icons.sync),
-            onPressed: isSyncing ? null : () => _handleSync(context),
+            onPressed: isSyncing ? null : _handleSync,
           ),
           IconButton(
             icon: const Icon(Icons.logout),
@@ -303,7 +403,10 @@ class _JobScreenState extends State<JobScreen> {
 
           Expanded(
             child: StreamBuilder<List<DbJob>>(
-              stream: jobRepo.watchJobs(_searchQuery),
+              stream: jobRepo.watchJobs(
+                query: _searchQuery,
+                isManual: _showManualOnly ? true : null,
+              ),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
@@ -326,13 +429,21 @@ class _JobScreenState extends State<JobScreen> {
                         const SizedBox(height: 16),
                         Text(
                           _searchQuery.isEmpty
-                              ? 'No Jobs Found'
+                              ? (_showManualOnly
+                                    ? 'No Manual Jobs Found'
+                                    : 'No Jobs Found')
                               : 'No result for "$_searchQuery"',
                         ),
                         const SizedBox(height: 8),
                         ElevatedButton(
-                          onPressed: () => _handleSync(context),
+                          onPressed: _handleSync,
                           child: const Text('Sync Now'),
+                        ),
+                        const SizedBox(height: 8),
+                        OutlinedButton.icon(
+                          onPressed: _showCreateManualJobDialog,
+                          icon: const Icon(Icons.add),
+                          label: const Text('Create Manual Job'),
                         ),
                       ],
                     ),
@@ -340,6 +451,7 @@ class _JobScreenState extends State<JobScreen> {
                 }
 
                 return ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 100),
                   itemCount: jobs.length,
                   itemBuilder: (context, index) {
                     final job = jobs[index];
@@ -351,12 +463,18 @@ class _JobScreenState extends State<JobScreen> {
                       child: Column(
                         children: [
                           ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             leading: CircleAvatar(
-                              backgroundColor: job.jobStatus == 1
-                                  ? Colors.green
-                                  : Colors.orange,
-                              child: const Icon(
-                                Icons.work,
+                              backgroundColor: job.isManual
+                                  ? Colors.blue
+                                  : (job.jobStatus == 1
+                                        ? Colors.green
+                                        : Colors.orange),
+                              child: Icon(
+                                job.isManual ? Icons.edit_note : Icons.work,
                                 color: Colors.white,
                               ),
                             ),
@@ -364,22 +482,104 @@ class _JobScreenState extends State<JobScreen> {
                               job.jobName ?? 'Unknown Job',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
+                                fontSize: 16,
                               ),
                             ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Job ID: ${job.jobId ?? '-'}'),
-                                Text('Machine: ${job.machineName ?? '-'}'),
-                                Text('Location: ${job.location ?? '-'}'),
-                              ],
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_today,
+                                        size: 14,
+                                        color: Colors.grey,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'Created: ${job.createDate?.split('T').first ?? '-'}',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.person,
+                                        size: 14,
+                                        color: Colors.grey,
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'By: ${job.createBy ?? '-'}',
+                                        style: const TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                  if (job.isManual)
+                                    Container(
+                                      margin: const EdgeInsets.only(top: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.blue.shade50,
+                                        borderRadius: BorderRadius.circular(4),
+                                        border: Border.all(
+                                          color: Colors.blue.shade200,
+                                        ),
+                                      ),
+                                      child: const Text(
+                                        'Manual',
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  if (job.isManual) ...[
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          job.isSynced
+                                              ? Icons.cloud_done
+                                              : Icons.cloud_upload,
+                                          size: 14,
+                                          color: job.isSynced
+                                              ? Colors.green
+                                              : Colors.grey,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          job.isSynced
+                                              ? 'Synced'
+                                              : 'Pending Sync',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: job.isSynced
+                                                ? Colors.green
+                                                : Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ],
+                              ),
                             ),
                             trailing: const Icon(
+                              // Keep trailing icon if navigation needed
                               Icons.arrow_forward_ios,
                               size: 16,
                             ),
                             onTap: () {
-                              // TODO: Navigate logic
+                              _showJobDetailsDialog(job);
                             },
                           ),
 
@@ -458,11 +658,77 @@ class _JobScreenState extends State<JobScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'job_screen_fab',
-        onPressed: _handleClaimJob,
-        label: const Text('Claim Job'),
-        icon: const Icon(Icons.add_task),
-        backgroundColor: Colors.blueAccent,
+        heroTag: 'manual_job_fab',
+        onPressed: _showCreateManualJobDialog,
+        label: const Text('Create Manual'),
+        icon: const Icon(Icons.add),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _showJobDetailsDialog(DbJob job) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(job.jobName ?? 'Job Details'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildDetailRow('Job ID:', job.jobId ?? '-'),
+            _buildDetailRow('Machine:', job.machineName ?? '-'),
+            _buildDetailRow('Location:', job.location ?? '-'),
+            _buildDetailRow('Created By:', job.createBy ?? '-'),
+            _buildDetailRow('Status:', job.jobStatus.toString()),
+            if (job.isManual)
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0),
+                child: Row(
+                  children: [
+                    Icon(
+                      job.isSynced ? Icons.cloud_done : Icons.cloud_upload,
+                      size: 16,
+                      color: job.isSynced ? Colors.green : Colors.grey,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      job.isSynced ? 'Synced with Server' : 'Pending Upload',
+                      style: TextStyle(
+                        color: job.isSynced ? Colors.green : Colors.grey,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(child: Text(value)),
+        ],
       ),
     );
   }

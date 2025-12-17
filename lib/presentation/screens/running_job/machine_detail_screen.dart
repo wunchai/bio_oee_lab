@@ -371,16 +371,19 @@ class _MachineDetailScreenState extends State<MachineDetailScreen>
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _showMachineActionDialog,
-              icon: const Icon(Icons.add),
-              label: const Text('Add Event'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _showMachineActionDialog,
+                icon: const Icon(Icons.add),
+                label: const Text('Add Event'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
               ),
             ),
           ),
@@ -475,16 +478,19 @@ class _MachineDetailScreenState extends State<MachineDetailScreen>
             },
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: _showMachineItemDialog,
-              icon: const Icon(Icons.add),
-              label: const Text('Add Test Set'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: _showMachineItemDialog,
+                icon: const Icon(Icons.add),
+                label: const Text('Add Test Set'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
               ),
             ),
           ),

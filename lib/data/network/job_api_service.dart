@@ -16,6 +16,40 @@ class JobApiService {
   final http.Client _client = http.Client();
   final String _baseUrl = AppConfig.baseUrl;
 
+  Future<bool> createJob(DbJob job) async {
+    final Uri uri = Uri.parse('$_baseUrl/OEE_JOB_CREATE'); // Assumed Endpoint
+    final body = jsonEncode({
+      'JobName': job.jobName,
+      'CreateBy': job.createBy,
+      'CreateDate': job.createDate,
+      // Add other fields if API supports them
+    });
+
+    if (kDebugMode) {
+      print('--- Create Manual Job API Request ---');
+      print(body);
+    }
+
+    try {
+      final response = await _client
+          .post(uri, headers: {'Content-Type': 'application/json'}, body: body)
+          .timeout(const Duration(seconds: 30));
+
+      if (kDebugMode) {
+        print('--- Create Manual Job API Response ---');
+        print('Status: ${response.statusCode}');
+        print('Body: ${response.body}');
+      }
+
+      return response.statusCode == 200 || response.statusCode == 201;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Failed to create manual job: $e');
+      }
+      return false;
+    }
+  }
+
   Future<JobSyncResponse> getJobs(
     String userId,
     int pageIndex, {
@@ -103,6 +137,8 @@ class JobApiService {
             createBy: map['CreateBy']?.toString(),
             lastSync: DateTime.now().toIso8601String(),
             updatedAt: null,
+            isManual: false, // Default for API fetched jobs
+            isSynced: true, // API jobs are always synced
           );
         }).toList();
 
