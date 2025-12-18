@@ -4,15 +4,22 @@ import 'package:uuid/uuid.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart'; // New Import
+import 'dart:convert'; // For JSON
 
 /// Repository for managing document data.
 class DocumentRepository {
   final DocumentDao _documentDao;
   final RunningJobDetailsDao _runningJobDetailsDao;
+  final ActivityLogDao _activityLogDao;
+  final PauseReasonDao _pauseReasonDao;
 
   DocumentRepository({required AppDatabase appDatabase})
     : _documentDao = appDatabase.documentDao,
-      _runningJobDetailsDao = appDatabase.runningJobDetailsDao;
+      _runningJobDetailsDao = appDatabase.runningJobDetailsDao,
+      _activityLogDao = appDatabase.activityLogDao,
+      _pauseReasonDao = appDatabase.pauseReasonDao;
 
   /// ฟังก์ชัน: เพิ่ม Machine จากการสแกน QR Code หรือ Manual Input
   Future<void> addMachineByQrCode({
@@ -460,5 +467,137 @@ class DocumentRepository {
 
   Future<void> deleteMachineItem(String recId) async {
     await _runningJobDetailsDao.deleteMachineItem(recId);
+  }
+
+  // -----------------------------------------------------------------------------
+  // 🔵 Batch Job Actions (Shortcuts)
+  // -----------------------------------------------------------------------------
+
+  Future<void> batchPauseJobs({
+    required String userId,
+    required String activityType, // e.g., 'Lunch', 'Meeting'
+    required String remark,
+  }) async {
+    // 1. Find all RUNNING documents (Status = 1)
+    final allDocs = await _documentDao.watchActiveDocuments(userId).first;
+    final runningDocs = allDocs.where((d) => d.status == 1).toList();
+
+    if (runningDocs.isEmpty) {
+      if (kDebugMode) print('No running jobs to pause.');
+    }
+
+    // 1.1 Find correct Pause Reason Code from DB or Default
+    // Try to find a reason that matches the activityType name
+    final allReasons = await _pauseReasonDao.getActiveReasons();
+
+    // Default fallback
+    String reasonCode = '99'; // Misc/Other?
+    String reasonName = activityType;
+
+    try {
+      final match = allReasons.firstWhere(
+        (r) =>
+            r.reasonName != null &&
+            r.reasonName!.toLowerCase().contains(activityType.toLowerCase()),
+      );
+      if (match.reasonCode != null) {
+        reasonCode = match.reasonCode!;
+        reasonName = match.reasonName ?? activityType;
+      }
+    } catch (_) {
+      // Not found, maybe use first available or keeping default
+      // If "Lunch" is not in DB, we might want to fail or just use text?
+      // User requested "DbPauseReason... ReasonCode/ReasonName".
+      // Let's assume '00' is work. '99' might be safe default if unknown.
+    }
+
+    // 2. Pause them all (Keep Status 1 "Running", but change ActivityID)
+    List<String> pausedDocIds = [];
+    for (final doc in runningDocs) {
+      if (doc.documentId != null) {
+        await handleUserAction(
+          documentId: doc.documentId!,
+          userId: userId,
+          activityType: reasonCode, // Use Code from DB
+          activityName: reasonName, // Use Name from DB
+          newDocStatus: 1, // Keep Running! (Paused state is just a log entry)
+        );
+        pausedDocIds.add(doc.documentId!);
+      }
+    }
+
+    // 3. Create Global Activity Log
+    // Store pausedDocIds in remark for resumption
+    final String fullRemark =
+        '$remark | PausedIds: ${jsonEncode(pausedDocIds)}';
+
+    await _activityLogDao.insertActivity(
+      ActivityLogsCompanion(
+        recId: drift.Value(const Uuid().v4()),
+        operatorId: drift.Value(userId),
+        activityType: drift.Value<String?>(activityType),
+        remark: drift.Value<String?>(fullRemark),
+        startTime: drift.Value<String?>(DateTime.now().toIso8601String()),
+        status: const drift.Value(1), // Running
+        syncStatus: const drift.Value(0),
+      ),
+    );
+  }
+
+  Future<int> batchResumeJobs(String userId) async {
+    // 1. Find last OPEN Activity Log
+    final activities = await _activityLogDao
+        .watchActiveActivities(userId)
+        .first;
+    if (activities.isEmpty) return 0;
+
+    final lastActivity = activities.first; // Last started
+
+    // 2. Close the Activity Log
+    await _activityLogDao.updateActivity(
+      lastActivity.copyWith(
+        endTime: drift.Value(DateTime.now().toIso8601String()),
+        status: 2, // Completed
+        syncStatus: 0, // Mark for sync
+      ),
+    );
+
+    // 3. Resume Jobs
+    int resumedCount = 0;
+    if (lastActivity.remark != null &&
+        lastActivity.remark!.contains('PausedIds:')) {
+      try {
+        final parts = lastActivity.remark!.split('PausedIds: ');
+        if (parts.length > 1) {
+          final jsonStr = parts[1];
+          final List<dynamic> ids = jsonDecode(jsonStr);
+
+          for (final id in ids) {
+            // Check if doc exists and is currently Running but in Pause Activity (Activity != '00')
+            // Actually, we trust the 'PausedIds' list meant they were paused.
+            // But we should check if they are still Status 1 (Running)
+            final doc = await _documentDao.getDocument(id.toString());
+
+            // Resume Criteria:
+            // 1. Doc exists
+            // 2. Doc is still active (Status 1) - If user manually ended it, don't resume key!
+            if (doc != null && doc.status == 1 && doc.documentId != null) {
+              await handleUserAction(
+                documentId: doc.documentId!,
+                userId: userId,
+                activityType: '00', // FIXED: ActivityID = 00
+                activityName: 'Work', // FIXED: ActivityName = Work
+                newDocStatus: 1, // Running
+              );
+              resumedCount++;
+            }
+          }
+        }
+      } catch (e) {
+        if (kDebugMode) print('Error parsing PausedIds: $e');
+      }
+    }
+
+    return resumedCount;
   }
 }

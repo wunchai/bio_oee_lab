@@ -53,6 +53,12 @@ class LoginRepository with ChangeNotifier {
   Future<LoginResult> login(String username, String password) async {
     _lastErrorMessage = '';
 
+    // --- Demo Mode ---
+    if (username == 'demo' && password == 'demo') {
+      return _performDemoLogin();
+    }
+    // -----------------
+
     final deviceId = _deviceInfoService.getLoginDeviceId();
     if (deviceId == 'unknown' || deviceId == 'error_getting_id') {
       return LoginResult(
@@ -161,6 +167,25 @@ class LoginRepository with ChangeNotifier {
     _isLoggedIn = true;
     _lastErrorMessage = '';
     notifyListeners();
+  }
+
+  Future<LoginResult> _performDemoLogin() async {
+    final demoUser = DbUser(
+      uid: 0,
+      userId: 'demo',
+      userName: 'Demo User',
+      userCode: 'DEMO-001',
+      password: 'demo',
+      position: 'Reviewer',
+      status: 1,
+      isLocalSessionActive: true,
+    );
+
+    // Save/Update local user
+    await _userDao.insertUser(demoUser);
+
+    _setSuccessState(demoUser, 'demo-token');
+    return LoginResult(status: LoginStatus.success);
   }
 
   LoginResult _handleLoginError(Object e) {

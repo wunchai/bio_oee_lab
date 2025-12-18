@@ -220,6 +220,11 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showBatchActions,
+        backgroundColor: Colors.indigo,
+        child: const Icon(Icons.flash_on),
+      ),
       body: StreamBuilder<List<DbDocument>>(
         stream: documentRepo.watchActiveDocuments(userId, query: _searchQuery),
         builder: (context, snapshot) {
@@ -256,7 +261,12 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
 
           return ListView.builder(
             itemCount: docs.length,
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.only(
+              bottom: 80,
+              left: 8,
+              right: 8,
+              top: 8,
+            ), // Add padding for FAB
             itemBuilder: (context, index) {
               final doc = docs[index];
               return _buildRunningJobCard(context, doc);
@@ -265,6 +275,107 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
         },
       ),
     );
+  }
+
+  void _showBatchActions() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  'Quick Actions (Stats All Jobs)',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.restaurant, color: Colors.orange),
+                title: const Text('Lunch Break'),
+                subtitle: const Text('Pause all jobs for lunch'),
+                onTap: () => _performBatchAction('Lunch', 'Lunch Break'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.coffee, color: Colors.brown),
+                title: const Text('Short Break'),
+                subtitle: const Text('Pause all jobs for a break'),
+                onTap: () => _performBatchAction('Break', 'Short Break'),
+              ),
+              ListTile(
+                leading: const Icon(Icons.groups, color: Colors.blue),
+                title: const Text('Meeting'),
+                subtitle: const Text('Pause all jobs for meeting'),
+                onTap: () => _performBatchAction('Meeting', 'Meeting'),
+              ),
+              const Divider(),
+              ListTile(
+                leading: const Icon(
+                  Icons.play_circle_fill,
+                  color: Colors.green,
+                ),
+                title: const Text('Resume Work'),
+                subtitle: const Text('Resume all previously paused jobs'),
+                onTap: _performBatchResume,
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _performBatchAction(String type, String remark) async {
+    Navigator.pop(context); // Close sheet
+    try {
+      final repo = context.read<DocumentRepository>();
+      final userId = context.read<LoginRepository>().loggedInUser?.userId ?? '';
+
+      await repo.batchPauseJobs(
+        userId: userId,
+        activityType: type,
+        remark: remark,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('All jobs paused for $type')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  Future<void> _performBatchResume() async {
+    Navigator.pop(context); // Close sheet
+    try {
+      final repo = context.read<DocumentRepository>();
+      final userId = context.read<LoginRepository>().loggedInUser?.userId ?? '';
+
+      final count = await repo.batchResumeJobs(userId);
+
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Resumed $count jobs.')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    }
   }
 
   Widget _buildSearchBar() {

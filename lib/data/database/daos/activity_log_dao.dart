@@ -46,6 +46,10 @@ class ActivityLogDao extends DatabaseAccessor<AppDatabase>
               predicate &= t.status.equals(1);
             }
 
+            // NEW: Filter out Shortcut Logs (MachineNo is null)
+            // User requested to show only logs that have a MachineNo
+            predicate &= t.machineNo.isNotNull();
+
             if (query != null && query.isNotEmpty) {
               predicate &=
                   t.machineNo.contains(query) | t.activityType.contains(query);

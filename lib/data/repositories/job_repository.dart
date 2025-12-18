@@ -3,6 +3,7 @@ import 'package:bio_oee_lab/data/database/daos/job_dao.dart';
 import 'package:bio_oee_lab/data/network/job_api_service.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart'; // For DbJob
 import 'package:drift/drift.dart'; // For Value and Companions
+import 'package:bio_oee_lab/data/mock/mock_data.dart';
 
 enum JobSyncStatus { idle, syncing, success, failure }
 
@@ -40,6 +41,26 @@ class JobRepository with ChangeNotifier {
       // 1. ดึงหน้าแรกก่อน เพื่อดูว่ามีข้อมูลไหม และมีกี่หน้า
       _syncMessage = 'Fetching page 1...';
       notifyListeners();
+
+      // --- Demo Mode Check ---
+      if (userId == 'demo') {
+        _syncMessage = 'Demo Mode: Generating mock data...';
+        notifyListeners();
+        await Future.delayed(const Duration(seconds: 1)); // Fake network delay
+
+        await _jobDao.deleteAllJobs(); // Clear old data for clean demo
+        await _jobDao.batchInsertJobs(MockData.jobs);
+
+        _status = JobSyncStatus.success;
+        _syncMessage = 'Synced ${MockData.jobs.length} demo jobs.';
+        notifyListeners();
+
+        await Future.delayed(const Duration(seconds: 2));
+        _status = JobSyncStatus.idle;
+        notifyListeners();
+        return true;
+      }
+      // -----------------------
 
       final firstPage = await _apiService.getJobs(
         userId,
