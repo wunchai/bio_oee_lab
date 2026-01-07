@@ -14,14 +14,16 @@ class DocumentDao extends DatabaseAccessor<AppDatabase>
   Stream<List<DbDocument>> watchActiveDocuments(
     String userId, {
     String? query,
+    List<int>? statusFilter,
   }) {
     final queryStr = query ?? '';
+    final statuses = statusFilter ?? [0, 1, 2];
 
     return (select(documents)
           ..where((tbl) {
-            // เงื่อนไขหลัก: User คนนี้ และสถานะเป็น 0, 1, 2
+            // เงื่อนไขหลัก: User คนนี้ และสถานะตาม Filter
             final baseFilter =
-                tbl.userId.equals(userId) & tbl.status.isIn([0, 1, 2]);
+                tbl.userId.equals(userId) & tbl.status.isIn(statuses);
 
             // ถ้ามีคำค้นหา ให้กรองเพิ่ม (ชื่อเอกสาร หรือ รหัสงาน)
             if (queryStr.isNotEmpty) {
@@ -146,5 +148,30 @@ class DocumentDao extends DatabaseAccessor<AppDatabase>
         recordVersion: Value(recordVersion),
       ),
     );
+  }
+
+  // NEW: Update document name by Job ID (for renamed jobs)
+  Future<void> updateDocumentNameByJobId(String jobId, String newName) async {
+    // We need to update ALL documents linked to this Job (usually 1 active)
+    // But logic says just update them all or active ones?
+    // Let's update all for consistency.
+
+    // Custom query might be better to handle "recordVersion = recordVersion + 1" natively
+    // But to keep it simple with Drift API:
+
+    final docs = await (select(
+      documents,
+    )..where((tbl) => tbl.jobId.equals(jobId))).get();
+
+    for (var doc in docs) {
+      final newVersion = (doc.recordVersion) + 1;
+      await (update(documents)..where((tbl) => tbl.uid.equals(doc.uid))).write(
+        DocumentsCompanion(
+          documentName: Value(newName),
+          syncStatus: const Value(0), // Reset sync status
+          recordVersion: Value(newVersion),
+        ),
+      );
+    }
   }
 }

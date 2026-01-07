@@ -48,7 +48,7 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
           NavigationDestination(icon: Icon(Icons.login), label: 'Check-In'),
           NavigationDestination(
             icon: Icon(Icons.engineering),
-            label: 'Activity',
+            label: 'Machine Activity',
           ),
           NavigationDestination(
             icon: Icon(Icons.precision_manufacturing),

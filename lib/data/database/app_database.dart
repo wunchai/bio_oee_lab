@@ -38,6 +38,9 @@ import 'package:bio_oee_lab/data/database/daos/machine_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/sync_log_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/machine_summary_dao.dart';
 
+import 'tables/human_activity_type_table.dart';
+import 'daos/human_activity_type_dao.dart';
+
 part 'app_database.g.dart';
 
 @DriftDatabase(
@@ -59,6 +62,7 @@ part 'app_database.g.dart';
     MachineSummaries, // <<< NEW
     MachineSummaryItems, // <<< NEW
     MachineSummaryEvents, // <<< NEW
+    HumanActivityTypes,
   ],
   daos: [
     JobDao,
@@ -71,6 +75,7 @@ part 'app_database.g.dart';
     MachineDao,
     SyncLogDao,
     MachineSummaryDao, // <<< NEW
+    HumanActivityTypeDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -84,7 +89,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 20; // <<< Bump to 20
+  int get schemaVersion => 23; // <<< Bump to 23
 
   // Define the migration strategy.
   @override
@@ -108,6 +113,29 @@ class AppDatabase extends _$AppDatabase {
 
       if (from < 20) {
         await m.addColumn(jobs, jobs.isSynced);
+      }
+
+      if (from < 21) {
+        await m.addColumn(humanActivityTypes, humanActivityTypes.recId);
+        await m.addColumn(humanActivityTypes, humanActivityTypes.documentId);
+        await m.addColumn(humanActivityTypes, humanActivityTypes.userId);
+        await m.addColumn(humanActivityTypes, humanActivityTypes.updatedAt);
+        await m.addColumn(humanActivityTypes, humanActivityTypes.lastSync);
+        await m.addColumn(humanActivityTypes, humanActivityTypes.syncStatus);
+        await m.addColumn(humanActivityTypes, humanActivityTypes.recordVersion);
+        await _createUpdatedAtTrigger(m, 'human_activity_types', 'updatedAt');
+      }
+
+      if (from < 22) {
+        await m.addColumn(jobs, jobs.recordVersion);
+      }
+
+      if (from < 23) {
+        await m.addColumn(
+          humanActivityTypes,
+          humanActivityTypes.jobTestSetRecId,
+        );
+        await m.addColumn(jobWorkingTimes, jobWorkingTimes.jobTestSetRecId);
       }
     },
   );
@@ -151,10 +179,7 @@ class AppDatabase extends _$AppDatabase {
     await _createUpdatedAtTrigger(m, 'jobs', 'updatedAt');
     await _createUpdatedAtTrigger(m, 'documents', 'updatedAt');
     await _createUpdatedAtTrigger(m, 'users', 'updatedAt');
-    await _createUpdatedAtTrigger(
-      m,
-      'machines',
-      'updatedAt',
-    ); // <<< NEW: Add trigger for machines
+    await _createUpdatedAtTrigger(m, 'machines', 'updatedAt');
+    await _createUpdatedAtTrigger(m, 'human_activity_types', 'updatedAt');
   }
 }

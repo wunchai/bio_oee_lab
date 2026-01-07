@@ -139,6 +139,7 @@ class JobApiService {
             updatedAt: null,
             isManual: false, // Default for API fetched jobs
             isSynced: true, // API jobs are always synced
+            recordVersion: 0,
           );
         }).toList();
 

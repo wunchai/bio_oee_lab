@@ -3,6 +3,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:uuid/uuid.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/daos/document_dao.dart';
+import 'package:bio_oee_lab/data/database/daos/job_dao.dart'; // Import JobDao
 import 'package:bio_oee_lab/data/database/daos/running_job_details_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/pause_reason_dao.dart'; // New Import
@@ -14,12 +15,14 @@ class DocumentRepository {
   final RunningJobDetailsDao _runningJobDetailsDao;
   final ActivityLogDao _activityLogDao;
   final PauseReasonDao _pauseReasonDao;
+  final JobDao _jobDao;
 
   DocumentRepository({required AppDatabase appDatabase})
     : _documentDao = appDatabase.documentDao,
       _runningJobDetailsDao = appDatabase.runningJobDetailsDao,
       _activityLogDao = appDatabase.activityLogDao,
-      _pauseReasonDao = appDatabase.pauseReasonDao;
+      _pauseReasonDao = appDatabase.pauseReasonDao,
+      _jobDao = appDatabase.jobDao;
 
   /// ฟังก์ชัน: เพิ่ม Machine จากการสแกน QR Code หรือ Manual Input
   Future<void> addMachineByQrCode({
@@ -96,11 +99,60 @@ class DocumentRepository {
     activityType, // This is now the ID (e.g. '1', '2' or 'Work')
     String? activityName, // Optional: The human readable name
     required int newDocStatus, // 1=Running, 2=End
+    String? jobTestSetId, // New (v23)
   }) async {
     try {
       final now = DateTime.now().toIso8601String();
 
-      // 1. หา Log ล่าสุดที่ยังเปิดอยู่
+      // -----------------------------------------------------------------------
+      // 0. Auto-Pause other running jobs (Single Active Job Policy)
+      // -----------------------------------------------------------------------
+      final otherActiveLogs = await _runningJobDetailsDao
+          .getOpenActivitiesByUserId(userId, excludeDocId: documentId);
+
+      for (final otherLog in otherActiveLogs) {
+        // Only pause if it's NOT already paused (e.g. if they are working on Doc A)
+        // If they are taking a break on Doc A (PAUSE_...), we might leave it or switch it?
+        // Requirement: "Activity in Job 1 must be stopped... and create record pause"
+        // Let's assume we force pause everything.
+        if (otherLog.activityId != null &&
+            !otherLog.activityId!.startsWith('PAUSE_')) {
+          // 0.1 Close the active work log
+          final closedOtherLog = otherLog.copyWith(
+            endTime: drift.Value(now),
+            updatedAt: drift.Value(now),
+            status: 1,
+            syncStatus: 0,
+          );
+          await _runningJobDetailsDao.updateWorkingTime(closedOtherLog);
+
+          // 0.2 Insert Auto-Pause Log for that document
+          // This ensures that when they go back to that job, it shows as Paused.
+          await _runningJobDetailsDao.insertWorkingTime(
+            JobWorkingTimesCompanion(
+              recId: drift.Value(const Uuid().v4()),
+              documentId: drift.Value(otherLog.documentId), // Same Doc
+              userId: drift.Value(userId),
+              activityId: const drift.Value('PAUSE_SWITCH_JOB'),
+              activityName: const drift.Value('Auto Pause (Switch Job)'),
+              startTime: drift.Value(now),
+              // Open-ended pause
+              status: const drift.Value(1),
+              syncStatus: const drift.Value(0),
+              updatedAt: drift.Value(now),
+              jobTestSetRecId: drift.Value(
+                otherLog.jobTestSetRecId,
+              ), // Keep context? Or null?
+            ),
+          );
+
+          if (kDebugMode) {
+            print('Auto-Paused Job in Doc: ${otherLog.documentId}');
+          }
+        }
+      }
+
+      // 1. หา Log ล่าสุดที่ยังเปิดอยู่ (Current Document)
       final lastLog = await _runningJobDetailsDao.getLastUserLog(
         documentId,
         userId,
@@ -135,6 +187,7 @@ class DocumentRepository {
         status: const drift.Value(1),
         syncStatus: const drift.Value(0),
         updatedAt: drift.Value(now),
+        jobTestSetRecId: drift.Value(jobTestSetId), // New (v23)
       );
       await _runningJobDetailsDao.insertWorkingTime(newLog);
 
@@ -143,7 +196,7 @@ class DocumentRepository {
 
       if (kDebugMode) {
         print(
-          'User Action: $activityType ($activityName) | DocStatus: $newDocStatus | Time: $now',
+          'User Action: $activityType ($activityName) | DocStatus: $newDocStatus | Time: $now | TestSet: $jobTestSetId',
         );
       }
     } catch (e) {
@@ -372,8 +425,47 @@ class DocumentRepository {
   Stream<List<DbDocument>> watchActiveDocuments(
     String userId, {
     String? query,
+    List<int>? statusFilter,
   }) {
-    return _documentDao.watchActiveDocuments(userId, query: query);
+    return _documentDao.watchActiveDocuments(
+      userId,
+      query: query,
+      statusFilter: statusFilter,
+    );
+  }
+
+  /// 🟠 Post Document (Status 3)
+  Future<void> postDocument(String documentId) async {
+    try {
+      final doc = await _documentDao.getDocument(documentId);
+      if (doc == null) throw Exception('Document not found');
+
+      // Update to Status 3 (Post)
+      // Reset Sync Status to 0
+      // Increment Record Version
+      // Set Post Date
+      final now = DateTime.now().toIso8601String();
+      final newVersion = (doc.recordVersion) + 1;
+
+      await _documentDao.updateDocument(
+        doc.copyWith(
+          status: 3,
+          syncStatus: 0,
+          recordVersion: newVersion,
+          postDate: drift.Value(now),
+          updatedAt: drift.Value(now),
+        ),
+      );
+
+      if (kDebugMode) {
+        print('Posted Document $documentId (Version: $newVersion)');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error posting document: $e');
+      }
+      rethrow;
+    }
   }
 
   Future<void> uploadPendingDocuments() async {
@@ -521,6 +613,7 @@ class DocumentRepository {
           activityType: reasonCode, // Use Code from DB
           activityName: reasonName, // Use Name from DB
           newDocStatus: 1, // Keep Running! (Paused state is just a log entry)
+          jobTestSetId: null, // Global Pause
         );
         pausedDocIds.add(doc.documentId!);
       }
@@ -588,6 +681,8 @@ class DocumentRepository {
                 activityType: '00', // FIXED: ActivityID = 00
                 activityName: 'Work', // FIXED: ActivityName = Work
                 newDocStatus: 1, // Running
+                jobTestSetId:
+                    null, // Resume to general work (or should we track last test set?)
               );
               resumedCount++;
             }
@@ -599,5 +694,27 @@ class DocumentRepository {
     }
 
     return resumedCount;
+  }
+
+  // -----------------------------------------------------------------------------
+  // 🟣 Job / Document Renaming
+  // -----------------------------------------------------------------------------
+
+  Future<void> renameJob(String jobId, String newName) async {
+    // We should run this transactionally if possible, but DAOs are separate accessors.
+    // However, since they are on the same DB, we could wrap in a transaction block
+    // if we had access to the DB instance directly here (we do, via DAOs).
+
+    // Simple sequential update is acceptable for now.
+
+    // 1. Update Job Name & Reset Sync Status
+    await _jobDao.updateJobName(jobId, newName);
+
+    // 2. Update Related Documents
+    await _documentDao.updateDocumentNameByJobId(jobId, newName);
+
+    if (kDebugMode) {
+      print('Renamed Job $jobId to "$newName" (and updated synced status)');
+    }
   }
 }

@@ -119,4 +119,22 @@ class JobDao extends DatabaseAccessor<AppDatabase> with _$JobDaoMixin {
       const JobsCompanion(isSynced: Value(true)),
     );
   }
+
+  // NEW: Rename Job and reset sync status
+  Future<void> updateJobName(String jobId, String newName) async {
+    // 1. Get current record version
+    final job = await (select(
+      jobs,
+    )..where((tbl) => tbl.jobId.equals(jobId))).getSingleOrNull();
+    final currentVersion = job?.recordVersion ?? 0;
+
+    // 2. Update
+    await (update(jobs)..where((tbl) => tbl.jobId.equals(jobId))).write(
+      JobsCompanion(
+        jobName: Value(newName),
+        isSynced: const Value(false),
+        recordVersion: Value(currentVersion + 1),
+      ),
+    );
+  }
 }

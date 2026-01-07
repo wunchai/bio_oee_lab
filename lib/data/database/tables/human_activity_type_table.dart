@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-@DataClassName('DbJobWorkingTime')
-class JobWorkingTimes extends Table {
+@DataClassName('DbHumanActivityType')
+class HumanActivityTypes extends Table {
   IntColumn get uid => integer().autoIncrement().named('uid')();
 
   // PK หลักสำหรับเชื่อมโยง (GUID)
@@ -12,25 +12,25 @@ class JobWorkingTimes extends Table {
 
   TextColumn get userId => text().named('UserId').nullable()();
 
+  // รหัสกิจกรรม (ใช้เป็น ID เวลาบันทึกใน JobWorkingTime)
+  TextColumn get activityCode => text().named('ActivityCode').nullable()();
+
   // Test Set Link (New v23)
   TextColumn get jobTestSetRecId =>
       text().named('JobTestSetRecID').nullable()();
 
-  TextColumn get activityId =>
-      text().named('ActivityID').nullable()(); // 1=Start, 2=Pause, etc.
+  // ชื่อกิจกรรมที่จะแสดงใน Dropdown
   TextColumn get activityName => text().named('ActivityName').nullable()();
 
-  TextColumn get startTime => text().named('StartTime').nullable()();
-  TextColumn get endTime => text().named('EndTime').nullable()();
-
+  // 1=Active, 0=Inactive
   IntColumn get status =>
-      integer().named('status').withDefault(const Constant(0))();
+      integer().named('Status').withDefault(const Constant(1))();
+
+  // Sync Fields
   TextColumn get updatedAt => text().named('updatedAt').nullable()();
   TextColumn get lastSync => text().named('lastSync').nullable()();
   IntColumn get syncStatus =>
       integer().named('syncStatus').withDefault(const Constant(0))();
-
-  // Versioning
   IntColumn get recordVersion =>
       integer().named('RecordVersion').withDefault(const Constant(0))();
 }

@@ -291,7 +291,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Daily Activities'),
+        title: const Text('Machine Activities'),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(120),

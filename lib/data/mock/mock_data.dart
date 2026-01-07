@@ -13,6 +13,7 @@ class MockData {
         .toIso8601String(),
     createBy: 'Demo User',
     documentId: 'DOC-DEMO-001',
+    recordVersion: 0,
     isManual: false,
     isSynced: true,
   );
@@ -30,6 +31,7 @@ class MockData {
     createBy: 'Demo User',
     documentId: 'DOC-DEMO-002',
     isManual: false,
+    recordVersion: 0,
     isSynced: true,
   );
 

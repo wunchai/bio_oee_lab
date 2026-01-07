@@ -235,6 +235,7 @@ class _JobScreenState extends State<JobScreen> {
       createBy: userId,
       documentId: jobId, // Using same unique ID
       isSynced: false, // Manual jobs start as unsynced
+      recordVersion: 0,
     );
 
     context.read<JobRepository>().createManualJob(newJob);
@@ -662,56 +663,138 @@ class _JobScreenState extends State<JobScreen> {
         onPressed: _showCreateManualJobDialog,
         label: const Text('Create Manual'),
         icon: const Icon(Icons.add),
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.blue,
       ),
     );
   }
 
-  void _showJobDetailsDialog(DbJob job) {
-    showDialog(
+  Future<void> _showJobDetailsDialog(DbJob job) async {
+    await showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(job.jobName ?? 'Job Details'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildDetailRow('Job ID:', job.jobId ?? '-'),
-            _buildDetailRow('Machine:', job.machineName ?? '-'),
-            _buildDetailRow('Location:', job.location ?? '-'),
-            _buildDetailRow('Created By:', job.createBy ?? '-'),
-            _buildDetailRow('Status:', job.jobStatus.toString()),
-            if (job.isManual)
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0),
-                child: Row(
-                  children: [
-                    Icon(
-                      job.isSynced ? Icons.cloud_done : Icons.cloud_upload,
-                      size: 16,
-                      color: job.isSynced ? Colors.green : Colors.grey,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      job.isSynced ? 'Synced with Server' : 'Pending Upload',
-                      style: TextStyle(
-                        color: job.isSynced ? Colors.green : Colors.grey,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+      builder: (ctx) {
+        return AlertDialog(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  job.jobName ?? 'Job Details',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+              IconButton(
+                icon: const Icon(Icons.edit, color: Colors.blue),
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _handleRenameJob(job);
+                },
+                tooltip: 'Rename Job',
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildDetailRow('Job ID', job.jobId ?? '-'),
+              _buildDetailRow('Machine', job.machineName ?? '-'),
+              _buildDetailRow('Location', job.location ?? '-'),
+              _buildDetailRow('Created By', job.createBy ?? '-'),
+              _buildDetailRow('Status', job.jobStatus.toString()),
+              if (job.isManual)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        job.isSynced ? Icons.cloud_done : Icons.cloud_upload,
+                        size: 16,
+                        color: job.isSynced ? Colors.green : Colors.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        job.isSynced ? 'Synced with Server' : 'Pending Upload',
+                        style: TextStyle(
+                          color: job.isSynced ? Colors.green : Colors.grey,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('Close'),
+            ),
+            // Start Job Button (if not started)
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                _onStartJobPressed(context, job);
+              },
+              child: const Text('Start Job'),
+            ),
           ],
+        );
+      },
+    );
+  }
+
+  // ✅ Rename Job Handler
+  Future<void> _handleRenameJob(DbJob job) async {
+    final controller = TextEditingController(text: job.jobName);
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Rename Job'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'New Job Name',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Close'),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Save'),
           ),
         ],
       ),
     );
+
+    if (newName != null && newName.isNotEmpty && newName != job.jobName) {
+      if (!mounted) return;
+      try {
+        final repo = context.read<DocumentRepository>();
+        if (job.jobId != null) {
+          await repo.renameJob(job.jobId!, newName);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Job renamed successfully')),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error renaming: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 
   Widget _buildDetailRow(String label, String value) {

@@ -96,6 +96,21 @@ class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
         .watch();
   }
 
+  // Find open logs for this user in ANY document (optionally excluding current doc)
+  Future<List<DbJobWorkingTime>> getOpenActivitiesByUserId(
+    String userId, {
+    String? excludeDocId,
+  }) {
+    return (select(jobWorkingTimes)..where((tbl) {
+          final userFilter = tbl.userId.equals(userId) & tbl.endTime.isNull();
+          if (excludeDocId != null) {
+            return userFilter & tbl.documentId.isNotValue(excludeDocId);
+          }
+          return userFilter;
+        }))
+        .get();
+  }
+
   // --- JobMachineEventLog ---
   Future<int> insertMachineLog(JobMachineEventLogsCompanion entry) =>
       into(jobMachineEventLogs).insert(entry);

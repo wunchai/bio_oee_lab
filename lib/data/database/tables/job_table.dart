@@ -48,4 +48,8 @@ class Jobs extends Table {
   // NEW: Flag for sync status (True = Synced/FromAPI, False = Pending Upload)
   BoolColumn get isSynced =>
       boolean().named('IsSynced').withDefault(const Constant(true))();
+
+  // NEW: Versioning for sync
+  IntColumn get recordVersion =>
+      integer().named('RecordVersion').withDefault(const Constant(0))();
 }

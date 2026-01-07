@@ -6,6 +6,7 @@ import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/running_job/machine_detail_screen.dart';
+import 'package:drift/drift.dart' hide Column;
 
 class RunningJobDetailScreen extends StatefulWidget {
   final String documentId;
@@ -21,10 +22,31 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
   late TabController _tabController;
   final TextEditingController _remarkController = TextEditingController();
 
+  DbJobTestSet? _selectedTestSet;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _loadInitialTestSet();
+  }
+
+  Future<void> _loadInitialTestSet() async {
+    // Wait for frame to ensure context is available (though strictly not needed for Provider listen:false)
+    await Future.delayed(Duration.zero);
+    if (!mounted) return;
+
+    final db = context.read<AppDatabase>();
+    // Get latest test set (first one)
+    final testSets = await db.runningJobDetailsDao
+        .watchTestSetsByDocId(widget.documentId)
+        .first;
+
+    if (testSets.isNotEmpty && mounted) {
+      setState(() {
+        _selectedTestSet = testSets.first;
+      });
+    }
   }
 
   @override
@@ -43,6 +65,7 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     String? activityName, // Name
     required int newStatus,
     String label = 'Action',
+    String? jobTestSetId,
   }) async {
     try {
       final repo = context.read<DocumentRepository>();
@@ -55,6 +78,7 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
         activityType: activityType,
         activityName: activityName,
         newDocStatus: newStatus,
+        jobTestSetId: jobTestSetId,
       );
 
       if (mounted) {
@@ -83,6 +107,9 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
         qrCode: code,
         userId: userId,
       );
+
+      // Auto-select the newly added test set
+      await _loadInitialTestSet();
 
       if (mounted) {
         ScaffoldMessenger.of(
@@ -143,6 +170,340 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     if (result != null && result.isNotEmpty) {
       await _saveTestSet(result);
     }
+  }
+
+  // ✅ 6. ฟังก์ชัน Rename Job (ใหม่! ⭐)
+  Future<void> _handleRenameJob(String currentName) async {
+    final controller = TextEditingController(text: currentName);
+    final newName = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Rename Job'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Job Name',
+            border: OutlineInputBorder(),
+            prefixIcon: Icon(Icons.edit),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+
+    if (newName != null && newName.isNotEmpty && newName != currentName) {
+      try {
+        final repo = context.read<DocumentRepository>();
+        final db = context.read<AppDatabase>();
+
+        final doc = await db.documentDao.getDocumentById(widget.documentId);
+        if (doc != null && doc.jobId != null) {
+          await repo.renameJob(doc.jobId!, newName);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Job Renamed successfully')),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error renaming: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  // ✅ 4. ฟังก์ชัน Switch Activity (Updated)
+  Future<void> _handleSwitchActivity(BuildContext context) async {
+    // 1. Use selected test set or prompt
+    DbJobTestSet? targetTestSet = _selectedTestSet;
+
+    if (targetTestSet == null) {
+      targetTestSet = await _showTestSetSelectionDialog(context);
+      if (targetTestSet != null) {
+        setState(() {
+          _selectedTestSet = targetTestSet;
+        });
+      }
+    }
+
+    if (targetTestSet == null) return; // Still null means cancelled
+
+    // 2. Select Activity (Filter by TestSet)
+    final activityObj = await _showActivitySelectionDialog(
+      context,
+      'Switch Activity',
+      testSetId: targetTestSet.recId,
+    );
+
+    if (activityObj != null) {
+      await _performAction(
+        activityType: activityObj.activityCode ?? 'Unknown',
+        activityName: activityObj.activityName,
+        newStatus: 1, // Keep Running
+        label: 'Switched to ${activityObj.activityName}',
+        jobTestSetId: targetTestSet.recId,
+      );
+    }
+  }
+
+  // ✅ 5. ฟังก์ชัน Start/Resume with Activity Selection (ใหม่! ⭐)
+  Future<void> _handleStartOrResumeWithActivity(
+    BuildContext context,
+    String label,
+  ) async {
+    // 1. Use selected test set or prompt
+    DbJobTestSet? targetTestSet = _selectedTestSet;
+
+    if (targetTestSet == null) {
+      targetTestSet = await _showTestSetSelectionDialog(context);
+      if (targetTestSet != null) {
+        setState(() {
+          _selectedTestSet = targetTestSet;
+        });
+      }
+    }
+
+    if (targetTestSet == null) return; // Cancelled
+
+    // 2. Select Activity
+    final activityObj = await _showActivitySelectionDialog(
+      context,
+      '$label Activity',
+      testSetId: targetTestSet.recId,
+    );
+
+    if (activityObj != null) {
+      await _performAction(
+        activityType: activityObj.activityCode ?? 'Unknown',
+        activityName: activityObj.activityName,
+        newStatus: 1,
+        label: label,
+        jobTestSetId: targetTestSet.recId,
+      );
+    }
+  }
+
+  // Helper: Show Dialog to Select Test Set
+  Future<DbJobTestSet?> _showTestSetSelectionDialog(
+    BuildContext context,
+  ) async {
+    final db = Provider.of<AppDatabase>(context, listen: false);
+
+    // Fetch Active Test Sets
+    final testSets = await db.runningJobDetailsDao
+        .watchTestSetsByDocId(widget.documentId)
+        .first;
+
+    if (testSets.isEmpty) {
+      // If no test sets, maybe show alert or just proceed with null?
+      // User requirement: "เลือก Test Set ก่อน" implies required.
+      // But if there are no test sets, we can't work?
+      // Let's prompt user to add one or allow null (Global)?
+      // For strictness, let's warn.
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No Test Sets found. Please add one first.'),
+          ),
+        );
+      }
+      return null;
+    }
+
+    if (!mounted) return null;
+
+    return showDialog<DbJobTestSet>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Select Test Set'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: testSets.length,
+              itemBuilder: (context, index) {
+                final ts = testSets[index];
+                return ListTile(
+                  title: Text('Test Set: ${ts.setItemNo ?? '-'}'),
+                  onTap: () => Navigator.pop(ctx, ts),
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, null),
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Helper: Show Dialog to Select or Create Activity
+  Future<DbHumanActivityType?> _showActivitySelectionDialog(
+    BuildContext context,
+    String title, {
+    String? testSetId,
+  }) async {
+    final db = Provider.of<AppDatabase>(context, listen: false);
+    final loginRepo = Provider.of<LoginRepository>(context, listen: false);
+    final userId = loginRepo.loggedInUser?.userId ?? 'Unknown';
+
+    // Seed default activities if empty for THIS document
+    await db.humanActivityTypeDao.seedDefaultActivities(
+      widget.documentId,
+      userId,
+    );
+
+    // Filter by document AND testSetId (optional)
+    final activities = await db.humanActivityTypeDao.getActiveActivities(
+      widget.documentId,
+      testSetRecId: testSetId,
+    );
+
+    if (!mounted) return null;
+
+    String? selectedActivityCode;
+    final textController = TextEditingController(); // For new activity name
+
+    return showDialog<DbHumanActivityType?>(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text(title),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Select activity:'),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                      ),
+                      hint: const Text('Choose activity...'),
+                      value: selectedActivityCode,
+                      items: activities
+                          .map(
+                            (a) => DropdownMenuItem(
+                              value: a.activityCode,
+                              child: Text(a.activityName ?? '-'),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        setState(() {
+                          selectedActivityCode = val;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    const Divider(),
+                    const Text(
+                      'Or create new:',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: textController,
+                      decoration: const InputDecoration(
+                        labelText: 'New Activity Name',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, null),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    // Check if creating new
+                    final newName = textController.text.trim();
+                    if (newName.isNotEmpty) {
+                      // Create new activity
+                      final code =
+                          'CUSTOM_${DateTime.now().millisecondsSinceEpoch}';
+                      final now = DateTime.now().toIso8601String();
+
+                      await db.humanActivityTypeDao.insertActivity(
+                        HumanActivityTypesCompanion.insert(
+                          documentId: Value(widget.documentId),
+                          userId: Value(userId),
+                          activityCode: Value(code),
+                          activityName: Value(newName),
+                          status: const Value(1),
+                          recId: Value(code),
+                          updatedAt: Value(now),
+                          lastSync: const Value(null),
+                          syncStatus: const Value(0),
+                          recordVersion: const Value(0),
+                          jobTestSetRecId: Value(testSetId), // Save Test Set ID
+                        ),
+                      );
+
+                      // Fetch newly created to return it
+                      final newActivity = DbHumanActivityType(
+                        uid: 0, // Placeholder, actual UID managed by DB
+                        recId: code,
+                        documentId: widget.documentId,
+                        userId: userId,
+                        activityCode: code,
+                        activityName: newName,
+                        status: 1,
+                        updatedAt: now,
+                        syncStatus: 0,
+                        recordVersion: 0,
+                        jobTestSetRecId: testSetId,
+                      );
+                      if (context.mounted) Navigator.pop(ctx, newActivity);
+                    } else if (selectedActivityCode != null) {
+                      // Return selected
+                      final selected = activities.firstWhere(
+                        (a) => a.activityCode == selectedActivityCode,
+                      );
+                      Navigator.pop(ctx, selected);
+                    }
+                  },
+                  child: const Text('Select'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _handlePause() async {
@@ -238,10 +599,12 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
       );
 
       await _performAction(
-        activityType: '${reasonObj.reasonCode}', // Use Code as ID
+        activityType: 'PAUSE_${reasonObj.reasonCode}', // Prefix with PAUSE_
         activityName: reasonObj.reasonName, // Use Name
         newStatus: 1,
         label: 'Pause',
+        jobTestSetId:
+            null, // Pause doesn't necessarily belong to a TestSet? Or use last? Global pause usually.
       );
     }
   }
@@ -347,12 +710,25 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  doc.documentName ?? 'Untitled',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                GestureDetector(
+                  onTap: () => _handleRenameJob(doc.documentName ?? ''),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Flexible(
+                        child: Text(
+                          doc.documentName ?? 'Untitled',
+                          style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.edit, size: 16, color: Colors.grey),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -409,219 +785,381 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     );
   }
 
+  String? _timelineFilterTestSetId;
+
   // --- Tab 1: Work & Time ---
   Widget _buildWorkTab(AppDatabase db, DbDocument doc) {
-    return StreamBuilder<List<DbJobWorkingTime>>(
-      stream: db.runningJobDetailsDao.watchUserLogs(widget.documentId),
-      builder: (context, logsSnapshot) {
-        final logs = logsSnapshot.data ?? [];
+    // 1. Fetch Test Sets to populate Filter & Map Names
+    return StreamBuilder<List<DbJobTestSet>>(
+      stream: db.runningJobDetailsDao.watchTestSetsByDocId(widget.documentId),
+      builder: (context, testSetsSnapshot) {
+        final testSets = testSetsSnapshot.data ?? [];
 
-        // 1. หา Log ล่าสุด (ถ้ามี)
-        // ถ้ามี Log ที่เปิดค้างอยู่ (endTime == null) ให้เอาอันนั้น
-        // ถ้าไม่มีเลย หรือปิดหมดแล้ว ให้เอาอันล่าสุด (ตัวแรก)
-        final currentLog = logs.isEmpty
-            ? null
-            : logs.firstWhere(
-                (l) => l.endTime == null,
-                orElse: () => logs.first,
-              );
+        // Map ID -> Name for easy lookup
+        final Map<String, String> testSetMap = {
+          for (var ts in testSets) ts.recId: ts.setItemNo ?? 'Unknown',
+        };
 
-        // 2. เช็คสถานะให้ชัวร์ (ป้องกัน null)
-        // มี Log เปิดค้างอยู่จริงไหม?
-        final bool hasOpenLog =
-            currentLog != null && currentLog.endTime == null;
+        // 2. Fetch Logs
+        return StreamBuilder<List<DbJobWorkingTime>>(
+          stream: db.runningJobDetailsDao.watchUserLogs(widget.documentId),
+          builder: (context, logsSnapshot) {
+            var logs = logsSnapshot.data ?? [];
 
-        // กำลังทำงานอยู่ (มี Log เปิดค้าง และกิจกรรมคือ Work => ID '00')
-        final bool isWorking = hasOpenLog && currentLog.activityId == '00';
+            // 3. Apply Filter
+            if (_timelineFilterTestSetId != null) {
+              logs = logs.where((l) {
+                // If filtering by a specific ID, match it.
+                // Note: Some global activities (like Pause) might have null testSetId.
+                // Usually we only show what matches.
+                return l.jobTestSetRecId == _timelineFilterTestSetId;
+              }).toList();
+            }
 
-        // กำลังพักอยู่ (มี Log เปิดค้าง แต่กิจกรรมไม่ใช่ Work)
-        final bool isPaused = hasOpenLog && currentLog.activityId != '00';
+            // 4. Find Current Status (for buttons)
+            // (Original logic to find currentLog, isWorking, etc.)
+            // We must use the UNFILTERED list to determine current state correctly!
+            // Wait, if we filter the view, controls should still reflect the actual job state.
+            // So let's re-fetch the *full* recent log for state logic.
+            final fullLogs = logsSnapshot.data ?? [];
 
-        final bool isEnded = doc.status == 2;
+            final currentLog = fullLogs.isEmpty
+                ? null
+                : fullLogs.firstWhere(
+                    (l) => l.endTime == null,
+                    orElse: () => fullLogs.first,
+                  );
 
-        return Column(
-          children: [
-            // ปุ่ม Control (ถ้ายังไม่จบงาน)
-            if (!isEnded)
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: !isWorking && !isPaused
-                          ? _buildBigButton(
-                              'START WORK',
-                              Colors.green,
-                              Icons.play_arrow,
-                              () => _performAction(
-                                activityType: '00',
-                                activityName: 'Work',
-                                newStatus: 1,
-                                label: 'Start',
-                              ),
-                            )
-                          : isPaused
-                          ? _buildBigButton(
-                              'RESUME',
-                              Colors.green,
-                              Icons.play_arrow,
-                              () => _performAction(
-                                activityType: '00',
-                                activityName: 'Work',
-                                newStatus: 1,
-                                label: 'Resume',
-                              ),
-                            )
-                          : _buildBigButton(
-                              'PAUSE',
-                              Colors.orange,
-                              Icons.pause,
-                              _handlePause,
+            final bool hasOpenLog =
+                currentLog != null && currentLog.endTime == null;
+
+            final bool isPaused =
+                hasOpenLog &&
+                (currentLog.activityId?.startsWith('PAUSE_') ?? false);
+
+            final bool isWorking = hasOpenLog && !isPaused;
+            final bool isEnded = doc.status == 2;
+
+            return Column(
+              children: [
+                // Control Buttons (Always visible)
+                if (!isEnded)
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: !isWorking && !isPaused
+                              ? _buildBigButton(
+                                  'START WORK',
+                                  Colors.green,
+                                  Icons.play_arrow,
+                                  () => _handleStartOrResumeWithActivity(
+                                    context,
+                                    'Start',
+                                  ),
+                                )
+                              : isPaused
+                              ? _buildBigButton(
+                                  'RESUME',
+                                  Colors.green,
+                                  Icons.play_arrow,
+                                  () => _handleStartOrResumeWithActivity(
+                                    context,
+                                    'Resume',
+                                  ),
+                                )
+                              : _buildBigButton(
+                                  'PAUSE',
+                                  Colors.orange,
+                                  Icons.pause,
+                                  _handlePause,
+                                ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildBigButton(
+                            'END JOB',
+                            Colors.red,
+                            Icons.stop,
+                            _handleEnd,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                // Switch Activity & Selector (Only when Working)
+                if (isWorking)
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      bottom: 16.0,
+                      left: 16.0,
+                      right: 16.0,
+                    ),
+                    child: Row(
+                      children: [
+                        // Switch Activity Button
+                        Expanded(
+                          flex: 3,
+                          child: OutlinedButton.icon(
+                            onPressed: () => _handleSwitchActivity(context),
+                            icon: const Icon(Icons.swap_horiz),
+                            label: const Text('Switch Activity'),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              side: const BorderSide(color: Colors.blue),
                             ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Test Set Selector
+                        Expanded(
+                          flex: 2,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final selected =
+                                  await _showTestSetSelectionDialog(context);
+                              if (selected != null) {
+                                setState(() {
+                                  _selectedTestSet = selected;
+                                });
+                              }
+                            },
+                            icon: const Icon(Icons.science),
+                            label: Text(
+                              _selectedTestSet?.setItemNo ?? 'Select Set',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              side: const BorderSide(color: Colors.grey),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildBigButton(
-                        'END JOB',
-                        Colors.red,
-                        Icons.stop,
-                        _handleEnd,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
 
-            const Divider(),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Activity Timeline',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
+                const Divider(),
+
+                // Filter Control Header
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  color: Colors.grey.shade50,
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.filter_list,
+                        size: 18,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Filter by:',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: DropdownButton<String?>(
+                          isExpanded: true,
+                          value: _timelineFilterTestSetId,
+                          underline: Container(), // Remove underline
+                          hint: const Text('All Test Sets'),
+                          items: [
+                            const DropdownMenuItem<String?>(
+                              value: null,
+                              child: Text('Show All'),
+                            ),
+                            ...testSets.map((ts) {
+                              return DropdownMenuItem<String?>(
+                                value: ts.recId,
+                                child: Text(
+                                  'Test Set: ${ts.setItemNo}',
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            }),
+                          ],
+                          onChanged: (val) {
+                            setState(() {
+                              _timelineFilterTestSetId = val;
+                            });
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ),
+                const Divider(height: 1),
 
-            // Timeline List
-            Expanded(
-              child: logs.isEmpty
-                  ? const Center(child: Text('No activity recorded yet.'))
-                  : ListView.builder(
-                      itemCount: logs.length,
-                      itemBuilder: (context, index) {
-                        final log = logs[index];
-                        final isWork = log.activityId == '00';
-                        final start = DateTime.tryParse(log.startTime ?? '');
-                        final end = DateTime.tryParse(log.endTime ?? '');
-
-                        final duration = end != null
-                            ? end.difference(start!)
-                            : DateTime.now().difference(start!);
-                        final durationStr =
-                            '${duration.inHours}h ${duration.inMinutes % 60}m ${duration.inSeconds % 60}s';
-
-                        final isSynced = log.syncStatus == 1;
-
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 4,
+                // Timeline List
+                Expanded(
+                  child: logs.isEmpty
+                      ? Center(
+                          child: Text(
+                            _timelineFilterTestSetId == null
+                                ? 'No activity recorded yet.'
+                                : 'No activities found for this Test Set.',
+                            style: const TextStyle(color: Colors.grey),
                           ),
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            leading: CircleAvatar(
-                              backgroundColor: isWork
-                                  ? Colors.green.shade100
-                                  : Colors.orange.shade100,
-                              child: Icon(
-                                isWork ? Icons.work : Icons.coffee,
-                                color: isWork ? Colors.green : Colors.orange,
-                                size: 20,
+                        )
+                      : ListView.builder(
+                          itemCount: logs.length,
+                          itemBuilder: (context, index) {
+                            final log = logs[index];
+                            final isWork =
+                                !(log.activityId?.startsWith('PAUSE_') ??
+                                    false);
+                            final start = DateTime.tryParse(
+                              log.startTime ?? '',
+                            );
+                            final end = DateTime.tryParse(log.endTime ?? '');
+                            final duration = end != null
+                                ? end.difference(start!)
+                                : DateTime.now().difference(start!);
+                            final durationStr =
+                                '${duration.inHours}h ${duration.inMinutes % 60}m ${duration.inSeconds % 60}s';
+                            final isSynced = log.syncStatus == 1;
+
+                            // Resolve Test Set Name
+                            final testSetName = log.jobTestSetRecId != null
+                                ? testSetMap[log.jobTestSetRecId]
+                                : null;
+
+                            return Card(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 4,
                               ),
-                            ),
-                            title: Text(
-                              log.activityName ?? log.activityId ?? 'Unknown',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Start: ${DateFormat('HH:mm:ss').format(start!)}',
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 8,
                                 ),
-                                if (end != null)
-                                  Text(
-                                    'End: ${DateFormat('HH:mm:ss').format(end)}',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 12,
-                                    ),
+                                leading: CircleAvatar(
+                                  backgroundColor: isWork
+                                      ? Colors.green.shade100
+                                      : Colors.orange.shade100,
+                                  child: Icon(
+                                    isWork ? Icons.work : Icons.coffee,
+                                    color: isWork
+                                        ? Colors.green
+                                        : Colors.orange,
+                                    size: 20,
                                   ),
-                              ],
-                            ),
-                            trailing: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                Text(
-                                  durationStr,
+                                ),
+                                title: Text(
+                                  log.activityName ??
+                                      log.activityId ??
+                                      'Unknown',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    if (end == null)
-                                      const Padding(
-                                        padding: EdgeInsets.only(right: 8.0),
+                                    const SizedBox(height: 4),
+                                    if (testSetName != null)
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 2,
+                                        ),
+                                        margin: const EdgeInsets.only(
+                                          bottom: 4,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue.shade50,
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
                                         child: Text(
-                                          'Running...',
+                                          'Test Set: $testSetName',
                                           style: TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.green,
+                                            fontSize: 12,
+                                            color: Colors.blue.shade800,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ),
-                                    Icon(
-                                      isSynced
-                                          ? Icons.cloud_done_outlined
-                                          : Icons.cloud_off,
-                                      size: 16,
-                                      color: isSynced
-                                          ? Colors.green
-                                          : Colors.grey,
+                                    Text(
+                                      'Start: ${DateFormat('HH:mm:ss').format(start)}',
+                                    ),
+                                    if (end != null)
+                                      Text(
+                                        'End: ${DateFormat('HH:mm:ss').format(end)}',
+                                        style: TextStyle(
+                                          color: Colors.grey.shade600,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                trailing: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      durationStr,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (end == null)
+                                          const Padding(
+                                            padding: EdgeInsets.only(
+                                              right: 8.0,
+                                            ),
+                                            child: Text(
+                                              'Running...',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: Colors.green,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        Icon(
+                                          isSynced
+                                              ? Icons.cloud_done_outlined
+                                              : Icons.cloud_off,
+                                          size: 16,
+                                          color: isSynced
+                                              ? Colors.green
+                                              : Colors.grey,
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        );
+                              ),
+                            );
+                          },
+                        ),
+                ),
+              ],
+            );
+          },
+        ); // End Logs StreamBuilder
       },
-    );
+    ); // End TestSet StreamBuilder
   }
 
   Widget _buildBigButton(

@@ -160,6 +160,18 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _recordVersionMeta = const VerificationMeta(
+    'recordVersion',
+  );
+  @override
+  late final GeneratedColumn<int> recordVersion = GeneratedColumn<int>(
+    'RecordVersion',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
@@ -175,6 +187,7 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
     updatedAt,
     isManual,
     isSynced,
+    recordVersion,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -269,6 +282,15 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
         isSynced.isAcceptableOrUnknown(data['IsSynced']!, _isSyncedMeta),
       );
     }
+    if (data.containsKey('RecordVersion')) {
+      context.handle(
+        _recordVersionMeta,
+        recordVersion.isAcceptableOrUnknown(
+          data['RecordVersion']!,
+          _recordVersionMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -330,6 +352,10 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
         DriftSqlType.bool,
         data['${effectivePrefix}IsSynced'],
       )!,
+      recordVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecordVersion'],
+      )!,
     );
   }
 
@@ -353,6 +379,7 @@ class DbJob extends DataClass implements Insertable<DbJob> {
   final String? updatedAt;
   final bool isManual;
   final bool isSynced;
+  final int recordVersion;
   const DbJob({
     required this.uid,
     this.jobId,
@@ -367,6 +394,7 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     this.updatedAt,
     required this.isManual,
     required this.isSynced,
+    required this.recordVersion,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -402,6 +430,7 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     }
     map['IsManual'] = Variable<bool>(isManual);
     map['IsSynced'] = Variable<bool>(isSynced);
+    map['RecordVersion'] = Variable<int>(recordVersion);
     return map;
   }
 
@@ -438,6 +467,7 @@ class DbJob extends DataClass implements Insertable<DbJob> {
           : Value(updatedAt),
       isManual: Value(isManual),
       isSynced: Value(isSynced),
+      recordVersion: Value(recordVersion),
     );
   }
 
@@ -460,6 +490,7 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       updatedAt: serializer.fromJson<String?>(json['updatedAt']),
       isManual: serializer.fromJson<bool>(json['isManual']),
       isSynced: serializer.fromJson<bool>(json['isSynced']),
+      recordVersion: serializer.fromJson<int>(json['recordVersion']),
     );
   }
   @override
@@ -479,6 +510,7 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       'updatedAt': serializer.toJson<String?>(updatedAt),
       'isManual': serializer.toJson<bool>(isManual),
       'isSynced': serializer.toJson<bool>(isSynced),
+      'recordVersion': serializer.toJson<int>(recordVersion),
     };
   }
 
@@ -496,6 +528,7 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     Value<String?> updatedAt = const Value.absent(),
     bool? isManual,
     bool? isSynced,
+    int? recordVersion,
   }) => DbJob(
     uid: uid ?? this.uid,
     jobId: jobId.present ? jobId.value : this.jobId,
@@ -510,6 +543,7 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
     isManual: isManual ?? this.isManual,
     isSynced: isSynced ?? this.isSynced,
+    recordVersion: recordVersion ?? this.recordVersion,
   );
   DbJob copyWithCompanion(JobsCompanion data) {
     return DbJob(
@@ -532,6 +566,9 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       isManual: data.isManual.present ? data.isManual.value : this.isManual,
       isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      recordVersion: data.recordVersion.present
+          ? data.recordVersion.value
+          : this.recordVersion,
     );
   }
 
@@ -550,7 +587,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
           ..write('createBy: $createBy, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('isManual: $isManual, ')
-          ..write('isSynced: $isSynced')
+          ..write('isSynced: $isSynced, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -570,6 +608,7 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     updatedAt,
     isManual,
     isSynced,
+    recordVersion,
   );
   @override
   bool operator ==(Object other) =>
@@ -587,7 +626,8 @@ class DbJob extends DataClass implements Insertable<DbJob> {
           other.createBy == this.createBy &&
           other.updatedAt == this.updatedAt &&
           other.isManual == this.isManual &&
-          other.isSynced == this.isSynced);
+          other.isSynced == this.isSynced &&
+          other.recordVersion == this.recordVersion);
 }
 
 class JobsCompanion extends UpdateCompanion<DbJob> {
@@ -604,6 +644,7 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
   final Value<String?> updatedAt;
   final Value<bool> isManual;
   final Value<bool> isSynced;
+  final Value<int> recordVersion;
   const JobsCompanion({
     this.uid = const Value.absent(),
     this.jobId = const Value.absent(),
@@ -618,6 +659,7 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     this.updatedAt = const Value.absent(),
     this.isManual = const Value.absent(),
     this.isSynced = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   JobsCompanion.insert({
     this.uid = const Value.absent(),
@@ -633,6 +675,7 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     this.updatedAt = const Value.absent(),
     this.isManual = const Value.absent(),
     this.isSynced = const Value.absent(),
+    this.recordVersion = const Value.absent(),
   });
   static Insertable<DbJob> custom({
     Expression<int>? uid,
@@ -648,6 +691,7 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     Expression<String>? updatedAt,
     Expression<bool>? isManual,
     Expression<bool>? isSynced,
+    Expression<int>? recordVersion,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
@@ -663,6 +707,7 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
       if (updatedAt != null) 'updatedAt': updatedAt,
       if (isManual != null) 'IsManual': isManual,
       if (isSynced != null) 'IsSynced': isSynced,
+      if (recordVersion != null) 'RecordVersion': recordVersion,
     });
   }
 
@@ -680,6 +725,7 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     Value<String?>? updatedAt,
     Value<bool>? isManual,
     Value<bool>? isSynced,
+    Value<int>? recordVersion,
   }) {
     return JobsCompanion(
       uid: uid ?? this.uid,
@@ -695,6 +741,7 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
       updatedAt: updatedAt ?? this.updatedAt,
       isManual: isManual ?? this.isManual,
       isSynced: isSynced ?? this.isSynced,
+      recordVersion: recordVersion ?? this.recordVersion,
     );
   }
 
@@ -740,6 +787,9 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     if (isSynced.present) {
       map['IsSynced'] = Variable<bool>(isSynced.value);
     }
+    if (recordVersion.present) {
+      map['RecordVersion'] = Variable<int>(recordVersion.value);
+    }
     return map;
   }
 
@@ -758,7 +808,8 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
           ..write('createBy: $createBy, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('isManual: $isManual, ')
-          ..write('isSynced: $isSynced')
+          ..write('isSynced: $isSynced, ')
+          ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
@@ -3672,6 +3723,17 @@ class $JobWorkingTimesTable extends JobWorkingTimes
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _jobTestSetRecIdMeta = const VerificationMeta(
+    'jobTestSetRecId',
+  );
+  @override
+  late final GeneratedColumn<String> jobTestSetRecId = GeneratedColumn<String>(
+    'JobTestSetRecID',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _activityIdMeta = const VerificationMeta(
     'activityId',
   );
@@ -3778,6 +3840,7 @@ class $JobWorkingTimesTable extends JobWorkingTimes
     recId,
     documentId,
     userId,
+    jobTestSetRecId,
     activityId,
     activityName,
     startTime,
@@ -3822,6 +3885,15 @@ class $JobWorkingTimesTable extends JobWorkingTimes
       context.handle(
         _userIdMeta,
         userId.isAcceptableOrUnknown(data['UserId']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('JobTestSetRecID')) {
+      context.handle(
+        _jobTestSetRecIdMeta,
+        jobTestSetRecId.isAcceptableOrUnknown(
+          data['JobTestSetRecID']!,
+          _jobTestSetRecIdMeta,
+        ),
       );
     }
     if (data.containsKey('ActivityID')) {
@@ -3909,6 +3981,10 @@ class $JobWorkingTimesTable extends JobWorkingTimes
         DriftSqlType.string,
         data['${effectivePrefix}UserId'],
       ),
+      jobTestSetRecId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}JobTestSetRecID'],
+      ),
       activityId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}ActivityID'],
@@ -3960,6 +4036,7 @@ class DbJobWorkingTime extends DataClass
   final String? recId;
   final String? documentId;
   final String? userId;
+  final String? jobTestSetRecId;
   final String? activityId;
   final String? activityName;
   final String? startTime;
@@ -3974,6 +4051,7 @@ class DbJobWorkingTime extends DataClass
     this.recId,
     this.documentId,
     this.userId,
+    this.jobTestSetRecId,
     this.activityId,
     this.activityName,
     this.startTime,
@@ -3996,6 +4074,9 @@ class DbJobWorkingTime extends DataClass
     }
     if (!nullToAbsent || userId != null) {
       map['UserId'] = Variable<String>(userId);
+    }
+    if (!nullToAbsent || jobTestSetRecId != null) {
+      map['JobTestSetRecID'] = Variable<String>(jobTestSetRecId);
     }
     if (!nullToAbsent || activityId != null) {
       map['ActivityID'] = Variable<String>(activityId);
@@ -4033,6 +4114,9 @@ class DbJobWorkingTime extends DataClass
       userId: userId == null && nullToAbsent
           ? const Value.absent()
           : Value(userId),
+      jobTestSetRecId: jobTestSetRecId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobTestSetRecId),
       activityId: activityId == null && nullToAbsent
           ? const Value.absent()
           : Value(activityId),
@@ -4067,6 +4151,7 @@ class DbJobWorkingTime extends DataClass
       recId: serializer.fromJson<String?>(json['recId']),
       documentId: serializer.fromJson<String?>(json['documentId']),
       userId: serializer.fromJson<String?>(json['userId']),
+      jobTestSetRecId: serializer.fromJson<String?>(json['jobTestSetRecId']),
       activityId: serializer.fromJson<String?>(json['activityId']),
       activityName: serializer.fromJson<String?>(json['activityName']),
       startTime: serializer.fromJson<String?>(json['startTime']),
@@ -4086,6 +4171,7 @@ class DbJobWorkingTime extends DataClass
       'recId': serializer.toJson<String?>(recId),
       'documentId': serializer.toJson<String?>(documentId),
       'userId': serializer.toJson<String?>(userId),
+      'jobTestSetRecId': serializer.toJson<String?>(jobTestSetRecId),
       'activityId': serializer.toJson<String?>(activityId),
       'activityName': serializer.toJson<String?>(activityName),
       'startTime': serializer.toJson<String?>(startTime),
@@ -4103,6 +4189,7 @@ class DbJobWorkingTime extends DataClass
     Value<String?> recId = const Value.absent(),
     Value<String?> documentId = const Value.absent(),
     Value<String?> userId = const Value.absent(),
+    Value<String?> jobTestSetRecId = const Value.absent(),
     Value<String?> activityId = const Value.absent(),
     Value<String?> activityName = const Value.absent(),
     Value<String?> startTime = const Value.absent(),
@@ -4117,6 +4204,9 @@ class DbJobWorkingTime extends DataClass
     recId: recId.present ? recId.value : this.recId,
     documentId: documentId.present ? documentId.value : this.documentId,
     userId: userId.present ? userId.value : this.userId,
+    jobTestSetRecId: jobTestSetRecId.present
+        ? jobTestSetRecId.value
+        : this.jobTestSetRecId,
     activityId: activityId.present ? activityId.value : this.activityId,
     activityName: activityName.present ? activityName.value : this.activityName,
     startTime: startTime.present ? startTime.value : this.startTime,
@@ -4135,6 +4225,9 @@ class DbJobWorkingTime extends DataClass
           ? data.documentId.value
           : this.documentId,
       userId: data.userId.present ? data.userId.value : this.userId,
+      jobTestSetRecId: data.jobTestSetRecId.present
+          ? data.jobTestSetRecId.value
+          : this.jobTestSetRecId,
       activityId: data.activityId.present
           ? data.activityId.value
           : this.activityId,
@@ -4162,6 +4255,7 @@ class DbJobWorkingTime extends DataClass
           ..write('recId: $recId, ')
           ..write('documentId: $documentId, ')
           ..write('userId: $userId, ')
+          ..write('jobTestSetRecId: $jobTestSetRecId, ')
           ..write('activityId: $activityId, ')
           ..write('activityName: $activityName, ')
           ..write('startTime: $startTime, ')
@@ -4181,6 +4275,7 @@ class DbJobWorkingTime extends DataClass
     recId,
     documentId,
     userId,
+    jobTestSetRecId,
     activityId,
     activityName,
     startTime,
@@ -4199,6 +4294,7 @@ class DbJobWorkingTime extends DataClass
           other.recId == this.recId &&
           other.documentId == this.documentId &&
           other.userId == this.userId &&
+          other.jobTestSetRecId == this.jobTestSetRecId &&
           other.activityId == this.activityId &&
           other.activityName == this.activityName &&
           other.startTime == this.startTime &&
@@ -4215,6 +4311,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
   final Value<String?> recId;
   final Value<String?> documentId;
   final Value<String?> userId;
+  final Value<String?> jobTestSetRecId;
   final Value<String?> activityId;
   final Value<String?> activityName;
   final Value<String?> startTime;
@@ -4229,6 +4326,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     this.recId = const Value.absent(),
     this.documentId = const Value.absent(),
     this.userId = const Value.absent(),
+    this.jobTestSetRecId = const Value.absent(),
     this.activityId = const Value.absent(),
     this.activityName = const Value.absent(),
     this.startTime = const Value.absent(),
@@ -4244,6 +4342,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     this.recId = const Value.absent(),
     this.documentId = const Value.absent(),
     this.userId = const Value.absent(),
+    this.jobTestSetRecId = const Value.absent(),
     this.activityId = const Value.absent(),
     this.activityName = const Value.absent(),
     this.startTime = const Value.absent(),
@@ -4259,6 +4358,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     Expression<String>? recId,
     Expression<String>? documentId,
     Expression<String>? userId,
+    Expression<String>? jobTestSetRecId,
     Expression<String>? activityId,
     Expression<String>? activityName,
     Expression<String>? startTime,
@@ -4274,6 +4374,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
       if (recId != null) 'recID': recId,
       if (documentId != null) 'documentId': documentId,
       if (userId != null) 'UserId': userId,
+      if (jobTestSetRecId != null) 'JobTestSetRecID': jobTestSetRecId,
       if (activityId != null) 'ActivityID': activityId,
       if (activityName != null) 'ActivityName': activityName,
       if (startTime != null) 'StartTime': startTime,
@@ -4291,6 +4392,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     Value<String?>? recId,
     Value<String?>? documentId,
     Value<String?>? userId,
+    Value<String?>? jobTestSetRecId,
     Value<String?>? activityId,
     Value<String?>? activityName,
     Value<String?>? startTime,
@@ -4306,6 +4408,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
       recId: recId ?? this.recId,
       documentId: documentId ?? this.documentId,
       userId: userId ?? this.userId,
+      jobTestSetRecId: jobTestSetRecId ?? this.jobTestSetRecId,
       activityId: activityId ?? this.activityId,
       activityName: activityName ?? this.activityName,
       startTime: startTime ?? this.startTime,
@@ -4332,6 +4435,9 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
     }
     if (userId.present) {
       map['UserId'] = Variable<String>(userId.value);
+    }
+    if (jobTestSetRecId.present) {
+      map['JobTestSetRecID'] = Variable<String>(jobTestSetRecId.value);
     }
     if (activityId.present) {
       map['ActivityID'] = Variable<String>(activityId.value);
@@ -4370,6 +4476,7 @@ class JobWorkingTimesCompanion extends UpdateCompanion<DbJobWorkingTime> {
           ..write('recId: $recId, ')
           ..write('documentId: $documentId, ')
           ..write('userId: $userId, ')
+          ..write('jobTestSetRecId: $jobTestSetRecId, ')
           ..write('activityId: $activityId, ')
           ..write('activityName: $activityName, ')
           ..write('startTime: $startTime, ')
@@ -10428,6 +10535,727 @@ class MachineSummaryEventsCompanion
   }
 }
 
+class $HumanActivityTypesTable extends HumanActivityTypes
+    with TableInfo<$HumanActivityTypesTable, DbHumanActivityType> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HumanActivityTypesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _recIdMeta = const VerificationMeta('recId');
+  @override
+  late final GeneratedColumn<String> recId = GeneratedColumn<String>(
+    'recID',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  @override
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'documentId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _userIdMeta = const VerificationMeta('userId');
+  @override
+  late final GeneratedColumn<String> userId = GeneratedColumn<String>(
+    'UserId',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activityCodeMeta = const VerificationMeta(
+    'activityCode',
+  );
+  @override
+  late final GeneratedColumn<String> activityCode = GeneratedColumn<String>(
+    'ActivityCode',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _jobTestSetRecIdMeta = const VerificationMeta(
+    'jobTestSetRecId',
+  );
+  @override
+  late final GeneratedColumn<String> jobTestSetRecId = GeneratedColumn<String>(
+    'JobTestSetRecID',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activityNameMeta = const VerificationMeta(
+    'activityName',
+  );
+  @override
+  late final GeneratedColumn<String> activityName = GeneratedColumn<String>(
+    'ActivityName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<int> status = GeneratedColumn<int>(
+    'Status',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<String> updatedAt = GeneratedColumn<String>(
+    'updatedAt',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lastSyncMeta = const VerificationMeta(
+    'lastSync',
+  );
+  @override
+  late final GeneratedColumn<String> lastSync = GeneratedColumn<String>(
+    'lastSync',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
+    'syncStatus',
+  );
+  @override
+  late final GeneratedColumn<int> syncStatus = GeneratedColumn<int>(
+    'syncStatus',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _recordVersionMeta = const VerificationMeta(
+    'recordVersion',
+  );
+  @override
+  late final GeneratedColumn<int> recordVersion = GeneratedColumn<int>(
+    'RecordVersion',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    recId,
+    documentId,
+    userId,
+    activityCode,
+    jobTestSetRecId,
+    activityName,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+    recordVersion,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'human_activity_types';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbHumanActivityType> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('recID')) {
+      context.handle(
+        _recIdMeta,
+        recId.isAcceptableOrUnknown(data['recID']!, _recIdMeta),
+      );
+    }
+    if (data.containsKey('documentId')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['documentId']!, _documentIdMeta),
+      );
+    }
+    if (data.containsKey('UserId')) {
+      context.handle(
+        _userIdMeta,
+        userId.isAcceptableOrUnknown(data['UserId']!, _userIdMeta),
+      );
+    }
+    if (data.containsKey('ActivityCode')) {
+      context.handle(
+        _activityCodeMeta,
+        activityCode.isAcceptableOrUnknown(
+          data['ActivityCode']!,
+          _activityCodeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('JobTestSetRecID')) {
+      context.handle(
+        _jobTestSetRecIdMeta,
+        jobTestSetRecId.isAcceptableOrUnknown(
+          data['JobTestSetRecID']!,
+          _jobTestSetRecIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('ActivityName')) {
+      context.handle(
+        _activityNameMeta,
+        activityName.isAcceptableOrUnknown(
+          data['ActivityName']!,
+          _activityNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('Status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['Status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('updatedAt')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updatedAt']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('lastSync')) {
+      context.handle(
+        _lastSyncMeta,
+        lastSync.isAcceptableOrUnknown(data['lastSync']!, _lastSyncMeta),
+      );
+    }
+    if (data.containsKey('syncStatus')) {
+      context.handle(
+        _syncStatusMeta,
+        syncStatus.isAcceptableOrUnknown(data['syncStatus']!, _syncStatusMeta),
+      );
+    }
+    if (data.containsKey('RecordVersion')) {
+      context.handle(
+        _recordVersionMeta,
+        recordVersion.isAcceptableOrUnknown(
+          data['RecordVersion']!,
+          _recordVersionMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbHumanActivityType map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbHumanActivityType(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      recId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recID'],
+      ),
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}documentId'],
+      ),
+      userId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}UserId'],
+      ),
+      activityCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ActivityCode'],
+      ),
+      jobTestSetRecId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}JobTestSetRecID'],
+      ),
+      activityName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}ActivityName'],
+      ),
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}Status'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updatedAt'],
+      ),
+      lastSync: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}lastSync'],
+      ),
+      syncStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}syncStatus'],
+      )!,
+      recordVersion: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecordVersion'],
+      )!,
+    );
+  }
+
+  @override
+  $HumanActivityTypesTable createAlias(String alias) {
+    return $HumanActivityTypesTable(attachedDatabase, alias);
+  }
+}
+
+class DbHumanActivityType extends DataClass
+    implements Insertable<DbHumanActivityType> {
+  final int uid;
+  final String? recId;
+  final String? documentId;
+  final String? userId;
+  final String? activityCode;
+  final String? jobTestSetRecId;
+  final String? activityName;
+  final int status;
+  final String? updatedAt;
+  final String? lastSync;
+  final int syncStatus;
+  final int recordVersion;
+  const DbHumanActivityType({
+    required this.uid,
+    this.recId,
+    this.documentId,
+    this.userId,
+    this.activityCode,
+    this.jobTestSetRecId,
+    this.activityName,
+    required this.status,
+    this.updatedAt,
+    this.lastSync,
+    required this.syncStatus,
+    required this.recordVersion,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || recId != null) {
+      map['recID'] = Variable<String>(recId);
+    }
+    if (!nullToAbsent || documentId != null) {
+      map['documentId'] = Variable<String>(documentId);
+    }
+    if (!nullToAbsent || userId != null) {
+      map['UserId'] = Variable<String>(userId);
+    }
+    if (!nullToAbsent || activityCode != null) {
+      map['ActivityCode'] = Variable<String>(activityCode);
+    }
+    if (!nullToAbsent || jobTestSetRecId != null) {
+      map['JobTestSetRecID'] = Variable<String>(jobTestSetRecId);
+    }
+    if (!nullToAbsent || activityName != null) {
+      map['ActivityName'] = Variable<String>(activityName);
+    }
+    map['Status'] = Variable<int>(status);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updatedAt'] = Variable<String>(updatedAt);
+    }
+    if (!nullToAbsent || lastSync != null) {
+      map['lastSync'] = Variable<String>(lastSync);
+    }
+    map['syncStatus'] = Variable<int>(syncStatus);
+    map['RecordVersion'] = Variable<int>(recordVersion);
+    return map;
+  }
+
+  HumanActivityTypesCompanion toCompanion(bool nullToAbsent) {
+    return HumanActivityTypesCompanion(
+      uid: Value(uid),
+      recId: recId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recId),
+      documentId: documentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(documentId),
+      userId: userId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userId),
+      activityCode: activityCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activityCode),
+      jobTestSetRecId: jobTestSetRecId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(jobTestSetRecId),
+      activityName: activityName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activityName),
+      status: Value(status),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      lastSync: lastSync == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastSync),
+      syncStatus: Value(syncStatus),
+      recordVersion: Value(recordVersion),
+    );
+  }
+
+  factory DbHumanActivityType.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbHumanActivityType(
+      uid: serializer.fromJson<int>(json['uid']),
+      recId: serializer.fromJson<String?>(json['recId']),
+      documentId: serializer.fromJson<String?>(json['documentId']),
+      userId: serializer.fromJson<String?>(json['userId']),
+      activityCode: serializer.fromJson<String?>(json['activityCode']),
+      jobTestSetRecId: serializer.fromJson<String?>(json['jobTestSetRecId']),
+      activityName: serializer.fromJson<String?>(json['activityName']),
+      status: serializer.fromJson<int>(json['status']),
+      updatedAt: serializer.fromJson<String?>(json['updatedAt']),
+      lastSync: serializer.fromJson<String?>(json['lastSync']),
+      syncStatus: serializer.fromJson<int>(json['syncStatus']),
+      recordVersion: serializer.fromJson<int>(json['recordVersion']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'recId': serializer.toJson<String?>(recId),
+      'documentId': serializer.toJson<String?>(documentId),
+      'userId': serializer.toJson<String?>(userId),
+      'activityCode': serializer.toJson<String?>(activityCode),
+      'jobTestSetRecId': serializer.toJson<String?>(jobTestSetRecId),
+      'activityName': serializer.toJson<String?>(activityName),
+      'status': serializer.toJson<int>(status),
+      'updatedAt': serializer.toJson<String?>(updatedAt),
+      'lastSync': serializer.toJson<String?>(lastSync),
+      'syncStatus': serializer.toJson<int>(syncStatus),
+      'recordVersion': serializer.toJson<int>(recordVersion),
+    };
+  }
+
+  DbHumanActivityType copyWith({
+    int? uid,
+    Value<String?> recId = const Value.absent(),
+    Value<String?> documentId = const Value.absent(),
+    Value<String?> userId = const Value.absent(),
+    Value<String?> activityCode = const Value.absent(),
+    Value<String?> jobTestSetRecId = const Value.absent(),
+    Value<String?> activityName = const Value.absent(),
+    int? status,
+    Value<String?> updatedAt = const Value.absent(),
+    Value<String?> lastSync = const Value.absent(),
+    int? syncStatus,
+    int? recordVersion,
+  }) => DbHumanActivityType(
+    uid: uid ?? this.uid,
+    recId: recId.present ? recId.value : this.recId,
+    documentId: documentId.present ? documentId.value : this.documentId,
+    userId: userId.present ? userId.value : this.userId,
+    activityCode: activityCode.present ? activityCode.value : this.activityCode,
+    jobTestSetRecId: jobTestSetRecId.present
+        ? jobTestSetRecId.value
+        : this.jobTestSetRecId,
+    activityName: activityName.present ? activityName.value : this.activityName,
+    status: status ?? this.status,
+    updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+    lastSync: lastSync.present ? lastSync.value : this.lastSync,
+    syncStatus: syncStatus ?? this.syncStatus,
+    recordVersion: recordVersion ?? this.recordVersion,
+  );
+  DbHumanActivityType copyWithCompanion(HumanActivityTypesCompanion data) {
+    return DbHumanActivityType(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      recId: data.recId.present ? data.recId.value : this.recId,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      userId: data.userId.present ? data.userId.value : this.userId,
+      activityCode: data.activityCode.present
+          ? data.activityCode.value
+          : this.activityCode,
+      jobTestSetRecId: data.jobTestSetRecId.present
+          ? data.jobTestSetRecId.value
+          : this.jobTestSetRecId,
+      activityName: data.activityName.present
+          ? data.activityName.value
+          : this.activityName,
+      status: data.status.present ? data.status.value : this.status,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      lastSync: data.lastSync.present ? data.lastSync.value : this.lastSync,
+      syncStatus: data.syncStatus.present
+          ? data.syncStatus.value
+          : this.syncStatus,
+      recordVersion: data.recordVersion.present
+          ? data.recordVersion.value
+          : this.recordVersion,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbHumanActivityType(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('documentId: $documentId, ')
+          ..write('userId: $userId, ')
+          ..write('activityCode: $activityCode, ')
+          ..write('jobTestSetRecId: $jobTestSetRecId, ')
+          ..write('activityName: $activityName, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    recId,
+    documentId,
+    userId,
+    activityCode,
+    jobTestSetRecId,
+    activityName,
+    status,
+    updatedAt,
+    lastSync,
+    syncStatus,
+    recordVersion,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbHumanActivityType &&
+          other.uid == this.uid &&
+          other.recId == this.recId &&
+          other.documentId == this.documentId &&
+          other.userId == this.userId &&
+          other.activityCode == this.activityCode &&
+          other.jobTestSetRecId == this.jobTestSetRecId &&
+          other.activityName == this.activityName &&
+          other.status == this.status &&
+          other.updatedAt == this.updatedAt &&
+          other.lastSync == this.lastSync &&
+          other.syncStatus == this.syncStatus &&
+          other.recordVersion == this.recordVersion);
+}
+
+class HumanActivityTypesCompanion extends UpdateCompanion<DbHumanActivityType> {
+  final Value<int> uid;
+  final Value<String?> recId;
+  final Value<String?> documentId;
+  final Value<String?> userId;
+  final Value<String?> activityCode;
+  final Value<String?> jobTestSetRecId;
+  final Value<String?> activityName;
+  final Value<int> status;
+  final Value<String?> updatedAt;
+  final Value<String?> lastSync;
+  final Value<int> syncStatus;
+  final Value<int> recordVersion;
+  const HumanActivityTypesCompanion({
+    this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.activityCode = const Value.absent(),
+    this.jobTestSetRecId = const Value.absent(),
+    this.activityName = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
+  });
+  HumanActivityTypesCompanion.insert({
+    this.uid = const Value.absent(),
+    this.recId = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.userId = const Value.absent(),
+    this.activityCode = const Value.absent(),
+    this.jobTestSetRecId = const Value.absent(),
+    this.activityName = const Value.absent(),
+    this.status = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.lastSync = const Value.absent(),
+    this.syncStatus = const Value.absent(),
+    this.recordVersion = const Value.absent(),
+  });
+  static Insertable<DbHumanActivityType> custom({
+    Expression<int>? uid,
+    Expression<String>? recId,
+    Expression<String>? documentId,
+    Expression<String>? userId,
+    Expression<String>? activityCode,
+    Expression<String>? jobTestSetRecId,
+    Expression<String>? activityName,
+    Expression<int>? status,
+    Expression<String>? updatedAt,
+    Expression<String>? lastSync,
+    Expression<int>? syncStatus,
+    Expression<int>? recordVersion,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (recId != null) 'recID': recId,
+      if (documentId != null) 'documentId': documentId,
+      if (userId != null) 'UserId': userId,
+      if (activityCode != null) 'ActivityCode': activityCode,
+      if (jobTestSetRecId != null) 'JobTestSetRecID': jobTestSetRecId,
+      if (activityName != null) 'ActivityName': activityName,
+      if (status != null) 'Status': status,
+      if (updatedAt != null) 'updatedAt': updatedAt,
+      if (lastSync != null) 'lastSync': lastSync,
+      if (syncStatus != null) 'syncStatus': syncStatus,
+      if (recordVersion != null) 'RecordVersion': recordVersion,
+    });
+  }
+
+  HumanActivityTypesCompanion copyWith({
+    Value<int>? uid,
+    Value<String?>? recId,
+    Value<String?>? documentId,
+    Value<String?>? userId,
+    Value<String?>? activityCode,
+    Value<String?>? jobTestSetRecId,
+    Value<String?>? activityName,
+    Value<int>? status,
+    Value<String?>? updatedAt,
+    Value<String?>? lastSync,
+    Value<int>? syncStatus,
+    Value<int>? recordVersion,
+  }) {
+    return HumanActivityTypesCompanion(
+      uid: uid ?? this.uid,
+      recId: recId ?? this.recId,
+      documentId: documentId ?? this.documentId,
+      userId: userId ?? this.userId,
+      activityCode: activityCode ?? this.activityCode,
+      jobTestSetRecId: jobTestSetRecId ?? this.jobTestSetRecId,
+      activityName: activityName ?? this.activityName,
+      status: status ?? this.status,
+      updatedAt: updatedAt ?? this.updatedAt,
+      lastSync: lastSync ?? this.lastSync,
+      syncStatus: syncStatus ?? this.syncStatus,
+      recordVersion: recordVersion ?? this.recordVersion,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (recId.present) {
+      map['recID'] = Variable<String>(recId.value);
+    }
+    if (documentId.present) {
+      map['documentId'] = Variable<String>(documentId.value);
+    }
+    if (userId.present) {
+      map['UserId'] = Variable<String>(userId.value);
+    }
+    if (activityCode.present) {
+      map['ActivityCode'] = Variable<String>(activityCode.value);
+    }
+    if (jobTestSetRecId.present) {
+      map['JobTestSetRecID'] = Variable<String>(jobTestSetRecId.value);
+    }
+    if (activityName.present) {
+      map['ActivityName'] = Variable<String>(activityName.value);
+    }
+    if (status.present) {
+      map['Status'] = Variable<int>(status.value);
+    }
+    if (updatedAt.present) {
+      map['updatedAt'] = Variable<String>(updatedAt.value);
+    }
+    if (lastSync.present) {
+      map['lastSync'] = Variable<String>(lastSync.value);
+    }
+    if (syncStatus.present) {
+      map['syncStatus'] = Variable<int>(syncStatus.value);
+    }
+    if (recordVersion.present) {
+      map['RecordVersion'] = Variable<int>(recordVersion.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HumanActivityTypesCompanion(')
+          ..write('uid: $uid, ')
+          ..write('recId: $recId, ')
+          ..write('documentId: $documentId, ')
+          ..write('userId: $userId, ')
+          ..write('activityCode: $activityCode, ')
+          ..write('jobTestSetRecId: $jobTestSetRecId, ')
+          ..write('activityName: $activityName, ')
+          ..write('status: $status, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('lastSync: $lastSync, ')
+          ..write('syncStatus: $syncStatus, ')
+          ..write('recordVersion: $recordVersion')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -10459,6 +11287,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MachineSummaryItemsTable(this);
   late final $MachineSummaryEventsTable machineSummaryEvents =
       $MachineSummaryEventsTable(this);
+  late final $HumanActivityTypesTable humanActivityTypes =
+      $HumanActivityTypesTable(this);
   late final JobDao jobDao = JobDao(this as AppDatabase);
   late final DocumentDao documentDao = DocumentDao(this as AppDatabase);
   late final UserDao userDao = UserDao(this as AppDatabase);
@@ -10475,6 +11305,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final MachineDao machineDao = MachineDao(this as AppDatabase);
   late final SyncLogDao syncLogDao = SyncLogDao(this as AppDatabase);
   late final MachineSummaryDao machineSummaryDao = MachineSummaryDao(
+    this as AppDatabase,
+  );
+  late final HumanActivityTypeDao humanActivityTypeDao = HumanActivityTypeDao(
     this as AppDatabase,
   );
   @override
@@ -10499,6 +11332,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     machineSummaries,
     machineSummaryItems,
     machineSummaryEvents,
+    humanActivityTypes,
   ];
 }
 
@@ -10517,6 +11351,7 @@ typedef $$JobsTableCreateCompanionBuilder =
       Value<String?> updatedAt,
       Value<bool> isManual,
       Value<bool> isSynced,
+      Value<int> recordVersion,
     });
 typedef $$JobsTableUpdateCompanionBuilder =
     JobsCompanion Function({
@@ -10533,6 +11368,7 @@ typedef $$JobsTableUpdateCompanionBuilder =
       Value<String?> updatedAt,
       Value<bool> isManual,
       Value<bool> isSynced,
+      Value<int> recordVersion,
     });
 
 class $$JobsTableFilterComposer extends Composer<_$AppDatabase, $JobsTable> {
@@ -10605,6 +11441,11 @@ class $$JobsTableFilterComposer extends Composer<_$AppDatabase, $JobsTable> {
 
   ColumnFilters<bool> get isSynced => $composableBuilder(
     column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -10681,6 +11522,11 @@ class $$JobsTableOrderingComposer extends Composer<_$AppDatabase, $JobsTable> {
     column: $table.isSynced,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$JobsTableAnnotationComposer
@@ -10736,6 +11582,11 @@ class $$JobsTableAnnotationComposer
 
   GeneratedColumn<bool> get isSynced =>
       $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => column,
+  );
 }
 
 class $$JobsTableTableManager
@@ -10779,6 +11630,7 @@ class $$JobsTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<bool> isManual = const Value.absent(),
                 Value<bool> isSynced = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobsCompanion(
                 uid: uid,
                 jobId: jobId,
@@ -10793,6 +11645,7 @@ class $$JobsTableTableManager
                 updatedAt: updatedAt,
                 isManual: isManual,
                 isSynced: isSynced,
+                recordVersion: recordVersion,
               ),
           createCompanionCallback:
               ({
@@ -10809,6 +11662,7 @@ class $$JobsTableTableManager
                 Value<String?> updatedAt = const Value.absent(),
                 Value<bool> isManual = const Value.absent(),
                 Value<bool> isSynced = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
               }) => JobsCompanion.insert(
                 uid: uid,
                 jobId: jobId,
@@ -10823,6 +11677,7 @@ class $$JobsTableTableManager
                 updatedAt: updatedAt,
                 isManual: isManual,
                 isSynced: isSynced,
+                recordVersion: recordVersion,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -12201,6 +13056,7 @@ typedef $$JobWorkingTimesTableCreateCompanionBuilder =
       Value<String?> recId,
       Value<String?> documentId,
       Value<String?> userId,
+      Value<String?> jobTestSetRecId,
       Value<String?> activityId,
       Value<String?> activityName,
       Value<String?> startTime,
@@ -12217,6 +13073,7 @@ typedef $$JobWorkingTimesTableUpdateCompanionBuilder =
       Value<String?> recId,
       Value<String?> documentId,
       Value<String?> userId,
+      Value<String?> jobTestSetRecId,
       Value<String?> activityId,
       Value<String?> activityName,
       Value<String?> startTime,
@@ -12254,6 +13111,11 @@ class $$JobWorkingTimesTableFilterComposer
 
   ColumnFilters<String> get userId => $composableBuilder(
     column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -12332,6 +13194,11 @@ class $$JobWorkingTimesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get activityId => $composableBuilder(
     column: $table.activityId,
     builder: (column) => ColumnOrderings(column),
@@ -12400,6 +13267,11 @@ class $$JobWorkingTimesTableAnnotationComposer
 
   GeneratedColumn<String> get userId =>
       $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get activityId => $composableBuilder(
     column: $table.activityId,
@@ -12478,6 +13350,7 @@ class $$JobWorkingTimesTableTableManager
                 Value<String?> recId = const Value.absent(),
                 Value<String?> documentId = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
+                Value<String?> jobTestSetRecId = const Value.absent(),
                 Value<String?> activityId = const Value.absent(),
                 Value<String?> activityName = const Value.absent(),
                 Value<String?> startTime = const Value.absent(),
@@ -12492,6 +13365,7 @@ class $$JobWorkingTimesTableTableManager
                 recId: recId,
                 documentId: documentId,
                 userId: userId,
+                jobTestSetRecId: jobTestSetRecId,
                 activityId: activityId,
                 activityName: activityName,
                 startTime: startTime,
@@ -12508,6 +13382,7 @@ class $$JobWorkingTimesTableTableManager
                 Value<String?> recId = const Value.absent(),
                 Value<String?> documentId = const Value.absent(),
                 Value<String?> userId = const Value.absent(),
+                Value<String?> jobTestSetRecId = const Value.absent(),
                 Value<String?> activityId = const Value.absent(),
                 Value<String?> activityName = const Value.absent(),
                 Value<String?> startTime = const Value.absent(),
@@ -12522,6 +13397,7 @@ class $$JobWorkingTimesTableTableManager
                 recId: recId,
                 documentId: documentId,
                 userId: userId,
+                jobTestSetRecId: jobTestSetRecId,
                 activityId: activityId,
                 activityName: activityName,
                 startTime: startTime,
@@ -15588,6 +16464,358 @@ typedef $$MachineSummaryEventsTableProcessedTableManager =
       DbMachineSummaryEvent,
       PrefetchHooks Function()
     >;
+typedef $$HumanActivityTypesTableCreateCompanionBuilder =
+    HumanActivityTypesCompanion Function({
+      Value<int> uid,
+      Value<String?> recId,
+      Value<String?> documentId,
+      Value<String?> userId,
+      Value<String?> activityCode,
+      Value<String?> jobTestSetRecId,
+      Value<String?> activityName,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+      Value<int> recordVersion,
+    });
+typedef $$HumanActivityTypesTableUpdateCompanionBuilder =
+    HumanActivityTypesCompanion Function({
+      Value<int> uid,
+      Value<String?> recId,
+      Value<String?> documentId,
+      Value<String?> userId,
+      Value<String?> activityCode,
+      Value<String?> jobTestSetRecId,
+      Value<String?> activityName,
+      Value<int> status,
+      Value<String?> updatedAt,
+      Value<String?> lastSync,
+      Value<int> syncStatus,
+      Value<int> recordVersion,
+    });
+
+class $$HumanActivityTypesTableFilterComposer
+    extends Composer<_$AppDatabase, $HumanActivityTypesTable> {
+  $$HumanActivityTypesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activityCode => $composableBuilder(
+    column: $table.activityCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$HumanActivityTypesTableOrderingComposer
+    extends Composer<_$AppDatabase, $HumanActivityTypesTable> {
+  $$HumanActivityTypesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get recId => $composableBuilder(
+    column: $table.recId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get userId => $composableBuilder(
+    column: $table.userId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activityCode => $composableBuilder(
+    column: $table.activityCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lastSync => $composableBuilder(
+    column: $table.lastSync,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$HumanActivityTypesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $HumanActivityTypesTable> {
+  $$HumanActivityTypesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<String> get recId =>
+      $composableBuilder(column: $table.recId, builder: (column) => column);
+
+  GeneratedColumn<String> get documentId => $composableBuilder(
+    column: $table.documentId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get userId =>
+      $composableBuilder(column: $table.userId, builder: (column) => column);
+
+  GeneratedColumn<String> get activityCode => $composableBuilder(
+    column: $table.activityCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get jobTestSetRecId => $composableBuilder(
+    column: $table.jobTestSetRecId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get lastSync =>
+      $composableBuilder(column: $table.lastSync, builder: (column) => column);
+
+  GeneratedColumn<int> get syncStatus => $composableBuilder(
+    column: $table.syncStatus,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get recordVersion => $composableBuilder(
+    column: $table.recordVersion,
+    builder: (column) => column,
+  );
+}
+
+class $$HumanActivityTypesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HumanActivityTypesTable,
+          DbHumanActivityType,
+          $$HumanActivityTypesTableFilterComposer,
+          $$HumanActivityTypesTableOrderingComposer,
+          $$HumanActivityTypesTableAnnotationComposer,
+          $$HumanActivityTypesTableCreateCompanionBuilder,
+          $$HumanActivityTypesTableUpdateCompanionBuilder,
+          (
+            DbHumanActivityType,
+            BaseReferences<
+              _$AppDatabase,
+              $HumanActivityTypesTable,
+              DbHumanActivityType
+            >,
+          ),
+          DbHumanActivityType,
+          PrefetchHooks Function()
+        > {
+  $$HumanActivityTypesTableTableManager(
+    _$AppDatabase db,
+    $HumanActivityTypesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$HumanActivityTypesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$HumanActivityTypesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$HumanActivityTypesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> recId = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String?> activityCode = const Value.absent(),
+                Value<String?> jobTestSetRecId = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
+              }) => HumanActivityTypesCompanion(
+                uid: uid,
+                recId: recId,
+                documentId: documentId,
+                userId: userId,
+                activityCode: activityCode,
+                jobTestSetRecId: jobTestSetRecId,
+                activityName: activityName,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+                recordVersion: recordVersion,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<String?> recId = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<String?> userId = const Value.absent(),
+                Value<String?> activityCode = const Value.absent(),
+                Value<String?> jobTestSetRecId = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
+                Value<int> status = const Value.absent(),
+                Value<String?> updatedAt = const Value.absent(),
+                Value<String?> lastSync = const Value.absent(),
+                Value<int> syncStatus = const Value.absent(),
+                Value<int> recordVersion = const Value.absent(),
+              }) => HumanActivityTypesCompanion.insert(
+                uid: uid,
+                recId: recId,
+                documentId: documentId,
+                userId: userId,
+                activityCode: activityCode,
+                jobTestSetRecId: jobTestSetRecId,
+                activityName: activityName,
+                status: status,
+                updatedAt: updatedAt,
+                lastSync: lastSync,
+                syncStatus: syncStatus,
+                recordVersion: recordVersion,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$HumanActivityTypesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HumanActivityTypesTable,
+      DbHumanActivityType,
+      $$HumanActivityTypesTableFilterComposer,
+      $$HumanActivityTypesTableOrderingComposer,
+      $$HumanActivityTypesTableAnnotationComposer,
+      $$HumanActivityTypesTableCreateCompanionBuilder,
+      $$HumanActivityTypesTableUpdateCompanionBuilder,
+      (
+        DbHumanActivityType,
+        BaseReferences<
+          _$AppDatabase,
+          $HumanActivityTypesTable,
+          DbHumanActivityType
+        >,
+      ),
+      DbHumanActivityType,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -15625,4 +16853,6 @@ class $AppDatabaseManager {
       $$MachineSummaryItemsTableTableManager(_db, _db.machineSummaryItems);
   $$MachineSummaryEventsTableTableManager get machineSummaryEvents =>
       $$MachineSummaryEventsTableTableManager(_db, _db.machineSummaryEvents);
+  $$HumanActivityTypesTableTableManager get humanActivityTypes =>
+      $$HumanActivityTypesTableTableManager(_db, _db.humanActivityTypes);
 }

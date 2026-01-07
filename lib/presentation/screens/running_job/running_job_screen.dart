@@ -26,6 +26,11 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
   String _searchQuery = '';
   bool _isUploading = false;
 
+  // Filter State
+  // 0: Draft, 1: Running, 2: End, 3: Post, 9: Cancel, 10: Delete
+  final List<int> _allStatuses = [0, 1, 2, 3, 9, 10];
+  List<int> _selectedStatuses = [0, 1, 2]; // Default view
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -33,7 +38,7 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
   }
 
   // ---------------------------------------------------------
-  // 📸 ส่วนจัดการ QR Code (เหมือนหน้า JobScreen)
+  // 📸 ส่วนจัดการ QR Code
   // ---------------------------------------------------------
 
   void _showScanOptions() {
@@ -65,7 +70,6 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
   }
 
   Future<void> _scanFromCamera() async {
-    // เปิดหน้า ScannerScreen (นิยามไว้ด้านล่าง)
     final result = await Navigator.push<String>(
       context,
       MaterialPageRoute(builder: (context) => const ScannerScreen()),
@@ -77,7 +81,6 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
   }
 
   Future<void> _scanFromGallery() async {
-    // ดักจับ Platform เพื่อป้องกัน Error บน Windows/Web
     if (kIsWeb ||
         (!Platform.isAndroid && !Platform.isIOS && !Platform.isMacOS)) {
       _showError(
@@ -132,19 +135,14 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  // ---------------------------------------------------------
-  // จบส่วน QR Code
-  // ---------------------------------------------------------
-
   Future<void> _handleManualUpload() async {
     setState(() {
       _isUploading = true;
     });
 
     try {
-      // Initialize Sync Repository (In a real app, this should be provided via Provider)
       final appDatabase = Provider.of<AppDatabase>(context, listen: false);
-      final apiService = JobSyncApiService(); // Or inject
+      final apiService = JobSyncApiService();
       final syncRepo = JobSyncRepository(
         appDatabase: appDatabase,
         apiService: apiService,
@@ -181,6 +179,148 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
     }
   }
 
+  void _handleRefresh() {
+    setState(() {
+      // Trigger rebuild to refresh StreamBuilder
+    });
+  }
+
+  Future<void> _handlePostDocument(DbDocument doc) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Confirm Post'),
+        content: Text(
+          'Post "${doc.documentName}"? Status will change to Post and ready for sync.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Post'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        if (!mounted) return;
+        await context.read<DocumentRepository>().postDocument(doc.documentId!);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Document Posted Successfully')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          _showError('Error posting document: $e');
+        }
+      }
+    }
+  }
+
+  void _showFilterDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              title: const Text('Filter Status'),
+              content: Wrap(
+                spacing: 8.0,
+                runSpacing: 4.0,
+                children: _allStatuses.map((status) {
+                  final isSelected = _selectedStatuses.contains(status);
+                  return FilterChip(
+                    label: Text(_getStatusLabel(status)),
+                    selected: isSelected,
+                    onSelected: (selected) {
+                      setStateDialog(() {
+                        if (selected) {
+                          _selectedStatuses.add(status);
+                        } else {
+                          _selectedStatuses.remove(status);
+                        }
+                      });
+                    },
+                    backgroundColor: _getStatusColor(status).withOpacity(0.1),
+                    selectedColor: _getStatusColor(status).withOpacity(0.3),
+                    checkmarkColor: _getStatusColor(status),
+                    labelStyle: TextStyle(
+                      color: _getStatusColor(status),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }).toList(),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Reset to default
+                    setStateDialog(() {
+                      _selectedStatuses = [0, 1, 2];
+                    });
+                  },
+                  child: const Text('Reset'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    setState(() {}); // Refresh Main Screen
+                  },
+                  child: const Text('Apply'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  String _getStatusLabel(int status) {
+    switch (status) {
+      case 0:
+        return 'Draft';
+      case 1:
+        return 'Running';
+      case 2:
+        return 'End';
+      case 3:
+        return 'Post';
+      case 9:
+        return 'Cancel';
+      case 10:
+        return 'Delete';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  Color _getStatusColor(int status) {
+    switch (status) {
+      case 0:
+        return Colors.grey;
+      case 1:
+        return Colors.orange;
+      case 2:
+        return Colors.blue;
+      case 3:
+        return Colors.purple;
+      case 9:
+        return Colors.red;
+      case 10:
+        return Colors.black;
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final documentRepo = context.watch<DocumentRepository>();
@@ -193,7 +333,7 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Running Jobs'), // Restore Title
+        title: const Text('Running Jobs'),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
@@ -203,7 +343,11 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
           ),
         ),
         actions: [
-          // 2. ปุ่ม Upload
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
+            onPressed: _handleRefresh,
+          ),
           IconButton(
             icon: _isUploading
                 ? const SizedBox(
@@ -226,7 +370,11 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
         child: const Icon(Icons.flash_on),
       ),
       body: StreamBuilder<List<DbDocument>>(
-        stream: documentRepo.watchActiveDocuments(userId, query: _searchQuery),
+        stream: documentRepo.watchActiveDocuments(
+          userId,
+          query: _searchQuery,
+          statusFilter: _selectedStatuses,
+        ),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
@@ -250,9 +398,14 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
                   const SizedBox(height: 16),
                   Text(
                     _searchQuery.isEmpty
-                        ? 'No running jobs.'
+                        ? 'No jobs found.'
                         : 'No result for "$_searchQuery"',
                     style: const TextStyle(fontSize: 18, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Filters: ${_selectedStatuses.map((e) => _getStatusLabel(e)).join(", ")}',
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ],
               ),
@@ -266,7 +419,7 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
               left: 8,
               right: 8,
               top: 8,
-            ), // Add padding for FAB
+            ),
             itemBuilder: (context, index) {
               final doc = docs[index];
               return _buildRunningJobCard(context, doc);
@@ -331,7 +484,7 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
   }
 
   Future<void> _performBatchAction(String type, String remark) async {
-    Navigator.pop(context); // Close sheet
+    Navigator.pop(context);
     try {
       final repo = context.read<DocumentRepository>();
       final userId = context.read<LoginRepository>().loggedInUser?.userId ?? '';
@@ -357,7 +510,7 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
   }
 
   Future<void> _performBatchResume() async {
-    Navigator.pop(context); // Close sheet
+    Navigator.pop(context);
     try {
       final repo = context.read<DocumentRepository>();
       final userId = context.read<LoginRepository>().loggedInUser?.userId ?? '';
@@ -390,10 +543,21 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
         decoration: InputDecoration(
           hintText: 'Search Document...',
           prefixIcon: const Icon(Icons.search, color: Colors.grey),
-          // ⬇️ เพิ่มปุ่ม QR Code ตรงนี้ ⬇️
-          suffixIcon: IconButton(
-            icon: const Icon(Icons.qr_code_scanner, color: Colors.black87),
-            onPressed: _showScanOptions,
+          // Filter Icon
+          suffixIcon: Row(
+            // Use Row for multiple icons
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.filter_list, color: Colors.blue),
+                onPressed: _showFilterDialog,
+                tooltip: 'Filter Status',
+              ),
+              IconButton(
+                icon: const Icon(Icons.qr_code_scanner, color: Colors.black87),
+                onPressed: _showScanOptions,
+              ),
+            ],
           ),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -408,24 +572,24 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
   }
 
   Widget _buildRunningJobCard(BuildContext context, DbDocument doc) {
-    Color statusColor;
-    String statusText;
-    IconData statusIcon;
+    final statusColor = _getStatusColor(doc.status);
+    final statusText = _getStatusLabel(doc.status);
 
+    IconData statusIcon;
     switch (doc.status) {
       case 1:
-        statusColor = Colors.orange;
-        statusText = 'Running';
         statusIcon = Icons.play_circle_fill;
         break;
       case 2:
-        statusColor = Colors.blue;
-        statusText = 'Ended (Waiting Post)';
         statusIcon = Icons.stop_circle;
         break;
+      case 3:
+        statusIcon = Icons.cloud_done;
+        break;
+      case 9:
+        statusIcon = Icons.cancel;
+        break;
       default:
-        statusColor = Colors.grey;
-        statusText = 'Draft';
         statusIcon = Icons.edit_note;
     }
 
@@ -435,7 +599,6 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       child: InkWell(
         onTap: () {
-          // ✅ เปิดหน้า RunningJobDetailScreen และส่ง documentId ไปด้วย
           if (doc.documentId != null) {
             Navigator.push(
               context,
@@ -455,7 +618,7 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: statusColor.withValues(alpha: 0.1),
+                      color: statusColor.withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(statusIcon, color: statusColor, size: 28),
@@ -477,28 +640,56 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
                         if (doc.syncStatus == 0)
                           const Text(
                             '• Waiting Sync',
-                            style: TextStyle(fontSize: 10, color: Colors.red),
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.orange,
+                            ), // Changed color
                           ),
                       ],
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: statusColor,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      statusText,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: statusColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          statusText,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                        ),
                       ),
-                    ),
+                      // Post Button (Only for End=2)
+                      if (doc.status == 2)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: OutlinedButton.icon(
+                            onPressed: () => _handlePostDocument(doc),
+                            icon: const Icon(Icons.send, size: 14),
+                            label: const Text(
+                              'Post',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.purple,
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
