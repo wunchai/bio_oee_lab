@@ -512,6 +512,14 @@ class DocumentRepository {
       await _runningJobDetailsDao.updateMachineLog(closedLog);
     }
 
+    // 2. Insert New Log
+    // If Start -> Open (endTime null)
+    // If Stop/Breakdown -> Closed (endTime = startTime)
+    final isTerminal =
+        activityType == 'Stop' ||
+        activityType == 'Breakdown' ||
+        activityType == 'End';
+
     await _runningJobDetailsDao.insertMachineLog(
       JobMachineEventLogsCompanion(
         recId: drift.Value(const Uuid().v4()),
@@ -521,7 +529,9 @@ class DocumentRepository {
         eventType: drift.Value(
           activityType,
         ), // Save event type (Start/Breakdown)
-        // endTime: Value(null), // Open event
+        endTime: drift.Value(
+          isTerminal ? nowStr : null,
+        ), // Close immediately if terminal
         status: const drift.Value(1), // 1=Active
         syncStatus: const drift.Value(0),
         recordVersion: const drift.Value(0),

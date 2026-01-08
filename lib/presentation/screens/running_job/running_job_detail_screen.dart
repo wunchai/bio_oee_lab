@@ -842,102 +842,38 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
 
             return Column(
               children: [
-                // Control Buttons (Always visible)
+                // 1. Control Panel Card (New UI)
                 if (!isEnded)
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: !isWorking && !isPaused
-                              ? _buildBigButton(
-                                  'START WORK',
-                                  Colors.green,
-                                  Icons.play_arrow,
-                                  () => _handleStartOrResumeWithActivity(
-                                    context,
-                                    'Start',
-                                  ),
-                                )
-                              : isPaused
-                              ? _buildBigButton(
-                                  'RESUME',
-                                  Colors.green,
-                                  Icons.play_arrow,
-                                  () => _handleStartOrResumeWithActivity(
-                                    context,
-                                    'Resume',
-                                  ),
-                                )
-                              : _buildBigButton(
-                                  'PAUSE',
-                                  Colors.orange,
-                                  Icons.pause,
-                                  _handlePause,
-                                ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildBigButton(
-                            'END JOB',
-                            Colors.red,
-                            Icons.stop,
-                            _handleEnd,
-                          ),
-                        ),
-                      ],
-                    ),
+                  _buildControlPanel(
+                    context,
+                    isWorking: isWorking,
+                    isPaused: isPaused,
+                    currentLog: currentLog,
                   ),
 
-                // Switch Activity & Selector (Only when Working)
-                if (isWorking)
+                // 2. End Job Button (Separate for safety)
+                if (!isEnded)
                   Padding(
-                    padding: const EdgeInsets.only(
-                      bottom: 16.0,
-                      left: 16.0,
-                      right: 16.0,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
                     ),
-                    child: Row(
-                      children: [
-                        // Switch Activity Button
-                        Expanded(
-                          flex: 3,
-                          child: OutlinedButton.icon(
-                            onPressed: () => _handleSwitchActivity(context),
-                            icon: const Icon(Icons.swap_horiz),
-                            label: const Text('Switch Activity'),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              side: const BorderSide(color: Colors.blue),
-                            ),
-                          ),
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _handleEnd,
+                        icon: const Icon(Icons.stop, color: Colors.red),
+                        label: const Text(
+                          'END JOB',
+                          style: TextStyle(color: Colors.red),
                         ),
-                        const SizedBox(width: 12),
-                        // Test Set Selector
-                        Expanded(
-                          flex: 2,
-                          child: OutlinedButton.icon(
-                            onPressed: () async {
-                              final selected =
-                                  await _showTestSetSelectionDialog(context);
-                              if (selected != null) {
-                                setState(() {
-                                  _selectedTestSet = selected;
-                                });
-                              }
-                            },
-                            icon: const Icon(Icons.science),
-                            label: Text(
-                              _selectedTestSet?.setItemNo ?? 'Select Set',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              side: const BorderSide(color: Colors.grey),
-                            ),
-                          ),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor:
+                              Colors.red.shade50, // Added Background
+                          side: const BorderSide(color: Colors.red, width: 1.5),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                      ],
+                      ),
                     ),
                   ),
 
@@ -1162,26 +1098,186 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     ); // End TestSet StreamBuilder
   }
 
-  Widget _buildBigButton(
-    String text,
-    Color color,
-    IconData icon,
-    VoidCallback onTap,
-  ) {
-    return ElevatedButton.icon(
-      onPressed: onTap,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      icon: Icon(icon, color: Colors.white),
-      label: Text(
-        text,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+  Widget _buildControlPanel(
+    BuildContext context, {
+    required bool isWorking,
+    required bool isPaused,
+    required DbJobWorkingTime? currentLog,
+  }) {
+    String statusText = 'Ready to Start';
+    Color statusColor = Colors.grey;
+    String activityName = '-';
+
+    if (isWorking) {
+      statusText = 'RUNNING';
+      statusColor = Colors.green;
+      activityName = currentLog?.activityName ?? 'Unknown';
+    } else if (isPaused) {
+      statusText = 'PAUSED';
+      statusColor = Colors.orange;
+      activityName = currentLog?.activityName ?? 'Unknown';
+    }
+
+    return Card(
+      margin: const EdgeInsets.all(16.0),
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            // 1. Header: Status & Activity Name
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Current Activity',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      activityName,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: statusColor),
+                  ),
+                  child: Text(
+                    statusText,
+                    style: TextStyle(
+                      color: statusColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            // 2. Main Control Button (Big Circle)
+            Center(
+              child: SizedBox(
+                width: 120,
+                height: 120,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (!isWorking && !isPaused) {
+                      _handleStartOrResumeWithActivity(context, 'Start');
+                    } else if (isPaused) {
+                      _handleStartOrResumeWithActivity(context, 'Resume');
+                    } else {
+                      _handlePause();
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: const CircleBorder(),
+                    backgroundColor: isWorking
+                        ? Colors.orange
+                        : Colors
+                              .green, // Orange for Pause, Green for Start/Resume
+                    elevation: 8,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        !isWorking && !isPaused
+                            ? Icons.play_arrow
+                            : isPaused
+                            ? Icons.play_arrow
+                            : Icons.pause,
+                        size: 48,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        !isWorking && !isPaused
+                            ? 'START'
+                            : isPaused
+                            ? 'RESUME'
+                            : 'PAUSE',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+
+            // 3. Secondary Actions (Switch & Test Set)
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: isWorking
+                        ? () => _handleSwitchActivity(context)
+                        : null,
+                    icon: const Icon(Icons.swap_horiz),
+                    label: const Text('Switch'),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade50, // Added Background
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(
+                        color: Colors.blue,
+                      ), // Ensure border visible
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () async {
+                      final selected = await _showTestSetSelectionDialog(
+                        context,
+                      );
+                      if (selected != null) {
+                        setState(() {
+                          _selectedTestSet = selected;
+                        });
+                      }
+                    },
+                    icon: const Icon(Icons.science),
+                    label: Text(
+                      _selectedTestSet?.setItemNo ?? 'Select Set',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      backgroundColor:
+                          Colors.indigo.shade50, // Added Background
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      side: const BorderSide(
+                        color: Colors.indigo,
+                      ), // Ensure border visible
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

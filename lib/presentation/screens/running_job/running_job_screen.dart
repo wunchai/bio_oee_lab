@@ -13,6 +13,7 @@ import 'package:bio_oee_lab/data/repositories/job_sync_repository.dart';
 import 'package:bio_oee_lab/data/network/job_sync_api_service.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
 import 'package:bio_oee_lab/data/services/device_info_service.dart';
+import 'package:bio_oee_lab/presentation/screens/running_job/operator_dashboard_screen.dart';
 
 class RunningJobScreen extends StatefulWidget {
   const RunningJobScreen({super.key});
@@ -343,6 +344,18 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.dashboard),
+            tooltip: 'Operator Dashboard',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const OperatorDashboardScreen(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: 'Refresh',

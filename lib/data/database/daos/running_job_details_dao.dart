@@ -111,6 +111,23 @@ class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
         .get();
   }
 
+  // Get Last used Test Set ID for a Document
+  Future<String?> getLastUsedJobTestSetId(String docId) async {
+    final query = select(jobWorkingTimes)
+      ..where(
+        (t) =>
+            t.documentId.equals(docId) &
+            t.jobTestSetRecId.isNotNull(), // Only where TestSet is used
+      )
+      ..orderBy([
+        (t) => OrderingTerm(expression: t.startTime, mode: OrderingMode.desc),
+      ])
+      ..limit(1);
+
+    final row = await query.getSingleOrNull();
+    return row?.jobTestSetRecId;
+  }
+
   // --- JobMachineEventLog ---
   Future<int> insertMachineLog(JobMachineEventLogsCompanion entry) =>
       into(jobMachineEventLogs).insert(entry);

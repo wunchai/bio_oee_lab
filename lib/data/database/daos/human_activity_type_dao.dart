@@ -36,6 +36,16 @@ class HumanActivityTypeDao extends DatabaseAccessor<AppDatabase>
         .get();
   }
 
+  /// Stream Version: ดึงรายการกิจกรรมทั้งหมดที่ Active
+  Stream<List<DbHumanActivityType>> watchActiveActivities(String documentId) {
+    return (select(humanActivityTypes)
+          ..where(
+            (tbl) => tbl.status.equals(1) & tbl.documentId.equals(documentId),
+          )
+          ..orderBy([(t) => OrderingTerm(expression: t.activityName)]))
+        .watch();
+  }
+
   /// เพิ่มกิจกรรมใหม่
   Future<int> insertActivity(HumanActivityTypesCompanion entry) {
     return into(humanActivityTypes).insert(entry);
