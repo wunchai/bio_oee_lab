@@ -140,6 +140,18 @@ class JobApiService {
             isManual: false, // Default for API fetched jobs
             isSynced: true, // API jobs are always synced
             recordVersion: 0,
+            oeeJobId: int.tryParse(map['OEEJobID']?.toString() ?? ''),
+            analysisJobId: int.tryParse(map['AnalysisJobID']?.toString() ?? ''),
+            sampleNo: map['SampleNo']?.toString(),
+            sampleName: map['SampleName']?.toString(),
+            lotNo: map['LOTNO']?.toString(),
+            setId: int.tryParse(map['SetID']?.toString() ?? ''),
+            planAnalysisDate: map['PlanAnalysisDate']?.toString(),
+            createUser: map['CreateUser']?.toString(),
+            updateUser: map['UpdateUser']?.toString(),
+            updateDate: map['UpdateDate']?.toString(),
+            recUpdate: int.tryParse(map['RecUpdate']?.toString() ?? ''),
+            assignmentId: map['AssignmentID']?.toString(),
           );
         }).toList();
 

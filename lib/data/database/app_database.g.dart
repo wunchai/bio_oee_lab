@@ -172,6 +172,134 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _oeeJobIdMeta = const VerificationMeta(
+    'oeeJobId',
+  );
+  @override
+  late final GeneratedColumn<int> oeeJobId = GeneratedColumn<int>(
+    'OEEJobID',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _analysisJobIdMeta = const VerificationMeta(
+    'analysisJobId',
+  );
+  @override
+  late final GeneratedColumn<int> analysisJobId = GeneratedColumn<int>(
+    'AnalysisJobID',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sampleNoMeta = const VerificationMeta(
+    'sampleNo',
+  );
+  @override
+  late final GeneratedColumn<String> sampleNo = GeneratedColumn<String>(
+    'SampleNo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sampleNameMeta = const VerificationMeta(
+    'sampleName',
+  );
+  @override
+  late final GeneratedColumn<String> sampleName = GeneratedColumn<String>(
+    'SampleName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lotNoMeta = const VerificationMeta('lotNo');
+  @override
+  late final GeneratedColumn<String> lotNo = GeneratedColumn<String>(
+    'LOTNO',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _setIdMeta = const VerificationMeta('setId');
+  @override
+  late final GeneratedColumn<int> setId = GeneratedColumn<int>(
+    'SetID',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _planAnalysisDateMeta = const VerificationMeta(
+    'planAnalysisDate',
+  );
+  @override
+  late final GeneratedColumn<String> planAnalysisDate = GeneratedColumn<String>(
+    'PlanAnalysisDate',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createUserMeta = const VerificationMeta(
+    'createUser',
+  );
+  @override
+  late final GeneratedColumn<String> createUser = GeneratedColumn<String>(
+    'CreateUser',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updateUserMeta = const VerificationMeta(
+    'updateUser',
+  );
+  @override
+  late final GeneratedColumn<String> updateUser = GeneratedColumn<String>(
+    'UpdateUser',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updateDateMeta = const VerificationMeta(
+    'updateDate',
+  );
+  @override
+  late final GeneratedColumn<String> updateDate = GeneratedColumn<String>(
+    'UpdateDate',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recUpdateMeta = const VerificationMeta(
+    'recUpdate',
+  );
+  @override
+  late final GeneratedColumn<int> recUpdate = GeneratedColumn<int>(
+    'RecUpdate',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _assignmentIdMeta = const VerificationMeta(
+    'assignmentId',
+  );
+  @override
+  late final GeneratedColumn<String> assignmentId = GeneratedColumn<String>(
+    'AssignmentID',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     uid,
@@ -188,6 +316,18 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
     isManual,
     isSynced,
     recordVersion,
+    oeeJobId,
+    analysisJobId,
+    sampleNo,
+    sampleName,
+    lotNo,
+    setId,
+    planAnalysisDate,
+    createUser,
+    updateUser,
+    updateDate,
+    recUpdate,
+    assignmentId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -291,6 +431,87 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
         ),
       );
     }
+    if (data.containsKey('OEEJobID')) {
+      context.handle(
+        _oeeJobIdMeta,
+        oeeJobId.isAcceptableOrUnknown(data['OEEJobID']!, _oeeJobIdMeta),
+      );
+    }
+    if (data.containsKey('AnalysisJobID')) {
+      context.handle(
+        _analysisJobIdMeta,
+        analysisJobId.isAcceptableOrUnknown(
+          data['AnalysisJobID']!,
+          _analysisJobIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('SampleNo')) {
+      context.handle(
+        _sampleNoMeta,
+        sampleNo.isAcceptableOrUnknown(data['SampleNo']!, _sampleNoMeta),
+      );
+    }
+    if (data.containsKey('SampleName')) {
+      context.handle(
+        _sampleNameMeta,
+        sampleName.isAcceptableOrUnknown(data['SampleName']!, _sampleNameMeta),
+      );
+    }
+    if (data.containsKey('LOTNO')) {
+      context.handle(
+        _lotNoMeta,
+        lotNo.isAcceptableOrUnknown(data['LOTNO']!, _lotNoMeta),
+      );
+    }
+    if (data.containsKey('SetID')) {
+      context.handle(
+        _setIdMeta,
+        setId.isAcceptableOrUnknown(data['SetID']!, _setIdMeta),
+      );
+    }
+    if (data.containsKey('PlanAnalysisDate')) {
+      context.handle(
+        _planAnalysisDateMeta,
+        planAnalysisDate.isAcceptableOrUnknown(
+          data['PlanAnalysisDate']!,
+          _planAnalysisDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('CreateUser')) {
+      context.handle(
+        _createUserMeta,
+        createUser.isAcceptableOrUnknown(data['CreateUser']!, _createUserMeta),
+      );
+    }
+    if (data.containsKey('UpdateUser')) {
+      context.handle(
+        _updateUserMeta,
+        updateUser.isAcceptableOrUnknown(data['UpdateUser']!, _updateUserMeta),
+      );
+    }
+    if (data.containsKey('UpdateDate')) {
+      context.handle(
+        _updateDateMeta,
+        updateDate.isAcceptableOrUnknown(data['UpdateDate']!, _updateDateMeta),
+      );
+    }
+    if (data.containsKey('RecUpdate')) {
+      context.handle(
+        _recUpdateMeta,
+        recUpdate.isAcceptableOrUnknown(data['RecUpdate']!, _recUpdateMeta),
+      );
+    }
+    if (data.containsKey('AssignmentID')) {
+      context.handle(
+        _assignmentIdMeta,
+        assignmentId.isAcceptableOrUnknown(
+          data['AssignmentID']!,
+          _assignmentIdMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -356,6 +577,54 @@ class $JobsTable extends Jobs with TableInfo<$JobsTable, DbJob> {
         DriftSqlType.int,
         data['${effectivePrefix}RecordVersion'],
       )!,
+      oeeJobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}OEEJobID'],
+      ),
+      analysisJobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}AnalysisJobID'],
+      ),
+      sampleNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}SampleNo'],
+      ),
+      sampleName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}SampleName'],
+      ),
+      lotNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}LOTNO'],
+      ),
+      setId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}SetID'],
+      ),
+      planAnalysisDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}PlanAnalysisDate'],
+      ),
+      createUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}CreateUser'],
+      ),
+      updateUser: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}UpdateUser'],
+      ),
+      updateDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}UpdateDate'],
+      ),
+      recUpdate: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}RecUpdate'],
+      ),
+      assignmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}AssignmentID'],
+      ),
     );
   }
 
@@ -380,6 +649,18 @@ class DbJob extends DataClass implements Insertable<DbJob> {
   final bool isManual;
   final bool isSynced;
   final int recordVersion;
+  final int? oeeJobId;
+  final int? analysisJobId;
+  final String? sampleNo;
+  final String? sampleName;
+  final String? lotNo;
+  final int? setId;
+  final String? planAnalysisDate;
+  final String? createUser;
+  final String? updateUser;
+  final String? updateDate;
+  final int? recUpdate;
+  final String? assignmentId;
   const DbJob({
     required this.uid,
     this.jobId,
@@ -395,6 +676,18 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     required this.isManual,
     required this.isSynced,
     required this.recordVersion,
+    this.oeeJobId,
+    this.analysisJobId,
+    this.sampleNo,
+    this.sampleName,
+    this.lotNo,
+    this.setId,
+    this.planAnalysisDate,
+    this.createUser,
+    this.updateUser,
+    this.updateDate,
+    this.recUpdate,
+    this.assignmentId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -431,6 +724,42 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     map['IsManual'] = Variable<bool>(isManual);
     map['IsSynced'] = Variable<bool>(isSynced);
     map['RecordVersion'] = Variable<int>(recordVersion);
+    if (!nullToAbsent || oeeJobId != null) {
+      map['OEEJobID'] = Variable<int>(oeeJobId);
+    }
+    if (!nullToAbsent || analysisJobId != null) {
+      map['AnalysisJobID'] = Variable<int>(analysisJobId);
+    }
+    if (!nullToAbsent || sampleNo != null) {
+      map['SampleNo'] = Variable<String>(sampleNo);
+    }
+    if (!nullToAbsent || sampleName != null) {
+      map['SampleName'] = Variable<String>(sampleName);
+    }
+    if (!nullToAbsent || lotNo != null) {
+      map['LOTNO'] = Variable<String>(lotNo);
+    }
+    if (!nullToAbsent || setId != null) {
+      map['SetID'] = Variable<int>(setId);
+    }
+    if (!nullToAbsent || planAnalysisDate != null) {
+      map['PlanAnalysisDate'] = Variable<String>(planAnalysisDate);
+    }
+    if (!nullToAbsent || createUser != null) {
+      map['CreateUser'] = Variable<String>(createUser);
+    }
+    if (!nullToAbsent || updateUser != null) {
+      map['UpdateUser'] = Variable<String>(updateUser);
+    }
+    if (!nullToAbsent || updateDate != null) {
+      map['UpdateDate'] = Variable<String>(updateDate);
+    }
+    if (!nullToAbsent || recUpdate != null) {
+      map['RecUpdate'] = Variable<int>(recUpdate);
+    }
+    if (!nullToAbsent || assignmentId != null) {
+      map['AssignmentID'] = Variable<String>(assignmentId);
+    }
     return map;
   }
 
@@ -468,6 +797,42 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       isManual: Value(isManual),
       isSynced: Value(isSynced),
       recordVersion: Value(recordVersion),
+      oeeJobId: oeeJobId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(oeeJobId),
+      analysisJobId: analysisJobId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(analysisJobId),
+      sampleNo: sampleNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sampleNo),
+      sampleName: sampleName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sampleName),
+      lotNo: lotNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lotNo),
+      setId: setId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(setId),
+      planAnalysisDate: planAnalysisDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(planAnalysisDate),
+      createUser: createUser == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createUser),
+      updateUser: updateUser == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updateUser),
+      updateDate: updateDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updateDate),
+      recUpdate: recUpdate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recUpdate),
+      assignmentId: assignmentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(assignmentId),
     );
   }
 
@@ -491,6 +856,18 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       isManual: serializer.fromJson<bool>(json['isManual']),
       isSynced: serializer.fromJson<bool>(json['isSynced']),
       recordVersion: serializer.fromJson<int>(json['recordVersion']),
+      oeeJobId: serializer.fromJson<int?>(json['oeeJobId']),
+      analysisJobId: serializer.fromJson<int?>(json['analysisJobId']),
+      sampleNo: serializer.fromJson<String?>(json['sampleNo']),
+      sampleName: serializer.fromJson<String?>(json['sampleName']),
+      lotNo: serializer.fromJson<String?>(json['lotNo']),
+      setId: serializer.fromJson<int?>(json['setId']),
+      planAnalysisDate: serializer.fromJson<String?>(json['planAnalysisDate']),
+      createUser: serializer.fromJson<String?>(json['createUser']),
+      updateUser: serializer.fromJson<String?>(json['updateUser']),
+      updateDate: serializer.fromJson<String?>(json['updateDate']),
+      recUpdate: serializer.fromJson<int?>(json['recUpdate']),
+      assignmentId: serializer.fromJson<String?>(json['assignmentId']),
     );
   }
   @override
@@ -511,6 +888,18 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       'isManual': serializer.toJson<bool>(isManual),
       'isSynced': serializer.toJson<bool>(isSynced),
       'recordVersion': serializer.toJson<int>(recordVersion),
+      'oeeJobId': serializer.toJson<int?>(oeeJobId),
+      'analysisJobId': serializer.toJson<int?>(analysisJobId),
+      'sampleNo': serializer.toJson<String?>(sampleNo),
+      'sampleName': serializer.toJson<String?>(sampleName),
+      'lotNo': serializer.toJson<String?>(lotNo),
+      'setId': serializer.toJson<int?>(setId),
+      'planAnalysisDate': serializer.toJson<String?>(planAnalysisDate),
+      'createUser': serializer.toJson<String?>(createUser),
+      'updateUser': serializer.toJson<String?>(updateUser),
+      'updateDate': serializer.toJson<String?>(updateDate),
+      'recUpdate': serializer.toJson<int?>(recUpdate),
+      'assignmentId': serializer.toJson<String?>(assignmentId),
     };
   }
 
@@ -529,6 +918,18 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     bool? isManual,
     bool? isSynced,
     int? recordVersion,
+    Value<int?> oeeJobId = const Value.absent(),
+    Value<int?> analysisJobId = const Value.absent(),
+    Value<String?> sampleNo = const Value.absent(),
+    Value<String?> sampleName = const Value.absent(),
+    Value<String?> lotNo = const Value.absent(),
+    Value<int?> setId = const Value.absent(),
+    Value<String?> planAnalysisDate = const Value.absent(),
+    Value<String?> createUser = const Value.absent(),
+    Value<String?> updateUser = const Value.absent(),
+    Value<String?> updateDate = const Value.absent(),
+    Value<int?> recUpdate = const Value.absent(),
+    Value<String?> assignmentId = const Value.absent(),
   }) => DbJob(
     uid: uid ?? this.uid,
     jobId: jobId.present ? jobId.value : this.jobId,
@@ -544,6 +945,22 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     isManual: isManual ?? this.isManual,
     isSynced: isSynced ?? this.isSynced,
     recordVersion: recordVersion ?? this.recordVersion,
+    oeeJobId: oeeJobId.present ? oeeJobId.value : this.oeeJobId,
+    analysisJobId: analysisJobId.present
+        ? analysisJobId.value
+        : this.analysisJobId,
+    sampleNo: sampleNo.present ? sampleNo.value : this.sampleNo,
+    sampleName: sampleName.present ? sampleName.value : this.sampleName,
+    lotNo: lotNo.present ? lotNo.value : this.lotNo,
+    setId: setId.present ? setId.value : this.setId,
+    planAnalysisDate: planAnalysisDate.present
+        ? planAnalysisDate.value
+        : this.planAnalysisDate,
+    createUser: createUser.present ? createUser.value : this.createUser,
+    updateUser: updateUser.present ? updateUser.value : this.updateUser,
+    updateDate: updateDate.present ? updateDate.value : this.updateDate,
+    recUpdate: recUpdate.present ? recUpdate.value : this.recUpdate,
+    assignmentId: assignmentId.present ? assignmentId.value : this.assignmentId,
   );
   DbJob copyWithCompanion(JobsCompanion data) {
     return DbJob(
@@ -569,6 +986,32 @@ class DbJob extends DataClass implements Insertable<DbJob> {
       recordVersion: data.recordVersion.present
           ? data.recordVersion.value
           : this.recordVersion,
+      oeeJobId: data.oeeJobId.present ? data.oeeJobId.value : this.oeeJobId,
+      analysisJobId: data.analysisJobId.present
+          ? data.analysisJobId.value
+          : this.analysisJobId,
+      sampleNo: data.sampleNo.present ? data.sampleNo.value : this.sampleNo,
+      sampleName: data.sampleName.present
+          ? data.sampleName.value
+          : this.sampleName,
+      lotNo: data.lotNo.present ? data.lotNo.value : this.lotNo,
+      setId: data.setId.present ? data.setId.value : this.setId,
+      planAnalysisDate: data.planAnalysisDate.present
+          ? data.planAnalysisDate.value
+          : this.planAnalysisDate,
+      createUser: data.createUser.present
+          ? data.createUser.value
+          : this.createUser,
+      updateUser: data.updateUser.present
+          ? data.updateUser.value
+          : this.updateUser,
+      updateDate: data.updateDate.present
+          ? data.updateDate.value
+          : this.updateDate,
+      recUpdate: data.recUpdate.present ? data.recUpdate.value : this.recUpdate,
+      assignmentId: data.assignmentId.present
+          ? data.assignmentId.value
+          : this.assignmentId,
     );
   }
 
@@ -588,13 +1031,25 @@ class DbJob extends DataClass implements Insertable<DbJob> {
           ..write('updatedAt: $updatedAt, ')
           ..write('isManual: $isManual, ')
           ..write('isSynced: $isSynced, ')
-          ..write('recordVersion: $recordVersion')
+          ..write('recordVersion: $recordVersion, ')
+          ..write('oeeJobId: $oeeJobId, ')
+          ..write('analysisJobId: $analysisJobId, ')
+          ..write('sampleNo: $sampleNo, ')
+          ..write('sampleName: $sampleName, ')
+          ..write('lotNo: $lotNo, ')
+          ..write('setId: $setId, ')
+          ..write('planAnalysisDate: $planAnalysisDate, ')
+          ..write('createUser: $createUser, ')
+          ..write('updateUser: $updateUser, ')
+          ..write('updateDate: $updateDate, ')
+          ..write('recUpdate: $recUpdate, ')
+          ..write('assignmentId: $assignmentId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     uid,
     jobId,
     jobName,
@@ -609,7 +1064,19 @@ class DbJob extends DataClass implements Insertable<DbJob> {
     isManual,
     isSynced,
     recordVersion,
-  );
+    oeeJobId,
+    analysisJobId,
+    sampleNo,
+    sampleName,
+    lotNo,
+    setId,
+    planAnalysisDate,
+    createUser,
+    updateUser,
+    updateDate,
+    recUpdate,
+    assignmentId,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -627,7 +1094,19 @@ class DbJob extends DataClass implements Insertable<DbJob> {
           other.updatedAt == this.updatedAt &&
           other.isManual == this.isManual &&
           other.isSynced == this.isSynced &&
-          other.recordVersion == this.recordVersion);
+          other.recordVersion == this.recordVersion &&
+          other.oeeJobId == this.oeeJobId &&
+          other.analysisJobId == this.analysisJobId &&
+          other.sampleNo == this.sampleNo &&
+          other.sampleName == this.sampleName &&
+          other.lotNo == this.lotNo &&
+          other.setId == this.setId &&
+          other.planAnalysisDate == this.planAnalysisDate &&
+          other.createUser == this.createUser &&
+          other.updateUser == this.updateUser &&
+          other.updateDate == this.updateDate &&
+          other.recUpdate == this.recUpdate &&
+          other.assignmentId == this.assignmentId);
 }
 
 class JobsCompanion extends UpdateCompanion<DbJob> {
@@ -645,6 +1124,18 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
   final Value<bool> isManual;
   final Value<bool> isSynced;
   final Value<int> recordVersion;
+  final Value<int?> oeeJobId;
+  final Value<int?> analysisJobId;
+  final Value<String?> sampleNo;
+  final Value<String?> sampleName;
+  final Value<String?> lotNo;
+  final Value<int?> setId;
+  final Value<String?> planAnalysisDate;
+  final Value<String?> createUser;
+  final Value<String?> updateUser;
+  final Value<String?> updateDate;
+  final Value<int?> recUpdate;
+  final Value<String?> assignmentId;
   const JobsCompanion({
     this.uid = const Value.absent(),
     this.jobId = const Value.absent(),
@@ -660,6 +1151,18 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     this.isManual = const Value.absent(),
     this.isSynced = const Value.absent(),
     this.recordVersion = const Value.absent(),
+    this.oeeJobId = const Value.absent(),
+    this.analysisJobId = const Value.absent(),
+    this.sampleNo = const Value.absent(),
+    this.sampleName = const Value.absent(),
+    this.lotNo = const Value.absent(),
+    this.setId = const Value.absent(),
+    this.planAnalysisDate = const Value.absent(),
+    this.createUser = const Value.absent(),
+    this.updateUser = const Value.absent(),
+    this.updateDate = const Value.absent(),
+    this.recUpdate = const Value.absent(),
+    this.assignmentId = const Value.absent(),
   });
   JobsCompanion.insert({
     this.uid = const Value.absent(),
@@ -676,6 +1179,18 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     this.isManual = const Value.absent(),
     this.isSynced = const Value.absent(),
     this.recordVersion = const Value.absent(),
+    this.oeeJobId = const Value.absent(),
+    this.analysisJobId = const Value.absent(),
+    this.sampleNo = const Value.absent(),
+    this.sampleName = const Value.absent(),
+    this.lotNo = const Value.absent(),
+    this.setId = const Value.absent(),
+    this.planAnalysisDate = const Value.absent(),
+    this.createUser = const Value.absent(),
+    this.updateUser = const Value.absent(),
+    this.updateDate = const Value.absent(),
+    this.recUpdate = const Value.absent(),
+    this.assignmentId = const Value.absent(),
   });
   static Insertable<DbJob> custom({
     Expression<int>? uid,
@@ -692,6 +1207,18 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     Expression<bool>? isManual,
     Expression<bool>? isSynced,
     Expression<int>? recordVersion,
+    Expression<int>? oeeJobId,
+    Expression<int>? analysisJobId,
+    Expression<String>? sampleNo,
+    Expression<String>? sampleName,
+    Expression<String>? lotNo,
+    Expression<int>? setId,
+    Expression<String>? planAnalysisDate,
+    Expression<String>? createUser,
+    Expression<String>? updateUser,
+    Expression<String>? updateDate,
+    Expression<int>? recUpdate,
+    Expression<String>? assignmentId,
   }) {
     return RawValuesInsertable({
       if (uid != null) 'uid': uid,
@@ -708,6 +1235,18 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
       if (isManual != null) 'IsManual': isManual,
       if (isSynced != null) 'IsSynced': isSynced,
       if (recordVersion != null) 'RecordVersion': recordVersion,
+      if (oeeJobId != null) 'OEEJobID': oeeJobId,
+      if (analysisJobId != null) 'AnalysisJobID': analysisJobId,
+      if (sampleNo != null) 'SampleNo': sampleNo,
+      if (sampleName != null) 'SampleName': sampleName,
+      if (lotNo != null) 'LOTNO': lotNo,
+      if (setId != null) 'SetID': setId,
+      if (planAnalysisDate != null) 'PlanAnalysisDate': planAnalysisDate,
+      if (createUser != null) 'CreateUser': createUser,
+      if (updateUser != null) 'UpdateUser': updateUser,
+      if (updateDate != null) 'UpdateDate': updateDate,
+      if (recUpdate != null) 'RecUpdate': recUpdate,
+      if (assignmentId != null) 'AssignmentID': assignmentId,
     });
   }
 
@@ -726,6 +1265,18 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     Value<bool>? isManual,
     Value<bool>? isSynced,
     Value<int>? recordVersion,
+    Value<int?>? oeeJobId,
+    Value<int?>? analysisJobId,
+    Value<String?>? sampleNo,
+    Value<String?>? sampleName,
+    Value<String?>? lotNo,
+    Value<int?>? setId,
+    Value<String?>? planAnalysisDate,
+    Value<String?>? createUser,
+    Value<String?>? updateUser,
+    Value<String?>? updateDate,
+    Value<int?>? recUpdate,
+    Value<String?>? assignmentId,
   }) {
     return JobsCompanion(
       uid: uid ?? this.uid,
@@ -742,6 +1293,18 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
       isManual: isManual ?? this.isManual,
       isSynced: isSynced ?? this.isSynced,
       recordVersion: recordVersion ?? this.recordVersion,
+      oeeJobId: oeeJobId ?? this.oeeJobId,
+      analysisJobId: analysisJobId ?? this.analysisJobId,
+      sampleNo: sampleNo ?? this.sampleNo,
+      sampleName: sampleName ?? this.sampleName,
+      lotNo: lotNo ?? this.lotNo,
+      setId: setId ?? this.setId,
+      planAnalysisDate: planAnalysisDate ?? this.planAnalysisDate,
+      createUser: createUser ?? this.createUser,
+      updateUser: updateUser ?? this.updateUser,
+      updateDate: updateDate ?? this.updateDate,
+      recUpdate: recUpdate ?? this.recUpdate,
+      assignmentId: assignmentId ?? this.assignmentId,
     );
   }
 
@@ -790,6 +1353,42 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
     if (recordVersion.present) {
       map['RecordVersion'] = Variable<int>(recordVersion.value);
     }
+    if (oeeJobId.present) {
+      map['OEEJobID'] = Variable<int>(oeeJobId.value);
+    }
+    if (analysisJobId.present) {
+      map['AnalysisJobID'] = Variable<int>(analysisJobId.value);
+    }
+    if (sampleNo.present) {
+      map['SampleNo'] = Variable<String>(sampleNo.value);
+    }
+    if (sampleName.present) {
+      map['SampleName'] = Variable<String>(sampleName.value);
+    }
+    if (lotNo.present) {
+      map['LOTNO'] = Variable<String>(lotNo.value);
+    }
+    if (setId.present) {
+      map['SetID'] = Variable<int>(setId.value);
+    }
+    if (planAnalysisDate.present) {
+      map['PlanAnalysisDate'] = Variable<String>(planAnalysisDate.value);
+    }
+    if (createUser.present) {
+      map['CreateUser'] = Variable<String>(createUser.value);
+    }
+    if (updateUser.present) {
+      map['UpdateUser'] = Variable<String>(updateUser.value);
+    }
+    if (updateDate.present) {
+      map['UpdateDate'] = Variable<String>(updateDate.value);
+    }
+    if (recUpdate.present) {
+      map['RecUpdate'] = Variable<int>(recUpdate.value);
+    }
+    if (assignmentId.present) {
+      map['AssignmentID'] = Variable<String>(assignmentId.value);
+    }
     return map;
   }
 
@@ -809,7 +1408,19 @@ class JobsCompanion extends UpdateCompanion<DbJob> {
           ..write('updatedAt: $updatedAt, ')
           ..write('isManual: $isManual, ')
           ..write('isSynced: $isSynced, ')
-          ..write('recordVersion: $recordVersion')
+          ..write('recordVersion: $recordVersion, ')
+          ..write('oeeJobId: $oeeJobId, ')
+          ..write('analysisJobId: $analysisJobId, ')
+          ..write('sampleNo: $sampleNo, ')
+          ..write('sampleName: $sampleName, ')
+          ..write('lotNo: $lotNo, ')
+          ..write('setId: $setId, ')
+          ..write('planAnalysisDate: $planAnalysisDate, ')
+          ..write('createUser: $createUser, ')
+          ..write('updateUser: $updateUser, ')
+          ..write('updateDate: $updateDate, ')
+          ..write('recUpdate: $recUpdate, ')
+          ..write('assignmentId: $assignmentId')
           ..write(')'))
         .toString();
   }
@@ -11256,6 +11867,425 @@ class HumanActivityTypesCompanion extends UpdateCompanion<DbHumanActivityType> {
   }
 }
 
+class $JobTestItemsTable extends JobTestItems
+    with TableInfo<$JobTestItemsTable, DbJobTestItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobTestItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _rowIdMeta = const VerificationMeta('rowId');
+  @override
+  late final GeneratedColumn<int> rowId = GeneratedColumn<int>(
+    'row_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _oeeJobIdMeta = const VerificationMeta(
+    'oeeJobId',
+  );
+  @override
+  late final GeneratedColumn<int> oeeJobId = GeneratedColumn<int>(
+    'oee_job_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _testItemIdMeta = const VerificationMeta(
+    'testItemId',
+  );
+  @override
+  late final GeneratedColumn<String> testItemId = GeneratedColumn<String>(
+    'test_item_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _testItemNameMeta = const VerificationMeta(
+    'testItemName',
+  );
+  @override
+  late final GeneratedColumn<String> testItemName = GeneratedColumn<String>(
+    'test_item_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createDateMeta = const VerificationMeta(
+    'createDate',
+  );
+  @override
+  late final GeneratedColumn<String> createDate = GeneratedColumn<String>(
+    'create_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    rowId,
+    oeeJobId,
+    testItemId,
+    testItemName,
+    createDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'job_test_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbJobTestItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('row_id')) {
+      context.handle(
+        _rowIdMeta,
+        rowId.isAcceptableOrUnknown(data['row_id']!, _rowIdMeta),
+      );
+    }
+    if (data.containsKey('oee_job_id')) {
+      context.handle(
+        _oeeJobIdMeta,
+        oeeJobId.isAcceptableOrUnknown(data['oee_job_id']!, _oeeJobIdMeta),
+      );
+    }
+    if (data.containsKey('test_item_id')) {
+      context.handle(
+        _testItemIdMeta,
+        testItemId.isAcceptableOrUnknown(
+          data['test_item_id']!,
+          _testItemIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('test_item_name')) {
+      context.handle(
+        _testItemNameMeta,
+        testItemName.isAcceptableOrUnknown(
+          data['test_item_name']!,
+          _testItemNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('create_date')) {
+      context.handle(
+        _createDateMeta,
+        createDate.isAcceptableOrUnknown(data['create_date']!, _createDateMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbJobTestItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbJobTestItem(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      rowId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_id'],
+      ),
+      oeeJobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}oee_job_id'],
+      ),
+      testItemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_item_id'],
+      ),
+      testItemName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_item_name'],
+      ),
+      createDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}create_date'],
+      ),
+    );
+  }
+
+  @override
+  $JobTestItemsTable createAlias(String alias) {
+    return $JobTestItemsTable(attachedDatabase, alias);
+  }
+}
+
+class DbJobTestItem extends DataClass implements Insertable<DbJobTestItem> {
+  final int uid;
+  final int? rowId;
+  final int? oeeJobId;
+  final String? testItemId;
+  final String? testItemName;
+  final String? createDate;
+  const DbJobTestItem({
+    required this.uid,
+    this.rowId,
+    this.oeeJobId,
+    this.testItemId,
+    this.testItemName,
+    this.createDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || rowId != null) {
+      map['row_id'] = Variable<int>(rowId);
+    }
+    if (!nullToAbsent || oeeJobId != null) {
+      map['oee_job_id'] = Variable<int>(oeeJobId);
+    }
+    if (!nullToAbsent || testItemId != null) {
+      map['test_item_id'] = Variable<String>(testItemId);
+    }
+    if (!nullToAbsent || testItemName != null) {
+      map['test_item_name'] = Variable<String>(testItemName);
+    }
+    if (!nullToAbsent || createDate != null) {
+      map['create_date'] = Variable<String>(createDate);
+    }
+    return map;
+  }
+
+  JobTestItemsCompanion toCompanion(bool nullToAbsent) {
+    return JobTestItemsCompanion(
+      uid: Value(uid),
+      rowId: rowId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rowId),
+      oeeJobId: oeeJobId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(oeeJobId),
+      testItemId: testItemId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(testItemId),
+      testItemName: testItemName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(testItemName),
+      createDate: createDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createDate),
+    );
+  }
+
+  factory DbJobTestItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbJobTestItem(
+      uid: serializer.fromJson<int>(json['uid']),
+      rowId: serializer.fromJson<int?>(json['rowId']),
+      oeeJobId: serializer.fromJson<int?>(json['oeeJobId']),
+      testItemId: serializer.fromJson<String?>(json['testItemId']),
+      testItemName: serializer.fromJson<String?>(json['testItemName']),
+      createDate: serializer.fromJson<String?>(json['createDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'rowId': serializer.toJson<int?>(rowId),
+      'oeeJobId': serializer.toJson<int?>(oeeJobId),
+      'testItemId': serializer.toJson<String?>(testItemId),
+      'testItemName': serializer.toJson<String?>(testItemName),
+      'createDate': serializer.toJson<String?>(createDate),
+    };
+  }
+
+  DbJobTestItem copyWith({
+    int? uid,
+    Value<int?> rowId = const Value.absent(),
+    Value<int?> oeeJobId = const Value.absent(),
+    Value<String?> testItemId = const Value.absent(),
+    Value<String?> testItemName = const Value.absent(),
+    Value<String?> createDate = const Value.absent(),
+  }) => DbJobTestItem(
+    uid: uid ?? this.uid,
+    rowId: rowId.present ? rowId.value : this.rowId,
+    oeeJobId: oeeJobId.present ? oeeJobId.value : this.oeeJobId,
+    testItemId: testItemId.present ? testItemId.value : this.testItemId,
+    testItemName: testItemName.present ? testItemName.value : this.testItemName,
+    createDate: createDate.present ? createDate.value : this.createDate,
+  );
+  DbJobTestItem copyWithCompanion(JobTestItemsCompanion data) {
+    return DbJobTestItem(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      rowId: data.rowId.present ? data.rowId.value : this.rowId,
+      oeeJobId: data.oeeJobId.present ? data.oeeJobId.value : this.oeeJobId,
+      testItemId: data.testItemId.present
+          ? data.testItemId.value
+          : this.testItemId,
+      testItemName: data.testItemName.present
+          ? data.testItemName.value
+          : this.testItemName,
+      createDate: data.createDate.present
+          ? data.createDate.value
+          : this.createDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbJobTestItem(')
+          ..write('uid: $uid, ')
+          ..write('rowId: $rowId, ')
+          ..write('oeeJobId: $oeeJobId, ')
+          ..write('testItemId: $testItemId, ')
+          ..write('testItemName: $testItemName, ')
+          ..write('createDate: $createDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(uid, rowId, oeeJobId, testItemId, testItemName, createDate);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbJobTestItem &&
+          other.uid == this.uid &&
+          other.rowId == this.rowId &&
+          other.oeeJobId == this.oeeJobId &&
+          other.testItemId == this.testItemId &&
+          other.testItemName == this.testItemName &&
+          other.createDate == this.createDate);
+}
+
+class JobTestItemsCompanion extends UpdateCompanion<DbJobTestItem> {
+  final Value<int> uid;
+  final Value<int?> rowId;
+  final Value<int?> oeeJobId;
+  final Value<String?> testItemId;
+  final Value<String?> testItemName;
+  final Value<String?> createDate;
+  const JobTestItemsCompanion({
+    this.uid = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.oeeJobId = const Value.absent(),
+    this.testItemId = const Value.absent(),
+    this.testItemName = const Value.absent(),
+    this.createDate = const Value.absent(),
+  });
+  JobTestItemsCompanion.insert({
+    this.uid = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.oeeJobId = const Value.absent(),
+    this.testItemId = const Value.absent(),
+    this.testItemName = const Value.absent(),
+    this.createDate = const Value.absent(),
+  });
+  static Insertable<DbJobTestItem> custom({
+    Expression<int>? uid,
+    Expression<int>? rowId,
+    Expression<int>? oeeJobId,
+    Expression<String>? testItemId,
+    Expression<String>? testItemName,
+    Expression<String>? createDate,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (rowId != null) 'row_id': rowId,
+      if (oeeJobId != null) 'oee_job_id': oeeJobId,
+      if (testItemId != null) 'test_item_id': testItemId,
+      if (testItemName != null) 'test_item_name': testItemName,
+      if (createDate != null) 'create_date': createDate,
+    });
+  }
+
+  JobTestItemsCompanion copyWith({
+    Value<int>? uid,
+    Value<int?>? rowId,
+    Value<int?>? oeeJobId,
+    Value<String?>? testItemId,
+    Value<String?>? testItemName,
+    Value<String?>? createDate,
+  }) {
+    return JobTestItemsCompanion(
+      uid: uid ?? this.uid,
+      rowId: rowId ?? this.rowId,
+      oeeJobId: oeeJobId ?? this.oeeJobId,
+      testItemId: testItemId ?? this.testItemId,
+      testItemName: testItemName ?? this.testItemName,
+      createDate: createDate ?? this.createDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (rowId.present) {
+      map['row_id'] = Variable<int>(rowId.value);
+    }
+    if (oeeJobId.present) {
+      map['oee_job_id'] = Variable<int>(oeeJobId.value);
+    }
+    if (testItemId.present) {
+      map['test_item_id'] = Variable<String>(testItemId.value);
+    }
+    if (testItemName.present) {
+      map['test_item_name'] = Variable<String>(testItemName.value);
+    }
+    if (createDate.present) {
+      map['create_date'] = Variable<String>(createDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobTestItemsCompanion(')
+          ..write('uid: $uid, ')
+          ..write('rowId: $rowId, ')
+          ..write('oeeJobId: $oeeJobId, ')
+          ..write('testItemId: $testItemId, ')
+          ..write('testItemName: $testItemName, ')
+          ..write('createDate: $createDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -11289,6 +12319,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $MachineSummaryEventsTable(this);
   late final $HumanActivityTypesTable humanActivityTypes =
       $HumanActivityTypesTable(this);
+  late final $JobTestItemsTable jobTestItems = $JobTestItemsTable(this);
   late final JobDao jobDao = JobDao(this as AppDatabase);
   late final DocumentDao documentDao = DocumentDao(this as AppDatabase);
   late final UserDao userDao = UserDao(this as AppDatabase);
@@ -11308,6 +12339,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final HumanActivityTypeDao humanActivityTypeDao = HumanActivityTypeDao(
+    this as AppDatabase,
+  );
+  late final JobTestItemDao jobTestItemDao = JobTestItemDao(
     this as AppDatabase,
   );
   @override
@@ -11333,6 +12367,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     machineSummaryItems,
     machineSummaryEvents,
     humanActivityTypes,
+    jobTestItems,
   ];
 }
 
@@ -11352,6 +12387,18 @@ typedef $$JobsTableCreateCompanionBuilder =
       Value<bool> isManual,
       Value<bool> isSynced,
       Value<int> recordVersion,
+      Value<int?> oeeJobId,
+      Value<int?> analysisJobId,
+      Value<String?> sampleNo,
+      Value<String?> sampleName,
+      Value<String?> lotNo,
+      Value<int?> setId,
+      Value<String?> planAnalysisDate,
+      Value<String?> createUser,
+      Value<String?> updateUser,
+      Value<String?> updateDate,
+      Value<int?> recUpdate,
+      Value<String?> assignmentId,
     });
 typedef $$JobsTableUpdateCompanionBuilder =
     JobsCompanion Function({
@@ -11369,6 +12416,18 @@ typedef $$JobsTableUpdateCompanionBuilder =
       Value<bool> isManual,
       Value<bool> isSynced,
       Value<int> recordVersion,
+      Value<int?> oeeJobId,
+      Value<int?> analysisJobId,
+      Value<String?> sampleNo,
+      Value<String?> sampleName,
+      Value<String?> lotNo,
+      Value<int?> setId,
+      Value<String?> planAnalysisDate,
+      Value<String?> createUser,
+      Value<String?> updateUser,
+      Value<String?> updateDate,
+      Value<int?> recUpdate,
+      Value<String?> assignmentId,
     });
 
 class $$JobsTableFilterComposer extends Composer<_$AppDatabase, $JobsTable> {
@@ -11446,6 +12505,66 @@ class $$JobsTableFilterComposer extends Composer<_$AppDatabase, $JobsTable> {
 
   ColumnFilters<int> get recordVersion => $composableBuilder(
     column: $table.recordVersion,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get oeeJobId => $composableBuilder(
+    column: $table.oeeJobId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get analysisJobId => $composableBuilder(
+    column: $table.analysisJobId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sampleNo => $composableBuilder(
+    column: $table.sampleNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sampleName => $composableBuilder(
+    column: $table.sampleName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lotNo => $composableBuilder(
+    column: $table.lotNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get setId => $composableBuilder(
+    column: $table.setId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get planAnalysisDate => $composableBuilder(
+    column: $table.planAnalysisDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createUser => $composableBuilder(
+    column: $table.createUser,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updateUser => $composableBuilder(
+    column: $table.updateUser,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get updateDate => $composableBuilder(
+    column: $table.updateDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get recUpdate => $composableBuilder(
+    column: $table.recUpdate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get assignmentId => $composableBuilder(
+    column: $table.assignmentId,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -11527,6 +12646,66 @@ class $$JobsTableOrderingComposer extends Composer<_$AppDatabase, $JobsTable> {
     column: $table.recordVersion,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get oeeJobId => $composableBuilder(
+    column: $table.oeeJobId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get analysisJobId => $composableBuilder(
+    column: $table.analysisJobId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sampleNo => $composableBuilder(
+    column: $table.sampleNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sampleName => $composableBuilder(
+    column: $table.sampleName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lotNo => $composableBuilder(
+    column: $table.lotNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get setId => $composableBuilder(
+    column: $table.setId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get planAnalysisDate => $composableBuilder(
+    column: $table.planAnalysisDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createUser => $composableBuilder(
+    column: $table.createUser,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updateUser => $composableBuilder(
+    column: $table.updateUser,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get updateDate => $composableBuilder(
+    column: $table.updateDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get recUpdate => $composableBuilder(
+    column: $table.recUpdate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get assignmentId => $composableBuilder(
+    column: $table.assignmentId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$JobsTableAnnotationComposer
@@ -11587,6 +12766,56 @@ class $$JobsTableAnnotationComposer
     column: $table.recordVersion,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get oeeJobId =>
+      $composableBuilder(column: $table.oeeJobId, builder: (column) => column);
+
+  GeneratedColumn<int> get analysisJobId => $composableBuilder(
+    column: $table.analysisJobId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get sampleNo =>
+      $composableBuilder(column: $table.sampleNo, builder: (column) => column);
+
+  GeneratedColumn<String> get sampleName => $composableBuilder(
+    column: $table.sampleName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lotNo =>
+      $composableBuilder(column: $table.lotNo, builder: (column) => column);
+
+  GeneratedColumn<int> get setId =>
+      $composableBuilder(column: $table.setId, builder: (column) => column);
+
+  GeneratedColumn<String> get planAnalysisDate => $composableBuilder(
+    column: $table.planAnalysisDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createUser => $composableBuilder(
+    column: $table.createUser,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updateUser => $composableBuilder(
+    column: $table.updateUser,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get updateDate => $composableBuilder(
+    column: $table.updateDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get recUpdate =>
+      $composableBuilder(column: $table.recUpdate, builder: (column) => column);
+
+  GeneratedColumn<String> get assignmentId => $composableBuilder(
+    column: $table.assignmentId,
+    builder: (column) => column,
+  );
 }
 
 class $$JobsTableTableManager
@@ -11631,6 +12860,18 @@ class $$JobsTableTableManager
                 Value<bool> isManual = const Value.absent(),
                 Value<bool> isSynced = const Value.absent(),
                 Value<int> recordVersion = const Value.absent(),
+                Value<int?> oeeJobId = const Value.absent(),
+                Value<int?> analysisJobId = const Value.absent(),
+                Value<String?> sampleNo = const Value.absent(),
+                Value<String?> sampleName = const Value.absent(),
+                Value<String?> lotNo = const Value.absent(),
+                Value<int?> setId = const Value.absent(),
+                Value<String?> planAnalysisDate = const Value.absent(),
+                Value<String?> createUser = const Value.absent(),
+                Value<String?> updateUser = const Value.absent(),
+                Value<String?> updateDate = const Value.absent(),
+                Value<int?> recUpdate = const Value.absent(),
+                Value<String?> assignmentId = const Value.absent(),
               }) => JobsCompanion(
                 uid: uid,
                 jobId: jobId,
@@ -11646,6 +12887,18 @@ class $$JobsTableTableManager
                 isManual: isManual,
                 isSynced: isSynced,
                 recordVersion: recordVersion,
+                oeeJobId: oeeJobId,
+                analysisJobId: analysisJobId,
+                sampleNo: sampleNo,
+                sampleName: sampleName,
+                lotNo: lotNo,
+                setId: setId,
+                planAnalysisDate: planAnalysisDate,
+                createUser: createUser,
+                updateUser: updateUser,
+                updateDate: updateDate,
+                recUpdate: recUpdate,
+                assignmentId: assignmentId,
               ),
           createCompanionCallback:
               ({
@@ -11663,6 +12916,18 @@ class $$JobsTableTableManager
                 Value<bool> isManual = const Value.absent(),
                 Value<bool> isSynced = const Value.absent(),
                 Value<int> recordVersion = const Value.absent(),
+                Value<int?> oeeJobId = const Value.absent(),
+                Value<int?> analysisJobId = const Value.absent(),
+                Value<String?> sampleNo = const Value.absent(),
+                Value<String?> sampleName = const Value.absent(),
+                Value<String?> lotNo = const Value.absent(),
+                Value<int?> setId = const Value.absent(),
+                Value<String?> planAnalysisDate = const Value.absent(),
+                Value<String?> createUser = const Value.absent(),
+                Value<String?> updateUser = const Value.absent(),
+                Value<String?> updateDate = const Value.absent(),
+                Value<int?> recUpdate = const Value.absent(),
+                Value<String?> assignmentId = const Value.absent(),
               }) => JobsCompanion.insert(
                 uid: uid,
                 jobId: jobId,
@@ -11678,6 +12943,18 @@ class $$JobsTableTableManager
                 isManual: isManual,
                 isSynced: isSynced,
                 recordVersion: recordVersion,
+                oeeJobId: oeeJobId,
+                analysisJobId: analysisJobId,
+                sampleNo: sampleNo,
+                sampleName: sampleName,
+                lotNo: lotNo,
+                setId: setId,
+                planAnalysisDate: planAnalysisDate,
+                createUser: createUser,
+                updateUser: updateUser,
+                updateDate: updateDate,
+                recUpdate: recUpdate,
+                assignmentId: assignmentId,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -16816,6 +18093,225 @@ typedef $$HumanActivityTypesTableProcessedTableManager =
       DbHumanActivityType,
       PrefetchHooks Function()
     >;
+typedef $$JobTestItemsTableCreateCompanionBuilder =
+    JobTestItemsCompanion Function({
+      Value<int> uid,
+      Value<int?> rowId,
+      Value<int?> oeeJobId,
+      Value<String?> testItemId,
+      Value<String?> testItemName,
+      Value<String?> createDate,
+    });
+typedef $$JobTestItemsTableUpdateCompanionBuilder =
+    JobTestItemsCompanion Function({
+      Value<int> uid,
+      Value<int?> rowId,
+      Value<int?> oeeJobId,
+      Value<String?> testItemId,
+      Value<String?> testItemName,
+      Value<String?> createDate,
+    });
+
+class $$JobTestItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $JobTestItemsTable> {
+  $$JobTestItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get oeeJobId => $composableBuilder(
+    column: $table.oeeJobId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testItemId => $composableBuilder(
+    column: $table.testItemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testItemName => $composableBuilder(
+    column: $table.testItemName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createDate => $composableBuilder(
+    column: $table.createDate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$JobTestItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $JobTestItemsTable> {
+  $$JobTestItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get oeeJobId => $composableBuilder(
+    column: $table.oeeJobId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testItemId => $composableBuilder(
+    column: $table.testItemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testItemName => $composableBuilder(
+    column: $table.testItemName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createDate => $composableBuilder(
+    column: $table.createDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$JobTestItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JobTestItemsTable> {
+  $$JobTestItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<int> get rowId =>
+      $composableBuilder(column: $table.rowId, builder: (column) => column);
+
+  GeneratedColumn<int> get oeeJobId =>
+      $composableBuilder(column: $table.oeeJobId, builder: (column) => column);
+
+  GeneratedColumn<String> get testItemId => $composableBuilder(
+    column: $table.testItemId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get testItemName => $composableBuilder(
+    column: $table.testItemName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createDate => $composableBuilder(
+    column: $table.createDate,
+    builder: (column) => column,
+  );
+}
+
+class $$JobTestItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $JobTestItemsTable,
+          DbJobTestItem,
+          $$JobTestItemsTableFilterComposer,
+          $$JobTestItemsTableOrderingComposer,
+          $$JobTestItemsTableAnnotationComposer,
+          $$JobTestItemsTableCreateCompanionBuilder,
+          $$JobTestItemsTableUpdateCompanionBuilder,
+          (
+            DbJobTestItem,
+            BaseReferences<_$AppDatabase, $JobTestItemsTable, DbJobTestItem>,
+          ),
+          DbJobTestItem,
+          PrefetchHooks Function()
+        > {
+  $$JobTestItemsTableTableManager(_$AppDatabase db, $JobTestItemsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JobTestItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JobTestItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JobTestItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<int?> rowId = const Value.absent(),
+                Value<int?> oeeJobId = const Value.absent(),
+                Value<String?> testItemId = const Value.absent(),
+                Value<String?> testItemName = const Value.absent(),
+                Value<String?> createDate = const Value.absent(),
+              }) => JobTestItemsCompanion(
+                uid: uid,
+                rowId: rowId,
+                oeeJobId: oeeJobId,
+                testItemId: testItemId,
+                testItemName: testItemName,
+                createDate: createDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<int?> rowId = const Value.absent(),
+                Value<int?> oeeJobId = const Value.absent(),
+                Value<String?> testItemId = const Value.absent(),
+                Value<String?> testItemName = const Value.absent(),
+                Value<String?> createDate = const Value.absent(),
+              }) => JobTestItemsCompanion.insert(
+                uid: uid,
+                rowId: rowId,
+                oeeJobId: oeeJobId,
+                testItemId: testItemId,
+                testItemName: testItemName,
+                createDate: createDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$JobTestItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $JobTestItemsTable,
+      DbJobTestItem,
+      $$JobTestItemsTableFilterComposer,
+      $$JobTestItemsTableOrderingComposer,
+      $$JobTestItemsTableAnnotationComposer,
+      $$JobTestItemsTableCreateCompanionBuilder,
+      $$JobTestItemsTableUpdateCompanionBuilder,
+      (
+        DbJobTestItem,
+        BaseReferences<_$AppDatabase, $JobTestItemsTable, DbJobTestItem>,
+      ),
+      DbJobTestItem,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -16855,4 +18351,6 @@ class $AppDatabaseManager {
       $$MachineSummaryEventsTableTableManager(_db, _db.machineSummaryEvents);
   $$HumanActivityTypesTableTableManager get humanActivityTypes =>
       $$HumanActivityTypesTableTableManager(_db, _db.humanActivityTypes);
+  $$JobTestItemsTableTableManager get jobTestItems =>
+      $$JobTestItemsTableTableManager(_db, _db.jobTestItems);
 }

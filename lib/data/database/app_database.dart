@@ -38,8 +38,10 @@ import 'package:bio_oee_lab/data/database/daos/machine_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/sync_log_dao.dart';
 import 'package:bio_oee_lab/data/database/daos/machine_summary_dao.dart';
 
-import 'tables/human_activity_type_table.dart';
-import 'daos/human_activity_type_dao.dart';
+import 'package:bio_oee_lab/data/database/tables/job_test_item_table.dart'; // Restored
+import 'package:bio_oee_lab/data/database/daos/job_test_item_dao.dart';
+import 'package:bio_oee_lab/data/database/tables/human_activity_type_table.dart';
+import 'package:bio_oee_lab/data/database/daos/human_activity_type_dao.dart'; // <<< New
 
 part 'app_database.g.dart';
 
@@ -59,10 +61,11 @@ part 'app_database.g.dart';
     ActivityLogs,
     Machines,
     SyncLogs,
-    MachineSummaries, // <<< NEW
-    MachineSummaryItems, // <<< NEW
-    MachineSummaryEvents, // <<< NEW
+    MachineSummaries,
+    MachineSummaryItems,
+    MachineSummaryEvents,
     HumanActivityTypes,
+    JobTestItems, // <<< New Table
   ],
   daos: [
     JobDao,
@@ -74,8 +77,9 @@ part 'app_database.g.dart';
     ActivityLogDao,
     MachineDao,
     SyncLogDao,
-    MachineSummaryDao, // <<< NEW
+    MachineSummaryDao,
     HumanActivityTypeDao,
+    JobTestItemDao, // <<< New Dao
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -89,7 +93,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 23; // <<< Bump to 23
+  int get schemaVersion => 26; // <<< Bump to 26
 
   // Define the migration strategy.
   @override
@@ -136,6 +140,28 @@ class AppDatabase extends _$AppDatabase {
           humanActivityTypes.jobTestSetRecId,
         );
         await m.addColumn(jobWorkingTimes, jobWorkingTimes.jobTestSetRecId);
+      }
+
+      if (from < 24) {
+        await m.addColumn(jobs, jobs.oeeJobId);
+        await m.addColumn(jobs, jobs.analysisJobId);
+        await m.addColumn(jobs, jobs.sampleNo);
+        await m.addColumn(jobs, jobs.sampleName);
+        await m.addColumn(jobs, jobs.lotNo);
+        await m.addColumn(jobs, jobs.setId);
+        await m.addColumn(jobs, jobs.planAnalysisDate);
+        await m.addColumn(jobs, jobs.createUser);
+        await m.addColumn(jobs, jobs.updateUser);
+        await m.addColumn(jobs, jobs.updateDate);
+        await m.addColumn(jobs, jobs.recUpdate);
+      }
+
+      if (from < 25) {
+        await m.addColumn(jobs, jobs.assignmentId);
+      }
+
+      if (from < 26) {
+        await m.createTable(jobTestItems);
       }
     },
   );

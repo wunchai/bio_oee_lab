@@ -52,4 +52,19 @@ class Jobs extends Table {
   // NEW: Versioning for sync
   IntColumn get recordVersion =>
       integer().named('RecordVersion').withDefault(const Constant(0))();
+
+  // New columns from API
+  IntColumn get oeeJobId => integer().named('OEEJobID').nullable()();
+  IntColumn get analysisJobId => integer().named('AnalysisJobID').nullable()();
+  TextColumn get sampleNo => text().named('SampleNo').nullable()();
+  TextColumn get sampleName => text().named('SampleName').nullable()();
+  TextColumn get lotNo => text().named('LOTNO').nullable()();
+  IntColumn get setId => integer().named('SetID').nullable()();
+  TextColumn get planAnalysisDate =>
+      text().named('PlanAnalysisDate').nullable()();
+  TextColumn get createUser => text().named('CreateUser').nullable()();
+  TextColumn get updateUser => text().named('UpdateUser').nullable()();
+  TextColumn get updateDate => text().named('UpdateDate').nullable()();
+  IntColumn get recUpdate => integer().named('RecUpdate').nullable()();
+  TextColumn get assignmentId => text().named('AssignmentID').nullable()();
 }

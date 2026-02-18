@@ -9,7 +9,8 @@ import 'package:bio_oee_lab/data/network/sync_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/job_repository.dart';
 import 'package:bio_oee_lab/data/repositories/machine_repository.dart';
 import 'package:bio_oee_lab/data/repositories/job_sync_repository.dart';
-import 'package:bio_oee_lab/data/models/user_sync_page.dart'; // import
+import 'package:bio_oee_lab/data/repositories/job_test_item_repository.dart'; // <<< NEW
+import 'package:bio_oee_lab/data/models/user_sync_page.dart';
 
 enum SyncStatus { idle, syncing, success, failure }
 
@@ -35,12 +36,16 @@ class SyncRepository with ChangeNotifier {
     required JobRepository jobRepository,
     required MachineRepository machineRepository,
     required JobSyncRepository jobSyncRepository,
+    required JobTestItemRepository jobTestItemRepository, // <<< NEW
   }) : _syncApiService = syncApiService,
        _userDao = userDao,
        _syncLogDao = syncLogDao,
        _jobRepository = jobRepository,
        _machineRepository = machineRepository,
-       _jobSyncRepository = jobSyncRepository;
+       _jobSyncRepository = jobSyncRepository,
+       _jobTestItemRepository = jobTestItemRepository; // <<< NEW
+
+  final JobTestItemRepository _jobTestItemRepository;
 
   // --- Utility: Log to DB ---
   Future<void> _log(String type, int status, String message) async {
@@ -78,6 +83,11 @@ class SyncRepository with ChangeNotifier {
       notifyListeners();
       final machinesOk = await _machineRepository.syncMachines(userId);
       if (!machinesOk) throw Exception('Machine Sync Failed');
+
+      // 3. JobTestItems (NEW)
+      _lastSyncMessage = 'Syncing Job Test Items...';
+      notifyListeners();
+      await _jobTestItemRepository.syncJobTestItems(userId); // Passed userId
 
       // Note: Users are typically synced on login or admin screen.
       // User requested "except user", so we skip user sync here.

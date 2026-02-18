@@ -22,8 +22,18 @@ class JobRepository with ChangeNotifier {
       _jobDao = jobDao;
 
   // ฟังก์ชันดึงงานจาก Database เพื่อแสดงผล
-  Stream<List<DbJob>> watchJobs({String query = '', bool? isManual}) {
-    return _jobDao.watchJobs(query: query, isManual: isManual);
+  Stream<List<DbJob>> watchJobs({
+    String query = '',
+    bool? isManual,
+    String? filterAssignmentId,
+    String? filterRunningByUserId,
+  }) {
+    return _jobDao.watchJobs(
+      query: query,
+      isManual: isManual,
+      filterAssignmentId: filterAssignmentId,
+      filterRunningByUserId: filterRunningByUserId,
+    );
   }
 
   // --- ฟังก์ชัน Sync หลัก (หัวใจสำคัญ) ---
@@ -167,6 +177,12 @@ class JobRepository with ChangeNotifier {
         createBy: Value('Manual'),
       ),
     );
+    notifyListeners(); // Refresh list
+  }
+
+  // --- ฟังก์ชันลบงานแบบ Manual ---
+  Future<void> deleteManualJob(String jobId) async {
+    await _jobDao.deleteJobById(jobId);
     notifyListeners(); // Refresh list
   }
 }

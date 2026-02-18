@@ -418,6 +418,18 @@ class DocumentRepository {
     }
   }
 
+  /// NEW: Delete all documents for a specific Job ID
+  Future<void> deleteDocumentsByJobId(String jobId) async {
+    try {
+      await _documentDao.deleteDocumentsByJobId(jobId);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error deleting documents for job $jobId: $e');
+      }
+      rethrow;
+    }
+  }
+
   String _generateUniqueDocumentId(String jobId) {
     return '${jobId}_${DateTime.now().millisecondsSinceEpoch}';
   }

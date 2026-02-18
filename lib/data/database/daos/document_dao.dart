@@ -59,6 +59,11 @@ class DocumentDao extends DatabaseAccessor<AppDatabase>
     )..where((tbl) => tbl.documentId.isIn(documentIds))).go();
   }
 
+  // NEW: Delete all documents by Job ID
+  Future<int> deleteDocumentsByJobId(String jobId) {
+    return (delete(documents)..where((tbl) => tbl.jobId.equals(jobId))).go();
+  }
+
   // Equivalent to suspend fun getDocument(documentId: String): DbDocument?
   Future<DbDocument?> getDocument(String documentId) {
     return (select(

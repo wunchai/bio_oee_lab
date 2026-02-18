@@ -25,6 +25,8 @@ class _JobScreenState extends State<JobScreen> {
       TextEditingController();
   String _searchQuery = '';
   bool _showManualOnly = true;
+  bool _showMyAssignments = true; // Default: Show My Jobs
+  bool _showRunning = false; // Default: Show All (not just running)
 
   @override
   void dispose() {
@@ -218,6 +220,68 @@ class _JobScreenState extends State<JobScreen> {
     );
   }
 
+  // ✅ Delete Manual Job Handler
+  void _handleDeleteJob(DbJob job) async {
+    if (job.jobId == null) return;
+
+    final documentRepo = context.read<DocumentRepository>();
+    final jobRepo = context.read<JobRepository>();
+
+    // 1. Check for documents (History)
+    // The user wants to allow deletion EVEN IF history exists.
+    // So we just warn them that history will be deleted too.
+    final hasDocs = await documentRepo
+        .watchActiveDocCountByJob(job.createBy ?? '', job.jobId!)
+        .first;
+
+    // Double check: ask confirmation with warning if needed
+    if (!mounted) return;
+
+    final warningMsg = hasDocs > 0
+        ? '\n\n⚠️ Warning: This job has running history/documents. Deleting it will PERMANENTLY DELETE all associated documents!'
+        : '';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Confirm Delete'),
+        content: Text(
+          'Are you sure you want to delete "${job.jobName}"?$warningMsg\nThis cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(ctx); // Close Confirm
+
+              // 2. Cascade Delete: Delete Documents first
+              await documentRepo.deleteDocumentsByJobId(job.jobId!);
+
+              // 3. Delete Job
+              await jobRepo.deleteManualJob(job.jobId!);
+
+              if (mounted) {
+                Navigator.of(context).pop(); // Close Details Dialog
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Job and associated documents deleted successfully.',
+                    ),
+                  ),
+                );
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _createManualJob(String jobName, String userId) {
     // Generate a GUID for manual job (Simulated)
     final jobId = DateTime.now().millisecondsSinceEpoch
@@ -266,33 +330,54 @@ class _JobScreenState extends State<JobScreen> {
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                 child: _buildSearchBar(),
               ),
-              // Filter Toggle
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
+              // Filter Toggle Row
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // Filter: My Assignments
                     FilterChip(
-                      label: const Text('Manual Jobs'),
-                      selected: _showManualOnly,
+                      label: const Text('My Assignments'),
+                      selected: _showMyAssignments,
                       onSelected: (bool selected) {
                         setState(() {
-                          _showManualOnly = true;
+                          _showMyAssignments = selected;
                         });
                       },
                       checkmarkColor: Colors.white,
-                      selectedColor: Colors.green.shade100,
+                      selectedColor: Colors.blue.shade300,
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 8),
+
+                    // Filter: Running
                     FilterChip(
-                      label: const Text('All Jobs'),
-                      selected: !_showManualOnly,
+                      label: const Text('Running'),
+                      selected: _showRunning,
                       onSelected: (bool selected) {
                         setState(() {
-                          _showManualOnly = false;
+                          _showRunning = selected;
                         });
                       },
-                      selectedColor: Colors.blue.shade100,
+                      checkmarkColor: Colors.white,
+                      selectedColor: Colors.orange.shade300,
+                    ),
+                    const SizedBox(width: 8),
+
+                    // Filter: Manual Only
+                    FilterChip(
+                      label: const Text('Manual Only'),
+                      selected: _showManualOnly,
+                      onSelected: (bool selected) {
+                        setState(() {
+                          _showManualOnly = selected;
+                        });
+                      },
+                      checkmarkColor: Colors.white,
+                      selectedColor: Colors.green.shade300,
                     ),
                   ],
                 ),
@@ -301,6 +386,11 @@ class _JobScreenState extends State<JobScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: 'Create Manual Job',
+            onPressed: _showCreateManualJobDialog,
+          ),
           IconButton(
             icon: isSyncing
                 ? const SizedBox(
@@ -407,6 +497,10 @@ class _JobScreenState extends State<JobScreen> {
               stream: jobRepo.watchJobs(
                 query: _searchQuery,
                 isManual: _showManualOnly ? true : null,
+                filterAssignmentId: _showRunning
+                    ? null
+                    : (_showMyAssignments ? userId : null),
+                filterRunningByUserId: _showRunning ? userId : null,
               ),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -480,7 +574,10 @@ class _JobScreenState extends State<JobScreen> {
                               ),
                             ),
                             title: Text(
-                              job.jobName ?? 'Unknown Job',
+                              // Show SampleNo as title, fallback to JobName
+                              (job.sampleNo != null && job.sampleNo!.isNotEmpty)
+                                  ? job.sampleNo!
+                                  : (job.jobName ?? 'Unknown Job'),
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -500,7 +597,7 @@ class _JobScreenState extends State<JobScreen> {
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        'Created: ${job.createDate?.split('T').first ?? '-'}',
+                                        'Plan: ${job.planAnalysisDate?.split('T').first ?? '-'}',
                                         style: const TextStyle(fontSize: 12),
                                       ),
                                     ],
@@ -509,16 +606,31 @@ class _JobScreenState extends State<JobScreen> {
                                   Row(
                                     children: [
                                       const Icon(
-                                        Icons.person,
+                                        Icons.assignment_ind,
                                         size: 14,
                                         color: Colors.grey,
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
-                                        'By: ${job.createBy ?? '-'}',
+                                        'Assign: ${job.assignmentId ?? '-'}',
                                         style: const TextStyle(fontSize: 12),
                                       ),
                                     ],
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Sample: ${job.sampleName ?? '-'}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    'LOT: ${job.lotNo ?? '-'}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                   if (job.isManual)
                                     Container(
@@ -658,13 +770,6 @@ class _JobScreenState extends State<JobScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'manual_job_fab',
-        onPressed: _showCreateManualJobDialog,
-        label: const Text('Create Manual'),
-        icon: const Icon(Icons.add),
-        backgroundColor: Colors.blue,
-      ),
     );
   }
 
@@ -679,17 +784,34 @@ class _JobScreenState extends State<JobScreen> {
               Expanded(
                 child: Text(
                   job.jobName ?? 'Job Details',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15, // Adjusted font size
+                  ),
+                  maxLines: 2, // Allow wrapping
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.edit, color: Colors.blue),
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  _handleRenameJob(job);
-                },
-                tooltip: 'Rename Job',
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Action Buttons (Manual Jobs Only)
+                  if (job.isManual) ...[
+                    IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      tooltip: 'Delete Job',
+                      onPressed: () => _handleDeleteJob(job),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.blue),
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        _handleRenameJob(job);
+                      },
+                      tooltip: 'Rename Job',
+                    ),
+                  ],
+                ],
               ),
             ],
           ),
@@ -697,10 +819,17 @@ class _JobScreenState extends State<JobScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDetailRow('Job ID', job.jobId ?? '-'),
+              _buildDetailRow('Sample No', job.sampleNo ?? job.jobName ?? '-'),
+              _buildDetailRow('Job Name', job.jobName ?? '-'),
+              _buildDetailRow('Sample Name', job.sampleName ?? '-'),
+              _buildDetailRow('LOT NO', job.lotNo ?? '-'),
+              _buildDetailRow(
+                'Plan Date',
+                job.planAnalysisDate?.split('T').first ?? '-',
+              ),
+              _buildDetailRow('Assignment ID', job.assignmentId ?? '-'),
               _buildDetailRow('Machine', job.machineName ?? '-'),
               _buildDetailRow('Location', job.location ?? '-'),
-              _buildDetailRow('Created By', job.createBy ?? '-'),
               _buildDetailRow('Status', job.jobStatus.toString()),
               if (job.isManual)
                 Padding(
@@ -799,18 +928,23 @@ class _JobScreenState extends State<JobScreen> {
 
   Widget _buildDetailRow(String label, String value) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4.0),
+      padding: const EdgeInsets.only(bottom: 6.0), // Increased spacing
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: 80,
+            width: 120, // Increased width for longer labels like Assignment ID
             child: Text(
               label,
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
           ),
-          Expanded(child: Text(value)),
+          Expanded(
+            child: Text(value, style: const TextStyle(color: Colors.black87)),
+          ),
         ],
       ),
     );

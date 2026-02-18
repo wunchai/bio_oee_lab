@@ -106,19 +106,77 @@ class _InfoScreenState extends State<InfoScreen> {
     final repo = context.read<SyncRepository>();
     final infoRepo = context.read<InfoRepository>();
     final deviceInfo = await infoRepo.getDeviceInfo();
-    // Use deviceId as userId for simplicity in this context, or fetch real user if needed
-    // Assuming admin or generic user for master sync if userId not stricly required by Repo logic
-    // But repos need userId.
-    // Let's try to get logged in user or device serial as fallback
     final userId =
         deviceInfo['deviceSerial'] ?? 'unknown_user'; // Fallback for now
 
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Starting Master Sync...')));
+
+    // Show Progress Dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Consumer<SyncRepository>(
+          builder: (context, repository, child) {
+            String statusText = repository.lastSyncMessage;
+            bool isSyncing = repository.syncStatus == SyncStatus.syncing;
+            bool isSuccess = repository.syncStatus == SyncStatus.success;
+            bool isFailure = repository.syncStatus == SyncStatus.failure;
+
+            if (isSuccess) {
+              // Auto close on success after a short delay or allow user to close
+              Future.delayed(const Duration(seconds: 1), () {
+                if (Navigator.canPop(dialogContext)) {
+                  Navigator.pop(dialogContext);
+                }
+              });
+            }
+
+            return AlertDialog(
+              title: Text(
+                isFailure
+                    ? 'Sync Failed'
+                    : isSuccess
+                    ? 'Sync Complete'
+                    : 'Syncing Master Data',
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isSyncing) const LinearProgressIndicator(),
+                  if (isSyncing || isSuccess) const SizedBox(height: 16),
+                  Text(statusText),
+                  if (isFailure) ...[
+                    const SizedBox(height: 16),
+                    const Icon(Icons.error, color: Colors.red, size: 48),
+                  ] else if (isSuccess) ...[
+                    const SizedBox(height: 16),
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 48,
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                if (!isSyncing)
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                      _loadData(); // Refresh info screen data
+                    },
+                    child: const Text('Close'),
+                  ),
+              ],
+            );
+          },
+        );
+      },
+    );
 
     await repo.syncMasterData(userId);
+    // Note: Dialog auto-closes on success via Future.delayed above, or manual close on error.
     _loadData(); // Refresh info
   }
 
@@ -130,9 +188,69 @@ class _InfoScreenState extends State<InfoScreen> {
     final deviceId = deviceInfo['deviceId'] ?? 'unknown_device';
 
     if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Starting Data Sync...')));
+
+    // Show Progress Dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Consumer<SyncRepository>(
+          builder: (context, repository, child) {
+            String statusText = repository.lastSyncMessage;
+            bool isSyncing = repository.syncStatus == SyncStatus.syncing;
+            bool isSuccess = repository.syncStatus == SyncStatus.success;
+            bool isFailure = repository.syncStatus == SyncStatus.failure;
+
+            if (isSuccess) {
+              Future.delayed(const Duration(seconds: 1), () {
+                if (Navigator.canPop(dialogContext)) {
+                  Navigator.pop(dialogContext);
+                }
+              });
+            }
+
+            return AlertDialog(
+              title: Text(
+                isFailure
+                    ? 'Sync Failed'
+                    : isSuccess
+                    ? 'Sync Complete'
+                    : 'Syncing Data',
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isSyncing) const LinearProgressIndicator(),
+                  if (isSyncing || isSuccess) const SizedBox(height: 16),
+                  Text(statusText),
+                  if (isFailure) ...[
+                    const SizedBox(height: 16),
+                    const Icon(Icons.error, color: Colors.red, size: 48),
+                  ] else if (isSuccess) ...[
+                    const SizedBox(height: 16),
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 48,
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                if (!isSyncing)
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                      _loadData();
+                    },
+                    child: const Text('Close'),
+                  ),
+              ],
+            );
+          },
+        );
+      },
+    );
 
     await repo.syncTransactionalData(userId, deviceId);
     _loadData(); // Refresh info

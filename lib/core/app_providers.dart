@@ -10,6 +10,7 @@ import 'package:bio_oee_lab/data/network/sync_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/sync_repository.dart';
 import 'package:bio_oee_lab/data/network/job_api_service.dart';
 import 'package:bio_oee_lab/data/network/job_sync_api_service.dart';
+import 'package:bio_oee_lab/data/repositories/job_sync_repository.dart'; // <<< NEW
 import 'package:bio_oee_lab/data/repositories/job_repository.dart';
 import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 import 'package:bio_oee_lab/data/repositories/check_in_repository.dart';
@@ -17,8 +18,9 @@ import 'package:bio_oee_lab/data/repositories/activity_repository.dart';
 import 'package:bio_oee_lab/data/network/machine_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/machine_repository.dart';
 import 'package:bio_oee_lab/data/network/activity_api_service.dart';
-import 'package:bio_oee_lab/data/repositories/info_repository.dart';
-import 'package:bio_oee_lab/data/repositories/job_sync_repository.dart';
+import 'package:bio_oee_lab/data/network/job_test_item_api_service.dart';
+import 'package:bio_oee_lab/data/repositories/job_test_item_repository.dart';
+import 'package:bio_oee_lab/data/repositories/info_repository.dart'; // <<< NEW
 
 Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final deviceInfoService = DeviceInfoService();
@@ -27,6 +29,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final jobApiService = JobApiService();
   final machineApiService = MachineApiService();
   final jobSyncApiService = JobSyncApiService();
+  final jobTestItemApiService = JobTestItemApiService(); // <<< NEW
 
   final dbProvider = Provider<AppDatabase>.value(value: appDatabase);
 
@@ -34,6 +37,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final pauseReasonDao = appDatabase.pauseReasonDao;
   final checkInDao = appDatabase.checkInDao;
   final activityLogDao = appDatabase.activityLogDao;
+  final jobTestItemDao = appDatabase.jobTestItemDao; // <<< NEW
 
   final loginRepository = LoginRepository(
     userDao: appDatabase.userDao,
@@ -57,6 +61,12 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     apiService: jobSyncApiService,
   );
 
+  final jobTestItemRepository = JobTestItemRepository(
+    // <<< NEW
+    jobTestItemApiService,
+    jobTestItemDao,
+  );
+
   final syncRepository = SyncRepository(
     syncApiService: syncApiService,
     userDao: appDatabase.userDao,
@@ -64,6 +74,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     jobRepository: jobRepository,
     machineRepository: machineRepository,
     jobSyncRepository: jobSyncRepository,
+    jobTestItemRepository: jobTestItemRepository, // <<< NEW
   );
 
   final documentRepository = DocumentRepository(appDatabase: appDatabase);
@@ -90,6 +101,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     ChangeNotifierProvider.value(value: jobRepository),
     ChangeNotifierProvider.value(value: machineRepository),
     Provider.value(value: jobSyncRepository),
+    ChangeNotifierProvider.value(value: jobTestItemRepository), // <<< NEW
     ChangeNotifierProvider.value(value: syncRepository),
     Provider<DocumentRepository>.value(value: documentRepository),
     Provider<InfoRepository>(

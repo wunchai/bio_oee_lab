@@ -67,7 +67,19 @@ class JobDao extends DatabaseAccessor<AppDatabase> with _$JobDaoMixin {
         jobStatus: Value(job.jobStatus),
         createDate: Value(job.createDate),
         createBy: Value(job.createBy),
-        // uid จะ auto-increment เอง
+        // NEW columns
+        oeeJobId: Value(job.oeeJobId),
+        analysisJobId: Value(job.analysisJobId),
+        sampleNo: Value(job.sampleNo),
+        sampleName: Value(job.sampleName),
+        lotNo: Value(job.lotNo),
+        setId: Value(job.setId),
+        planAnalysisDate: Value(job.planAnalysisDate),
+        createUser: Value(job.createUser),
+        updateUser: Value(job.updateUser),
+        updateDate: Value(job.updateDate),
+        recUpdate: Value(job.recUpdate),
+        assignmentId: Value(job.assignmentId),
       );
     }).toList();
 
@@ -76,25 +88,56 @@ class JobDao extends DatabaseAccessor<AppDatabase> with _$JobDaoMixin {
     });
   }
 
-  // ฟังก์ชันสำหรับแสดงผลในหน้าจอ พร้อมค้นหา (Search) และ Filter (Manual/All)
-  Stream<List<DbJob>> watchJobs({String? query, bool? isManual}) {
+  // ฟังก์ชันสำหรับแสดงผลในหน้าจอ พร้อมค้นหา (Search) และ Filter
+  Stream<List<DbJob>> watchJobs({
+    String? query,
+    bool? isManual,
+    String? filterAssignmentId, // Filter by AssignmentID (exact match)
+    String?
+    filterRunningByUserId, // Filter jobs that have RUNNING documents for this user
+  }) {
     // เริ่มต้น Query Table
     var stmt = select(jobs);
 
-    // Filter by isManual if provided
+    // 1. Filter by isManual
     if (isManual != null) {
       stmt = stmt..where((tbl) => tbl.isManual.equals(isManual));
     }
 
-    // Filter by Search Query
-    if (query != null && query.isNotEmpty) {
+    // 2. Filter by AssignmentID
+    if (filterAssignmentId != null && filterAssignmentId.isNotEmpty) {
+      stmt = stmt..where((tbl) => tbl.assignmentId.equals(filterAssignmentId));
+    }
+
+    // 3. Filter by Running Status (Complex Subquery)
+    // Show only jobs that have at least one document with status=1 (Running) for this user
+    if (filterRunningByUserId != null && filterRunningByUserId.isNotEmpty) {
       stmt = stmt
         ..where(
-          (tbl) => tbl.jobName.contains(query) | tbl.jobId.contains(query),
+          (tbl) => existsQuery(
+            select(db.documents)..where(
+              (doc) =>
+                  doc.jobId.equalsExp(tbl.jobId) &
+                  doc.userId.equals(filterRunningByUserId) &
+                  doc.status.equals(1), // 1 = Running
+            ),
+          ),
         );
     }
 
-    // Order by createDate descending (optional but good for UI)
+    // 4. Filter by Search Query
+    if (query != null && query.isNotEmpty) {
+      stmt = stmt
+        ..where(
+          (tbl) =>
+              tbl.jobName.contains(query) |
+              tbl.jobId.contains(query) |
+              tbl.sampleNo.contains(query) | // Also search by SampleNo
+              tbl.lotNo.contains(query), // Also search by LotNo
+        );
+    }
+
+    // Order by createDate descending
     stmt = stmt
       ..orderBy([
         (t) => OrderingTerm(expression: t.createDate, mode: OrderingMode.desc),
@@ -136,5 +179,10 @@ class JobDao extends DatabaseAccessor<AppDatabase> with _$JobDaoMixin {
         recordVersion: Value(currentVersion + 1),
       ),
     );
+  }
+
+  // NEW: Delete Job by ID
+  Future<int> deleteJobById(String jobId) {
+    return (delete(jobs)..where((tbl) => tbl.jobId.equals(jobId))).go();
   }
 }
