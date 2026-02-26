@@ -10,4 +10,25 @@ mixin _$MachineSummaryDaoMixin on DatabaseAccessor<AppDatabase> {
       attachedDatabase.machineSummaryItems;
   $MachineSummaryEventsTable get machineSummaryEvents =>
       attachedDatabase.machineSummaryEvents;
+  MachineSummaryDaoManager get managers => MachineSummaryDaoManager(this);
+}
+
+class MachineSummaryDaoManager {
+  final _$MachineSummaryDaoMixin _db;
+  MachineSummaryDaoManager(this._db);
+  $$MachineSummariesTableTableManager get machineSummaries =>
+      $$MachineSummariesTableTableManager(
+        _db.attachedDatabase,
+        _db.machineSummaries,
+      );
+  $$MachineSummaryItemsTableTableManager get machineSummaryItems =>
+      $$MachineSummaryItemsTableTableManager(
+        _db.attachedDatabase,
+        _db.machineSummaryItems,
+      );
+  $$MachineSummaryEventsTableTableManager get machineSummaryEvents =>
+      $$MachineSummaryEventsTableTableManager(
+        _db.attachedDatabase,
+        _db.machineSummaryEvents,
+      );
 }

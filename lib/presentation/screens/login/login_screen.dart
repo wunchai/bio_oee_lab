@@ -1,6 +1,7 @@
 // lib/presentation/screens/login/login_screen.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
@@ -156,6 +157,8 @@ class _LoginScreenContent extends StatelessWidget {
                 onChanged: formState.setUsername,
                 enabled: !isBusy,
                 textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               ),
               const SizedBox(height: 16),
               TextField(

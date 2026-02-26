@@ -128,7 +128,10 @@ class _DashboardJobCardState extends State<_DashboardJobCard> {
     }
   }
 
-  Future<void> _handleStartResume(String activityType) async {
+  Future<void> _handleStartResume(
+    String activityType, [
+    String? activityName,
+  ]) async {
     // Enforcement: Must have Test Set selected
     if (_selectedTestSet == null) {
       if (mounted) {
@@ -156,6 +159,7 @@ class _DashboardJobCardState extends State<_DashboardJobCard> {
         documentId: widget.doc.documentId!,
         userId: userId,
         activityType: activityType,
+        activityName: activityName,
         newDocStatus: 1, // Always Running
         jobTestSetId: _selectedTestSet?.recId, // Use selected Test Set
       );
@@ -250,6 +254,7 @@ class _DashboardJobCardState extends State<_DashboardJobCard> {
                         if (act.activityCode != null) {
                           _handleStartResume(
                             act.activityCode!,
+                            act.activityName,
                           ); // Start new activity
                         }
                       },
@@ -443,11 +448,33 @@ class _DashboardJobCardState extends State<_DashboardJobCard> {
                       width: 64,
                       height: 64,
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (isWorking) {
                             _handlePause();
                           } else {
-                            _handleStartResume('Work'); // Default code
+                            final db = Provider.of<AppDatabase>(
+                              context,
+                              listen: false,
+                            );
+                            final loginRepo = Provider.of<LoginRepository>(
+                              context,
+                              listen: false,
+                            );
+                            final userId = loginRepo.loggedInUser?.userId ?? '';
+                            final lastLog = await db.runningJobDetailsDao
+                                .getLastNonPauseUserLog(
+                                  widget.doc.documentId!,
+                                  userId,
+                                );
+
+                            if (lastLog != null && lastLog.activityId != null) {
+                              _handleStartResume(
+                                lastLog.activityId!,
+                                lastLog.activityName,
+                              );
+                            } else {
+                              _handleSwitchActivity();
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(

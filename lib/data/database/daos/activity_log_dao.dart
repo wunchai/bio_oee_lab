@@ -1,10 +1,17 @@
 import 'package:drift/drift.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/tables/activity_log_table.dart';
+import 'package:bio_oee_lab/data/database/tables/machine_table.dart';
 
 part 'activity_log_dao.g.dart';
 
-@DriftAccessor(tables: [ActivityLogs])
+class ActivityLogWithMachine {
+  final DbActivityLog log;
+  final DbMachine? machine;
+  ActivityLogWithMachine(this.log, this.machine);
+}
+
+@DriftAccessor(tables: [ActivityLogs, Machines])
 class ActivityLogDao extends DatabaseAccessor<AppDatabase>
     with _$ActivityLogDaoMixin {
   ActivityLogDao(AppDatabase db) : super(db);
@@ -62,6 +69,51 @@ class ActivityLogDao extends DatabaseAccessor<AppDatabase>
                 OrderingTerm(expression: t.startTime, mode: OrderingMode.desc),
           ]))
         .watch();
+  }
+
+  // ดึงกิจกรรมพร้อมข้อมูลเครื่องจักร (Join)
+  Stream<List<ActivityLogWithMachine>> watchActivitiesWithMachine(
+    String userId, {
+    String? query,
+    int? status,
+  }) {
+    final q = select(activityLogs).join([
+      leftOuterJoin(
+        machines,
+        machines.machineNo.equalsExp(activityLogs.machineNo) |
+            machines.machineId.equalsExp(activityLogs.machineNo) |
+            machines.barcodeGuid.equalsExp(activityLogs.machineNo),
+      ),
+    ])..where(activityLogs.operatorId.equals(userId));
+
+    if (status != null) {
+      q.where(activityLogs.status.equals(status));
+    } else {
+      q.where(activityLogs.status.equals(1));
+    }
+
+    q.where(activityLogs.machineNo.isNotNull());
+
+    if (query != null && query.isNotEmpty) {
+      q.where(
+        activityLogs.machineNo.contains(query) |
+            machines.machineName.contains(query) |
+            activityLogs.activityType.contains(query),
+      );
+    }
+
+    q.orderBy([
+      OrderingTerm(expression: activityLogs.startTime, mode: OrderingMode.desc),
+    ]);
+
+    return q.watch().map((rows) {
+      return rows.map((row) {
+        return ActivityLogWithMachine(
+          row.readTable(activityLogs),
+          row.readTableOrNull(machines),
+        );
+      }).toList();
+    });
   }
 
   // ดึงรายการเดียวตาม ID

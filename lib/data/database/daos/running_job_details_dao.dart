@@ -5,8 +5,26 @@ import 'package:bio_oee_lab/data/database/tables/running_job_machine_table.dart'
 import 'package:bio_oee_lab/data/database/tables/job_working_time_table.dart';
 import 'package:bio_oee_lab/data/database/tables/job_machine_event_log_table.dart';
 import 'package:bio_oee_lab/data/database/tables/job_machine_item_table.dart';
+import 'package:bio_oee_lab/data/database/tables/document_table.dart';
+import 'package:bio_oee_lab/data/database/tables/machine_table.dart';
 
 part 'running_job_details_dao.g.dart';
+
+// Helper class for Joined Query (TestSet + Document)
+class TestSetWithDoc {
+  final DbJobTestSet testSet;
+  final DbDocument? document;
+
+  TestSetWithDoc(this.testSet, this.document);
+}
+
+// Helper class for Joined Query (Running Machine + Master Machine)
+class MachineWithDetails {
+  final DbRunningJobMachine runningMachine;
+  final DbMachine? masterMachine;
+
+  MachineWithDetails(this.runningMachine, this.masterMachine);
+}
 
 @DriftAccessor(
   tables: [
@@ -15,6 +33,8 @@ part 'running_job_details_dao.g.dart';
     JobWorkingTimes,
     JobMachineEventLogs,
     JobMachineItems,
+    Documents,
+    Machines,
   ],
 )
 class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
@@ -35,6 +55,39 @@ class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
         .watch();
   }
 
+  // Delete Job Test Set (Soft Delete)
+  Stream<List<DbJobTestSet>> watchAllActiveTestSets() {
+    return (select(
+      jobTestSets,
+    )..where((tbl) => tbl.status.isNotValue(9))).watch();
+  }
+
+  // Hard Delete Test Sets by Document ID
+  Future<int> deleteTestSetsByDocumentId(String docId) {
+    return (delete(
+      jobTestSets,
+    )..where((tbl) => tbl.documentId.equals(docId))).go();
+  }
+
+  // Watch All Active Test Sets with Document Details (Joined)
+  Stream<List<TestSetWithDoc>> watchAllActiveTestSetsWithDocs() {
+    final query = select(jobTestSets).join([
+      leftOuterJoin(
+        documents,
+        documents.documentId.equalsExp(jobTestSets.documentId),
+      ),
+    ])..where(jobTestSets.status.isNotValue(9));
+
+    return query.watch().map((rows) {
+      return rows.map((row) {
+        return TestSetWithDoc(
+          row.readTable(jobTestSets),
+          row.readTableOrNull(documents),
+        );
+      }).toList();
+    });
+  }
+
   // --- RunningJobMachine ---
   Future<int> insertMachine(RunningJobMachinesCompanion entry) =>
       into(runningJobMachines).insert(entry);
@@ -43,6 +96,40 @@ class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
           (tbl) => tbl.documentId.equals(docId) & tbl.status.isNotValue(9),
         ))
         .watch();
+  }
+
+  Stream<List<DbRunningJobMachine>> watchAllActiveMachines() {
+    return (select(
+      runningJobMachines,
+    )..where((tbl) => tbl.status.isNotValue(9))).watch();
+  }
+
+  // Hard Delete Machines by Document ID
+  Future<int> deleteMachinesByDocumentId(String docId) {
+    return (delete(
+      runningJobMachines,
+    )..where((tbl) => tbl.documentId.equals(docId))).go();
+  }
+
+  // Watch All Active Machines with Master Details (Joined)
+  Stream<List<MachineWithDetails>> watchAllActiveMachinesWithDetails() {
+    final query = select(runningJobMachines).join([
+      leftOuterJoin(
+        machines,
+        machines.machineNo.equalsExp(runningJobMachines.machineNo) |
+            machines.machineId.equalsExp(runningJobMachines.machineNo) |
+            machines.barcodeGuid.equalsExp(runningJobMachines.machineNo),
+      ),
+    ])..where(runningJobMachines.status.isNotValue(9));
+
+    return query.watch().map((rows) {
+      return rows.map((row) {
+        return MachineWithDetails(
+          row.readTable(runningJobMachines),
+          row.readTableOrNull(machines),
+        );
+      }).toList();
+    });
   }
 
   // Delete Job Test Set (Soft Delete)
@@ -78,6 +165,26 @@ class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
     return (select(jobWorkingTimes)
           ..where(
             (tbl) => tbl.documentId.equals(docId) & tbl.userId.equals(userId),
+          )
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.uid, mode: OrderingMode.desc),
+          ])
+          ..limit(1))
+        .getSingleOrNull();
+  }
+
+  // ดึง Log ล่าสุดที่ไม่ใช่การ Pause (PAUSE_)
+  Future<DbJobWorkingTime?> getLastNonPauseUserLog(
+    String docId,
+    String userId,
+  ) {
+    return (select(jobWorkingTimes)
+          ..where(
+            (tbl) =>
+                tbl.documentId.equals(docId) &
+                tbl.userId.equals(userId) &
+                tbl.activityId.isNotNull() &
+                tbl.activityId.like('PAUSE_%').not(),
           )
           ..orderBy([
             (t) => OrderingTerm(expression: t.uid, mode: OrderingMode.desc),

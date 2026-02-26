@@ -5,7 +5,6 @@ import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
-import 'package:bio_oee_lab/presentation/screens/running_job/machine_detail_screen.dart';
 import 'package:drift/drift.dart' hide Column;
 
 class RunningJobDetailScreen extends StatefulWidget {
@@ -27,7 +26,7 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     _loadInitialTestSet();
   }
 
@@ -248,7 +247,7 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     final activityObj = await _showActivitySelectionDialog(
       context,
       'Switch Activity',
-      testSetId: targetTestSet.recId,
+      testSet: targetTestSet,
     );
 
     if (activityObj != null) {
@@ -285,7 +284,7 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     final activityObj = await _showActivitySelectionDialog(
       context,
       '$label Activity',
-      testSetId: targetTestSet.recId,
+      testSet: targetTestSet,
     );
 
     if (activityObj != null) {
@@ -335,14 +334,65 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
           title: const Text('Select Test Set'),
           content: SizedBox(
             width: double.maxFinite,
+            height: 400,
             child: ListView.builder(
               shrinkWrap: true,
               itemCount: testSets.length,
               itemBuilder: (context, index) {
                 final ts = testSets[index];
-                return ListTile(
-                  title: Text('Test Set: ${ts.setItemNo ?? '-'}'),
-                  onTap: () => Navigator.pop(ctx, ts),
+                return Card(
+                  elevation: 2,
+                  margin: const EdgeInsets.symmetric(
+                    vertical: 6,
+                    horizontal: 2,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => Navigator.pop(ctx, ts),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.blue.withValues(alpha: 0.1),
+                            radius: 18,
+                            child: const Icon(
+                              Icons.science,
+                              color: Colors.blue,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  ts.setItemNo ?? 'Unknown Set',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                Text(
+                                  ts.testItemName ?? '-',
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const Icon(Icons.touch_app, color: Colors.blueAccent),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
               },
             ),
@@ -362,22 +412,30 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
   Future<DbHumanActivityType?> _showActivitySelectionDialog(
     BuildContext context,
     String title, {
-    String? testSetId,
+    DbJobTestSet? testSet,
   }) async {
     final db = Provider.of<AppDatabase>(context, listen: false);
     final loginRepo = Provider.of<LoginRepository>(context, listen: false);
     final userId = loginRepo.loggedInUser?.userId ?? 'Unknown';
 
+    final doc = await db.documentDao.getDocumentById(widget.documentId);
+    final job = doc?.jobId != null
+        ? await db.jobDao.getJobById(doc!.jobId!)
+        : null;
+
     // Seed default activities if empty for THIS document
     await db.humanActivityTypeDao.seedDefaultActivities(
       widget.documentId,
       userId,
+      oeeJobId: job?.oeeJobId,
+      testItemId: testSet?.setItemNo,
+      testSetRecId: testSet?.recId,
     );
 
     // Filter by document AND testSetId (optional)
     final activities = await db.humanActivityTypeDao.getActiveActivities(
       widget.documentId,
-      testSetRecId: testSetId,
+      testSetRecId: testSet?.recId,
     );
 
     if (!mounted) return null;
@@ -469,7 +527,9 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                           lastSync: const Value(null),
                           syncStatus: const Value(0),
                           recordVersion: const Value(0),
-                          jobTestSetRecId: Value(testSetId), // Save Test Set ID
+                          jobTestSetRecId: Value(
+                            testSet?.recId,
+                          ), // Save Test Set ID
                         ),
                       );
 
@@ -485,7 +545,7 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                         updatedAt: now,
                         syncStatus: 0,
                         recordVersion: 0,
-                        jobTestSetRecId: testSetId,
+                        jobTestSetRecId: testSet?.recId,
                       );
                       if (context.mounted) Navigator.pop(ctx, newActivity);
                     } else if (selectedActivityCode != null) {
@@ -655,7 +715,6 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
           tabs: const [
             Tab(icon: Icon(Icons.access_time), text: 'Work & Time'),
             Tab(icon: Icon(Icons.science), text: 'Test Sets'),
-            Tab(icon: Icon(Icons.precision_manufacturing), text: 'Machines'),
           ],
         ),
       ),
@@ -683,9 +742,6 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
 
                     // Tab 2: Test Sets List
                     _buildTestSetsTab(db),
-
-                    // Tab 3: Machines List
-                    _buildMachinesTab(db),
                   ],
                 ),
               ),
@@ -797,7 +853,9 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
 
         // Map ID -> Name for easy lookup
         final Map<String, String> testSetMap = {
-          for (var ts in testSets) ts.recId: ts.setItemNo ?? 'Unknown',
+          for (var ts in testSets)
+            ts.recId:
+                '${ts.setItemNo ?? 'Unknown'} - ${ts.testItemName ?? 'Unknown'}',
         };
 
         // 2. Fetch Logs
@@ -840,115 +898,150 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
             final bool isWorking = hasOpenLog && !isPaused;
             final bool isEnded = doc.status == 2;
 
-            return Column(
-              children: [
-                // 1. Control Panel Card (New UI)
-                if (!isEnded)
-                  _buildControlPanel(
-                    context,
-                    isWorking: isWorking,
-                    isPaused: isPaused,
-                    currentLog: currentLog,
-                  ),
-
-                // 2. End Job Button (Separate for safety)
-                if (!isEnded)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton.icon(
-                        onPressed: _handleEnd,
-                        icon: const Icon(Icons.stop, color: Colors.red),
-                        label: const Text(
-                          'END JOB',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          backgroundColor:
-                              Colors.red.shade50, // Added Background
-                          side: const BorderSide(color: Colors.red, width: 1.5),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                        ),
-                      ),
-                    ),
-                  ),
-
-                const Divider(),
-
-                // Filter Control Header
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  color: Colors.grey.shade50,
-                  child: Row(
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
                     children: [
-                      const Icon(
-                        Icons.filter_list,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                      const SizedBox(width: 8),
-                      const Text(
-                        'Filter by:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: DropdownButton<String?>(
-                          isExpanded: true,
-                          value: _timelineFilterTestSetId,
-                          underline: Container(), // Remove underline
-                          hint: const Text('All Test Sets'),
-                          items: [
-                            const DropdownMenuItem<String?>(
-                              value: null,
-                              child: Text('Show All'),
-                            ),
-                            ...testSets.map((ts) {
-                              return DropdownMenuItem<String?>(
-                                value: ts.recId,
-                                child: Text(
-                                  'Test Set: ${ts.setItemNo}',
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              );
-                            }),
-                          ],
-                          onChanged: (val) {
-                            setState(() {
-                              _timelineFilterTestSetId = val;
-                            });
+                      // 1. Control Panel Card (New UI)
+                      if (!isEnded)
+                        Builder(
+                          builder: (context) {
+                            String testItemName = '-';
+                            if (currentLog?.jobTestSetRecId != null) {
+                              final matchingTs = testSets
+                                  .where(
+                                    (ts) =>
+                                        ts.recId == currentLog?.jobTestSetRecId,
+                                  )
+                                  .firstOrNull;
+                              if (matchingTs != null) {
+                                testItemName =
+                                    '${matchingTs.setItemNo ?? 'Unknown'} - ${matchingTs.testItemName ?? 'Unknown'}';
+                              }
+                            }
+                            return _buildControlPanel(
+                              context,
+                              isWorking: isWorking,
+                              isPaused: isPaused,
+                              currentLog: currentLog,
+                              currentTestItemName: testItemName,
+                            );
                           },
                         ),
+
+                      // 2. End Job Button (Separate for safety)
+                      if (!isEnded)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0,
+                            vertical: 8.0,
+                          ),
+                          child: SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: _handleEnd,
+                              icon: const Icon(Icons.stop, color: Colors.red),
+                              label: const Text(
+                                'END JOB',
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                backgroundColor:
+                                    Colors.red.shade50, // Added Background
+                                side: const BorderSide(
+                                  color: Colors.red,
+                                  width: 1.5,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      const Divider(),
+
+                      // Filter Control Header
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        color: Colors.grey.shade50,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.filter_list,
+                              size: 18,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Filter by:',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: DropdownButton<String?>(
+                                isExpanded: true,
+                                value: _timelineFilterTestSetId,
+                                underline: Container(), // Remove underline
+                                hint: const Text('All Test Sets'),
+                                items: [
+                                  const DropdownMenuItem<String?>(
+                                    value: null,
+                                    child: Text('Show All'),
+                                  ),
+                                  ...testSets.map((ts) {
+                                    return DropdownMenuItem<String?>(
+                                      value: ts.recId,
+                                      child: Text(
+                                        'Test Set: ${ts.setItemNo}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    );
+                                  }),
+                                ],
+                                onChanged: (val) {
+                                  setState(() {
+                                    _timelineFilterTestSetId = val;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                      const Divider(height: 1),
                     ],
                   ),
                 ),
-                const Divider(height: 1),
 
                 // Timeline List
-                Expanded(
-                  child: logs.isEmpty
-                      ? Center(
+                logs.isEmpty
+                    ? SliverFillRemaining(
+                        hasScrollBody: false,
+                        child: Center(
                           child: Text(
                             _timelineFilterTestSetId == null
                                 ? 'No activity recorded yet.'
                                 : 'No activities found for this Test Set.',
                             style: const TextStyle(color: Colors.grey),
                           ),
-                        )
-                      : ListView.builder(
-                          itemCount: logs.length,
-                          itemBuilder: (context, index) {
+                        ),
+                      )
+                    : SliverPadding(
+                        padding: const EdgeInsets.only(bottom: 24),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
                             final log = logs[index];
                             final isWork =
                                 !(log.activityId?.startsWith('PAUSE_') ??
@@ -1087,9 +1180,9 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                                 ),
                               ),
                             );
-                          },
+                          }, childCount: logs.length),
                         ),
-                ),
+                      ),
               ],
             );
           },
@@ -1103,6 +1196,7 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
     required bool isWorking,
     required bool isPaused,
     required DbJobWorkingTime? currentLog,
+    required String currentTestItemName,
   }) {
     String statusText = 'Ready to Start';
     Color statusColor = Colors.grey;
@@ -1130,26 +1224,53 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Current Activity',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey.shade600,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Current Activity',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      activityName,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                      const SizedBox(height: 4),
+                      Text(
+                        activityName,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                      if (isWorking || isPaused) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.science,
+                              size: 14,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                currentTestItemName,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.blue.shade700,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 12),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -1373,8 +1494,19 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
                         item.setItemNo ?? 'Unknown Code',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      subtitle: Text(
-                        'Registered by: ${item.registerUser ?? '-'}',
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (item.testItemName != null &&
+                              item.testItemName!.isNotEmpty)
+                            Text(
+                              'Test: ${item.testItemName}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          Text('Registered by: ${item.registerUser ?? '-'}'),
+                        ],
                       ),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -1408,211 +1540,9 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
 
   // --- Machine Action Dialogs ---
 
-  // --- Tab 3: Machines (Updated) ---
-  Widget _buildMachinesTab(AppDatabase db) {
-    return Column(
-      children: [
-        // 1. แถวปุ่มควบคุม (Scan & Manual)
-        Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Row(
-            children: [
-              // ปุ่ม Scan QR
-              Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: _handleScanMachine,
-                  icon: const Icon(Icons.qr_code_scanner),
-                  label: const Text('Scan Machine'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple, // ใช้สีม่วงแยกความแตกต่าง
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // ปุ่ม Manual Input
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _handleManualInputMachine,
-                  icon: const Icon(Icons.keyboard),
-                  label: const Text('Manual Input'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    side: const BorderSide(color: Colors.purple),
-                    foregroundColor: Colors.purple,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        // 2. รายการ Machines
-        Expanded(
-          child: StreamBuilder<List<DbRunningJobMachine>>(
-            // เรียก watchMachinesByDocId จาก DAO
-            stream: db.runningJobDetailsDao.watchMachinesByDocId(
-              widget.documentId,
-            ),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData)
-                return const Center(child: CircularProgressIndicator());
-              final items = snapshot.data!;
-
-              if (items.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'No Machines added.\nScan QR or enter manually to start.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                );
-              }
-
-              return ListView.builder(
-                itemCount: items.length,
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                itemBuilder: (context, index) {
-                  final item = items[index];
-                  return Card(
-                    elevation: 2,
-                    margin: const EdgeInsets.symmetric(
-                      vertical: 4,
-                      horizontal: 4,
-                    ),
-                    child: ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.purple.shade50,
-                        child: const Icon(
-                          Icons.precision_manufacturing,
-                          color: Colors.purple,
-                          size: 20,
-                        ),
-                      ),
-                      title: Text(
-                        item.machineNo ?? 'Unknown Machine',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      subtitle: Text(
-                        'Registered by: ${item.registerUser ?? '-'}',
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            onPressed: () => _confirmDeleteMachine(item),
-                            icon: const Icon(Icons.delete, color: Colors.red),
-                            tooltip: 'Delete',
-                          ),
-                          const Icon(Icons.arrow_forward_ios, size: 16),
-                        ],
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => MachineDetailScreen(
-                              machine: item,
-                              documentId: widget.documentId,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  );
-                },
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
   // -------------------------------------------------------
   // ⚙️ Machine Actions (Scan & Manual)
   // -------------------------------------------------------
-
-  // 1. Helper Function: บันทึก Machine ลง Database
-  Future<void> _saveMachine(String code) async {
-    try {
-      final repo = context.read<DocumentRepository>();
-      final loginRepo = context.read<LoginRepository>();
-      final userId = loginRepo.loggedInUser?.userId ?? 'Unknown';
-
-      await repo.addMachineByQrCode(
-        documentId: widget.documentId,
-        qrCode: code,
-        userId: userId,
-      );
-
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Machine Added: $code')));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-        );
-      }
-    }
-  }
-
-  // 2. ฟังก์ชัน Scan Machine QR
-  Future<void> _handleScanMachine() async {
-    final result = await Navigator.push<String>(
-      context,
-      MaterialPageRoute(builder: (context) => const ScannerScreen()),
-    );
-
-    if (result != null && result.isNotEmpty) {
-      await _saveMachine(result);
-    }
-  }
-
-  // 3. ฟังก์ชัน Manual Input Machine
-  Future<void> _handleManualInputMachine() async {
-    final controller = TextEditingController();
-    final result = await showDialog<String>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add Machine (Manual)'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Machine No.',
-            hintText: 'Type Machine ID here...',
-            border: OutlineInputBorder(),
-            prefixIcon: Icon(Icons.precision_manufacturing),
-          ),
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('Add'),
-          ),
-        ],
-      ),
-    );
-
-    if (result != null && result.isNotEmpty) {
-      await _saveMachine(result);
-    }
-  }
 
   // 4. Delete Confirmations (Soft Delete)
   Future<void> _confirmDeleteTestSet(DbJobTestSet item) async {
@@ -1643,45 +1573,6 @@ class _RunningJobDetailScreenState extends State<RunningJobDetailScreen>
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('Test Set deleted.')));
-        }
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
-          );
-        }
-      }
-    }
-  }
-
-  Future<void> _confirmDeleteMachine(DbRunningJobMachine item) async {
-    final confirm = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Machine'),
-        content: Text('Delete Machine "${item.machineNo}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirm == true) {
-      final db = Provider.of<AppDatabase>(context, listen: false);
-      try {
-        await db.runningJobDetailsDao.deleteRunningJobMachine(item.recId);
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Machine deleted.')));
         }
       } catch (e) {
         if (mounted) {

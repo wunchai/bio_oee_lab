@@ -46,7 +46,7 @@ dependencies:
   http: ^1.1.0
   
   # JSON Serialization
-  json_annotation: ^4.9.0 # Annotations for code generation to/from JSON
+  json_annotation: ^4.11.0 # Annotations for code generation to/from JSON
 
   # State Management (you can choose others later if preferred, e.g., BLoC, Riverpod)
   provider: ^6.0.5 # A popular and easy-to-use state ma`agement solution

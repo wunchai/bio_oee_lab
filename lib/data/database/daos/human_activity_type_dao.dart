@@ -51,54 +51,69 @@ class HumanActivityTypeDao extends DatabaseAccessor<AppDatabase>
     return into(humanActivityTypes).insert(entry);
   }
 
-  /// Seed Default Activities สำหรับ Document นี้ (ถ้ายังไม่มีข้อมูล)
-  Future<void> seedDefaultActivities(String documentId, String userId) async {
-    // เช็คว่ามีกิจกรรมของ Document นี้หรือยัง
-    final existing = await (select(
-      humanActivityTypes,
-    )..where((tbl) => tbl.documentId.equals(documentId))).get();
+  /// Seed Activities จาก Master (JobActivity)
+  /// ใช้ oeeJobId และ testItemId เพื่อกรองกิจกรรมที่ตรงกัน
+  Future<void> seedDefaultActivities(
+    String documentId,
+    String userId, {
+    int? oeeJobId,
+    String? testItemId,
+    String? testSetRecId,
+  }) async {
+    // เช็คว่ามีกิจกรรมของ Document และ TestSet นี้หรือยัง
+    final existing =
+        await (select(humanActivityTypes)..where((tbl) {
+              Expression<bool> testSetFilter = tbl.jobTestSetRecId.isNull();
+              if (testSetRecId != null) {
+                testSetFilter = tbl.jobTestSetRecId.equals(
+                  testSetRecId,
+                ); // Not fallback to null here, we want exact match for this test set
+              }
+              return tbl.documentId.equals(documentId) & testSetFilter;
+            }))
+            .get();
 
     if (existing.isEmpty) {
       final now = DateTime.now().toIso8601String();
-      final defaults = [
-        _createDefault(documentId, userId, 'WORK', 'Work', now),
-        _createDefault(documentId, userId, 'ASSEMBLY', 'Assembly', now),
-        _createDefault(documentId, userId, 'INSPECTION', 'Inspection', now),
-        _createDefault(
-          documentId,
-          userId,
-          'MATERIAL',
-          'Material Handling',
-          now,
-        ),
-        _createDefault(documentId, userId, 'CLEANING', 'Cleaning', now),
-        _createDefault(documentId, userId, 'OTHER', 'Other', now),
-      ];
+      List<HumanActivityTypesCompanion> newActivities = [];
 
-      await batch((batch) {
-        batch.insertAll(humanActivityTypes, defaults);
-      });
+      // 1. ลองหาจาก Master (JobActivities) ก่อน ถ้ามีข้อมูล
+      if (oeeJobId != null && testItemId != null) {
+        final masterActivities = await db.jobActivityDao
+            .getActivitiesByOeeJobId(oeeJobId);
+        final matchedActivities = masterActivities
+            .where((a) => a.testItemId == testItemId)
+            .toList();
+
+        if (matchedActivities.isNotEmpty) {
+          newActivities = matchedActivities.map((a) {
+            final code =
+                a.activityId?.toString() ??
+                'ACT_${DateTime.now().millisecondsSinceEpoch}';
+            final name = a.activityName ?? 'Unknown Activity';
+
+            return HumanActivityTypesCompanion.insert(
+              documentId: Value(documentId),
+              userId: Value(userId),
+              activityCode: Value(code),
+              activityName: Value(name),
+              status: const Value(1),
+              recId: Value(code), // ใช้ Code เป็น RecId
+              updatedAt: Value(now),
+              jobTestSetRecId: Value(testSetRecId), // ผูกกับ TestSet
+              lastSync: const Value(null),
+              syncStatus: const Value(0),
+              recordVersion: const Value(0),
+            );
+          }).toList();
+        }
+      }
+
+      if (newActivities.isNotEmpty) {
+        await batch((batch) {
+          batch.insertAll(humanActivityTypes, newActivities);
+        });
+      }
     }
-  }
-
-  HumanActivityTypesCompanion _createDefault(
-    String docId,
-    String uId,
-    String code,
-    String name,
-    String now,
-  ) {
-    return HumanActivityTypesCompanion.insert(
-      documentId: Value(docId),
-      userId: Value(uId),
-      activityCode: Value(code),
-      activityName: Value(name),
-      status: const Value(1),
-      recId: Value(code), // ใช้ Code เป็น RecId ชั่วคราวสำหรับ Default
-      updatedAt: Value(now),
-      lastSync: const Value(null),
-      syncStatus: const Value(0),
-      recordVersion: const Value(0),
-    );
   }
 }

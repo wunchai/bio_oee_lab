@@ -10,6 +10,7 @@ import 'package:bio_oee_lab/data/repositories/job_repository.dart';
 import 'package:bio_oee_lab/data/repositories/machine_repository.dart';
 import 'package:bio_oee_lab/data/repositories/job_sync_repository.dart';
 import 'package:bio_oee_lab/data/repositories/job_test_item_repository.dart'; // <<< NEW
+import 'package:bio_oee_lab/data/repositories/job_activity_repository.dart';
 import 'package:bio_oee_lab/data/models/user_sync_page.dart';
 
 enum SyncStatus { idle, syncing, success, failure }
@@ -21,6 +22,7 @@ class SyncRepository with ChangeNotifier {
   final JobRepository _jobRepository;
   final MachineRepository _machineRepository;
   final JobSyncRepository _jobSyncRepository;
+  final JobActivityRepository _jobActivityRepository;
 
   SyncStatus _syncStatus = SyncStatus.idle;
   String _lastSyncMessage = '';
@@ -37,13 +39,15 @@ class SyncRepository with ChangeNotifier {
     required MachineRepository machineRepository,
     required JobSyncRepository jobSyncRepository,
     required JobTestItemRepository jobTestItemRepository, // <<< NEW
+    required JobActivityRepository jobActivityRepository,
   }) : _syncApiService = syncApiService,
        _userDao = userDao,
        _syncLogDao = syncLogDao,
        _jobRepository = jobRepository,
        _machineRepository = machineRepository,
        _jobSyncRepository = jobSyncRepository,
-       _jobTestItemRepository = jobTestItemRepository; // <<< NEW
+       _jobTestItemRepository = jobTestItemRepository, // <<< NEW
+       _jobActivityRepository = jobActivityRepository;
 
   final JobTestItemRepository _jobTestItemRepository;
 
@@ -88,6 +92,11 @@ class SyncRepository with ChangeNotifier {
       _lastSyncMessage = 'Syncing Job Test Items...';
       notifyListeners();
       await _jobTestItemRepository.syncJobTestItems(userId); // Passed userId
+
+      // 4. JobActivities
+      _lastSyncMessage = 'Syncing Job Activities...';
+      notifyListeners();
+      await _jobActivityRepository.syncJobActivities(userId);
 
       // Note: Users are typically synced on login or admin screen.
       // User requested "except user", so we skip user sync here.
@@ -227,6 +236,46 @@ class SyncRepository with ChangeNotifier {
       notifyListeners();
       return false;
     } finally {
+      await Future.delayed(const Duration(seconds: 2));
+      _syncStatus = SyncStatus.idle;
+      notifyListeners();
+    }
+  }
+
+  // --- 4. Sync Job Screen Data ---
+  Future<bool> syncJobScreenData(String userId) async {
+    _syncStatus = SyncStatus.syncing;
+    _lastSyncMessage = 'Syncing Job Data...';
+    notifyListeners();
+    await _log('Job Screen', 0, 'Started Job Data Sync');
+
+    try {
+      _lastSyncMessage = 'Syncing Jobs...';
+      notifyListeners();
+      final jobsOk = await _jobRepository.syncJobs(userId);
+      if (!jobsOk) throw Exception('Job Sync Failed');
+
+      _lastSyncMessage = 'Syncing Job Test Items...';
+      notifyListeners();
+      await _jobTestItemRepository.syncJobTestItems(userId);
+
+      _lastSyncMessage = 'Syncing Job Activities...';
+      notifyListeners();
+      await _jobActivityRepository.syncJobActivities(userId);
+
+      _syncStatus = SyncStatus.success;
+      _lastSyncMessage = 'Job Data Synced Successfully';
+      await _log('Job Screen', 1, 'Success: Job Data synchronized.');
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _syncStatus = SyncStatus.failure;
+      _lastSyncMessage = 'Job Data Sync Failed: $e';
+      await _log('Job Screen', 2, 'Error: $e');
+      notifyListeners();
+      return false;
+    } finally {
+      // Auto-reset status after a slight delay
       await Future.delayed(const Duration(seconds: 2));
       _syncStatus = SyncStatus.idle;
       notifyListeners();

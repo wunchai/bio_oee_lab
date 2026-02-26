@@ -45,6 +45,14 @@ class Documents extends Table {
   TextColumn get cancelDate => text().named('CancleDate').nullable()();
   TextColumn get postDate => text().named('PostDate').nullable()();
 
+  // --- ⬇️ NEW COLUMNS (Copied from Job) ⬇️ ---
+  TextColumn get sampleNo => text().named('SampleNo').nullable()();
+  TextColumn get sampleName => text().named('SampleName').nullable()();
+  TextColumn get lotNo => text().named('LOTNO').nullable()();
+  TextColumn get planAnalysisDate =>
+      text().named('PlanAnalysisDate').nullable()();
+  TextColumn get assignmentId => text().named('AssignmentID').nullable()();
+
   // Versioning
   IntColumn get recordVersion =>
       integer().named('RecordVersion').withDefault(const Constant(0))();

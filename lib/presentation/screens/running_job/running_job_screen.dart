@@ -224,6 +224,45 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
     }
   }
 
+  Future<void> _handleDeleteDraft(DbDocument doc) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Draft Job'),
+        content: Text(
+          'Are you sure you want to permanently delete "${doc.documentName}"? This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        if (!mounted) return;
+        await context.read<DocumentRepository>().deleteDraftDocument(doc);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Draft Job Deleted Successfully')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          _showError('Error deleting draft: $e');
+        }
+      }
+    }
+  }
+
   void _showFilterDialog() {
     showDialog(
       context: context,
@@ -379,8 +418,8 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showBatchActions,
-        backgroundColor: Colors.indigo,
-        child: const Icon(Icons.flash_on),
+        backgroundColor: Colors.green.shade800,
+        child: const Icon(Icons.flash_on, color: Colors.white),
       ),
       body: StreamBuilder<List<DbDocument>>(
         stream: documentRepo.watchActiveDocuments(
@@ -642,21 +681,105 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          doc.documentName ?? 'Untitled',
+                          // Show SampleNo as title, fallback to DocumentName
+                          (doc.sampleNo != null && doc.sampleNo!.isNotEmpty)
+                              ? doc.sampleNo!
+                              : (doc.documentName ?? 'Unknown Job'),
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text('Job ID: ${doc.jobId ?? '-'}'),
+                        Text(
+                          'Job Name: ${doc.documentName ?? '-'}',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.calendar_today,
+                              size: 14,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Plan: ${doc.planAnalysisDate?.split('T').first ?? '-'}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.assignment_ind,
+                              size: 14,
+                              color: Colors.grey,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Assign: ${doc.assignmentId ?? '-'}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Sample: ${doc.sampleName ?? '-'}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        Text(
+                          'LOT: ${doc.lotNo ?? '-'}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
                         if (doc.syncStatus == 0)
-                          const Text(
-                            '• Waiting Sync',
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.orange,
-                            ), // Changed color
+                          Row(
+                            children: const [
+                              Icon(
+                                Icons.cloud_upload,
+                                size: 14,
+                                color: Colors.orange,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Pending Sync',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.orange,
+                                ),
+                              ),
+                            ],
+                          )
+                        else
+                          Row(
+                            children: const [
+                              Icon(
+                                Icons.cloud_done,
+                                size: 14,
+                                color: Colors.green,
+                              ),
+                              SizedBox(width: 4),
+                              Text(
+                                'Synced',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.green,
+                                ),
+                              ),
+                            ],
                           ),
                       ],
                     ),
@@ -695,6 +818,26 @@ class _RunningJobScreenState extends State<RunningJobScreen> {
                             ),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.purple,
+                              visualDensity: VisualDensity.compact,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                              ),
+                            ),
+                          ),
+                        ),
+                      // Delete Button (Only for Draft=0)
+                      if (doc.status == 0)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: OutlinedButton.icon(
+                            onPressed: () => _handleDeleteDraft(doc),
+                            icon: const Icon(Icons.delete, size: 14),
+                            label: const Text(
+                              'Delete',
+                              style: TextStyle(fontSize: 12),
+                            ),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.red,
                               visualDensity: VisualDensity.compact,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 8,

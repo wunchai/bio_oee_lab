@@ -20,4 +20,10 @@ class JobTestItemDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<List<DbJobTestItem>> getAll() => select(jobTestItems).get();
+
+  Future<List<DbJobTestItem>> getItemsByOeeJobId(int oeeJobId) {
+    return (select(
+      jobTestItems,
+    )..where((t) => t.oeeJobId.equals(oeeJobId))).get();
+  }
 }

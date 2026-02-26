@@ -26,7 +26,7 @@ class DocumentRepository {
 
   /// ฟังก์ชัน: เพิ่ม Machine จากการสแกน QR Code หรือ Manual Input
   Future<void> addMachineByQrCode({
-    required String documentId,
+    String? documentId,
     required String qrCode,
     required String userId,
   }) async {
@@ -61,6 +61,9 @@ class DocumentRepository {
     required String documentId,
     required String qrCode,
     required String userId,
+    int? rowId,
+    int? oeeJobId, // <<< New Parameter
+    String? testItemName,
   }) async {
     try {
       final now = DateTime.now().toIso8601String();
@@ -70,6 +73,9 @@ class DocumentRepository {
         recId: drift.Value(newRecId),
         documentId: drift.Value(documentId),
         setItemNo: drift.Value(qrCode), // เก็บค่า QR Code ที่อ่านได้
+        oeeJobId: drift.Value(oeeJobId), // <<< New Value
+        rowId: drift.Value(rowId),
+        testItemName: drift.Value(testItemName),
         registerDateTime: drift.Value(now),
         registerUser: drift.Value(userId),
         status: const drift.Value(0), // 0 = Active
@@ -105,7 +111,17 @@ class DocumentRepository {
       final now = DateTime.now().toIso8601String();
 
       // -----------------------------------------------------------------------
-      // 0. Auto-Pause other running jobs (Single Active Job Policy)
+      // 0. Global Pause Interception (End Global Breaks)
+      // -----------------------------------------------------------------------
+      // If the user starts a non-pause activity (meaning they resumed "Work"),
+      // we must instantly terminate any active global Lunch Break / Meeting
+      // and transition all OTHER background jobs into an auto-switch pause.
+      if (!activityType.startsWith('PAUSE_')) {
+        await _resolveGlobalPause(userId, resumingDocId: documentId);
+      }
+
+      // -----------------------------------------------------------------------
+      // 0.5. Auto-Pause other running jobs (Single Active Job Policy)
       // -----------------------------------------------------------------------
       final otherActiveLogs = await _runningJobDetailsDao
           .getOpenActivitiesByUserId(userId, excludeDocId: documentId);
@@ -205,8 +221,34 @@ class DocumentRepository {
     }
   }
 
+  /// NEW: ลบเอกสารที่ยังเป็น Draft (Status = 0) พร้อมกับข้อมูลที่เกี่ยวข้อง
+  Future<void> deleteDraftDocument(DbDocument doc) async {
+    if (doc.status != 0) {
+      throw Exception('Only Draft documents can be deleted.');
+    }
+
+    final docId = doc.documentId;
+    if (docId == null) return;
+
+    try {
+      // 1. ลบข้อมูลที่เกี่ยวข้องในตาราง TestSets และ Machines
+      await _runningJobDetailsDao.deleteTestSetsByDocumentId(docId);
+      await _runningJobDetailsDao.deleteMachinesByDocumentId(docId);
+
+      // 2. ลบตัวเอกสารเอง (Hard Delete)
+      await _documentDao.deleteDocument(doc);
+
+      if (kDebugMode) {
+        print('Hard deleted Draft Document: $docId and its related details.');
+      }
+    } catch (e) {
+      if (kDebugMode) print('Error deleting draft document: $e');
+      rethrow;
+    }
+  }
+
   // -----------------------------------------------------------------------------
-  // 🟡 ส่วนจัดการ Document (สร้าง, ก๊อปปี้, ลบ) - เหมือนเดิม
+  // 🟢 ส่วนจัดการกิจกรรม (Activity Log)(สร้าง, ก๊อปปี้, ลบ) - เหมือนเดิม
   // -----------------------------------------------------------------------------
 
   // -----------------------------------------------------------------------------
@@ -222,7 +264,7 @@ class DocumentRepository {
   }
 
   /// 1. สร้าง Running Job จาก Job ที่เลือก (Create from Job)
-  Future<void> createDocumentFromJob({
+  Future<String> createDocumentFromJob({
     required DbJob job,
     required String userId,
   }) async {
@@ -238,12 +280,19 @@ class DocumentRepository {
         syncStatus: const drift.Value(0),
         createDate: drift.Value(DateTime.now().toIso8601String()),
         lastSync: drift.Value(DateTime.now().toIso8601String()),
+        // Copied from Job for fast UI retrieval
+        sampleNo: drift.Value(job.sampleNo),
+        sampleName: drift.Value(job.sampleName),
+        lotNo: drift.Value(job.lotNo),
+        planAnalysisDate: drift.Value(job.planAnalysisDate),
+        assignmentId: drift.Value(job.assignmentId),
       );
 
       await _documentDao.insertDocument(newDocumentEntry);
       if (kDebugMode) {
         print('Created Draft Document: $newDocId from Job: ${job.jobId}');
       }
+      return newDocId;
     } catch (e) {
       if (kDebugMode) {
         print('Error creating document from job: $e');
@@ -552,7 +601,7 @@ class DocumentRepository {
   }
 
   Future<void> addMachineItem({
-    required String documentId,
+    String? documentId,
     required String machineRecId,
     required String testSetRecId,
     required String userId,
@@ -581,6 +630,77 @@ class DocumentRepository {
 
   Future<void> deleteMachineItem(String recId) async {
     await _runningJobDetailsDao.deleteMachineItem(recId);
+  }
+
+  // -----------------------------------------------------------------------------
+  // 🔵 Global Pause Resolution Interceptor
+  // -----------------------------------------------------------------------------
+
+  /// Checks if the user is currently in a global batch pause (like a Lunch Break).
+  /// If so, closes the break and puts all *other* previously paused jobs into
+  /// a standard PAUSE_SWITCH_JOB state, terminating the lunch break definitively.
+  Future<void> _resolveGlobalPause(
+    String userId, {
+    String? resumingDocId,
+  }) async {
+    final activities = await _activityLogDao
+        .watchActiveActivities(userId)
+        .first;
+    if (activities.isEmpty) return;
+
+    final lastActivity = activities.first; // The current global pause
+
+    // Is it a global batch pause?
+    if (lastActivity.remark != null &&
+        lastActivity.remark!.contains('PausedIds:')) {
+      // 1. Close the Global Phase Activity Log
+      await _activityLogDao.updateActivity(
+        lastActivity.copyWith(
+          endTime: drift.Value(DateTime.now().toIso8601String()),
+          status: 2, // Completed
+          syncStatus: 0,
+        ),
+      );
+
+      // 2. Transition ALL other jobs (except the one explicitly resuming right now)
+      try {
+        final parts = lastActivity.remark!.split('PausedIds: ');
+        if (parts.length > 1) {
+          final jsonStr = parts[1];
+          final List<dynamic> ids = jsonDecode(jsonStr);
+
+          for (final id in ids) {
+            final String otherDocId = id.toString();
+            // Skip the job the user is manually resuming (it will be handled naturally)
+            if (otherDocId != resumingDocId) {
+              final otherDoc = await _documentDao.getDocument(otherDocId);
+              if (otherDoc != null &&
+                  otherDoc.status == 1 &&
+                  otherDoc.documentId != null) {
+                final log = await _runningJobDetailsDao.getLastNonPauseUserLog(
+                  otherDoc.documentId!,
+                  userId,
+                );
+
+                // Note: We avoid an infinite loop because PAUSE_SWITCH_JOB starts with 'PAUSE_'
+                // and thus won't re-trigger _resolveGlobalPause via handleUserAction.
+                await handleUserAction(
+                  documentId: otherDoc.documentId!,
+                  userId: userId,
+                  activityType: 'PAUSE_SWITCH_JOB',
+                  activityName: 'Auto Pause (Switch Job)',
+                  newDocStatus: 1, // Still running (in background)
+                  jobTestSetId:
+                      log?.jobTestSetRecId, // Preserve Active Test Set
+                );
+              }
+            }
+          }
+        }
+      } catch (e) {
+        if (kDebugMode) print('Error parsing PausedIds during resolution: $e');
+      }
+    }
   }
 
   // -----------------------------------------------------------------------------
@@ -629,13 +749,19 @@ class DocumentRepository {
     List<String> pausedDocIds = [];
     for (final doc in runningDocs) {
       if (doc.documentId != null) {
+        // Find existing test set if any
+        final lastLog = await _runningJobDetailsDao.getLastNonPauseUserLog(
+          doc.documentId!,
+          userId,
+        );
+
         await handleUserAction(
           documentId: doc.documentId!,
           userId: userId,
-          activityType: reasonCode, // Use Code from DB
+          activityType: 'PAUSE_$reasonCode', // Prefix with PAUSE_
           activityName: reasonName, // Use Name from DB
           newDocStatus: 1, // Keep Running! (Paused state is just a log entry)
-          jobTestSetId: null, // Global Pause
+          jobTestSetId: lastLog?.jobTestSetRecId, // Preserve Active Test Set
         );
         pausedDocIds.add(doc.documentId!);
       }
@@ -668,16 +794,6 @@ class DocumentRepository {
 
     final lastActivity = activities.first; // Last started
 
-    // 2. Close the Activity Log
-    await _activityLogDao.updateActivity(
-      lastActivity.copyWith(
-        endTime: drift.Value(DateTime.now().toIso8601String()),
-        status: 2, // Completed
-        syncStatus: 0, // Mark for sync
-      ),
-    );
-
-    // 3. Resume Jobs
     int resumedCount = 0;
     if (lastActivity.remark != null &&
         lastActivity.remark!.contains('PausedIds:')) {
@@ -687,24 +803,44 @@ class DocumentRepository {
           final jsonStr = parts[1];
           final List<dynamic> ids = jsonDecode(jsonStr);
 
-          for (final id in ids) {
-            // Check if doc exists and is currently Running but in Pause Activity (Activity != '00')
-            // Actually, we trust the 'PausedIds' list meant they were paused.
-            // But we should check if they are still Status 1 (Running)
-            final doc = await _documentDao.getDocument(id.toString());
+          // Find the single absolute most-recent job to resume
+          String? targetDocId;
+          DbJobWorkingTime? targetLog;
 
-            // Resume Criteria:
-            // 1. Doc exists
-            // 2. Doc is still active (Status 1) - If user manually ended it, don't resume key!
-            if (doc != null && doc.status == 1 && doc.documentId != null) {
+          for (final id in ids.reversed) {
+            final log = await _runningJobDetailsDao.getLastNonPauseUserLog(
+              id.toString(),
+              userId,
+            );
+            if (log != null) {
+              if (targetLog == null ||
+                  (log.startTime != null &&
+                      targetLog.startTime != null &&
+                      DateTime.parse(
+                        log.startTime!,
+                      ).isAfter(DateTime.parse(targetLog.startTime!)))) {
+                targetDocId = id.toString();
+                targetLog = log;
+              }
+            }
+          }
+
+          if (targetDocId != null && targetLog != null) {
+            final targetDoc = await _documentDao.getDocument(targetDocId);
+
+            if (targetDoc != null &&
+                targetDoc.status == 1 &&
+                targetDoc.documentId != null) {
+              // Executing handleUserAction with a WORK activity will trigger `_resolveGlobalPause`
+              // which automatically closes the master ActivityLog and transitions all *other*
+              // `ids` from this pause into PAUSE_SWITCH_JOB. We don't have to do it manually here.
               await handleUserAction(
-                documentId: doc.documentId!,
+                documentId: targetDoc.documentId!,
                 userId: userId,
-                activityType: '00', // FIXED: ActivityID = 00
-                activityName: 'Work', // FIXED: ActivityName = Work
+                activityType: targetLog.activityId ?? '00',
+                activityName: targetLog.activityName ?? 'Work',
                 newDocStatus: 1, // Running
-                jobTestSetId:
-                    null, // Resume to general work (or should we track last test set?)
+                jobTestSetId: targetLog.jobTestSetRecId, // Restore Test Set
               );
               resumedCount++;
             }

@@ -20,6 +20,8 @@ import 'package:bio_oee_lab/data/repositories/machine_repository.dart';
 import 'package:bio_oee_lab/data/network/activity_api_service.dart';
 import 'package:bio_oee_lab/data/network/job_test_item_api_service.dart';
 import 'package:bio_oee_lab/data/repositories/job_test_item_repository.dart';
+import 'package:bio_oee_lab/data/network/job_activity_api_service.dart';
+import 'package:bio_oee_lab/data/repositories/job_activity_repository.dart';
 import 'package:bio_oee_lab/data/repositories/info_repository.dart'; // <<< NEW
 
 Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
@@ -30,6 +32,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final machineApiService = MachineApiService();
   final jobSyncApiService = JobSyncApiService();
   final jobTestItemApiService = JobTestItemApiService(); // <<< NEW
+  final jobActivityApiService = JobActivityApiService();
 
   final dbProvider = Provider<AppDatabase>.value(value: appDatabase);
 
@@ -38,6 +41,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
   final checkInDao = appDatabase.checkInDao;
   final activityLogDao = appDatabase.activityLogDao;
   final jobTestItemDao = appDatabase.jobTestItemDao; // <<< NEW
+  final jobActivityDao = appDatabase.jobActivityDao;
 
   final loginRepository = LoginRepository(
     userDao: appDatabase.userDao,
@@ -67,6 +71,11 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     jobTestItemDao,
   );
 
+  final jobActivityRepository = JobActivityRepository(
+    jobActivityApiService,
+    jobActivityDao,
+  );
+
   final syncRepository = SyncRepository(
     syncApiService: syncApiService,
     userDao: appDatabase.userDao,
@@ -75,6 +84,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     machineRepository: machineRepository,
     jobSyncRepository: jobSyncRepository,
     jobTestItemRepository: jobTestItemRepository, // <<< NEW
+    jobActivityRepository: jobActivityRepository,
   );
 
   final documentRepository = DocumentRepository(appDatabase: appDatabase);
@@ -102,6 +112,7 @@ Future<List<SingleChildWidget>> appProviders(AppDatabase appDatabase) async {
     ChangeNotifierProvider.value(value: machineRepository),
     Provider.value(value: jobSyncRepository),
     ChangeNotifierProvider.value(value: jobTestItemRepository), // <<< NEW
+    ChangeNotifierProvider.value(value: jobActivityRepository),
     ChangeNotifierProvider.value(value: syncRepository),
     Provider<DocumentRepository>.value(value: documentRepository),
     Provider<InfoRepository>(

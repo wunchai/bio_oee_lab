@@ -6,6 +6,7 @@ import 'package:bio_oee_lab/presentation/screens/running_job/running_job_screen.
 import 'package:bio_oee_lab/presentation/screens/checkin/check_in_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/activity/activity_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/machine/machine_screen.dart';
+import 'package:bio_oee_lab/presentation/screens/machine/machine_dashboard_screen.dart';
 import 'package:bio_oee_lab/presentation/screens/info/info_screen.dart';
 
 class MainWrapperScreen extends StatefulWidget {
@@ -21,9 +22,10 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
   final List<Widget> _pages = [
     JobScreen(),
     RunningJobScreen(),
-    CheckInScreen(),
+    MachineDashboardScreen(),
     ActivityScreen(),
     MachineScreen(),
+    CheckInScreen(),
     InfoScreen(),
   ];
 
@@ -33,7 +35,9 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
       body: IndexedStack(index: _currentIndex, children: _pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         onDestinationSelected: (int index) {
+          if (index == 5) return; // Disable Check-In
           setState(() {
             _currentIndex = index;
           });
@@ -45,14 +49,19 @@ class _MainWrapperScreenState extends State<MainWrapperScreen> {
             selectedIcon: Icon(Icons.play_circle_fill),
             label: 'Running',
           ),
-          NavigationDestination(icon: Icon(Icons.login), label: 'Check-In'),
           NavigationDestination(
-            icon: Icon(Icons.engineering),
-            label: 'Machine Activity',
+            icon: Icon(Icons.build_circle),
+            label: 'M. Job',
           ),
+          NavigationDestination(icon: Icon(Icons.engineering), label: 'Setup'),
           NavigationDestination(
             icon: Icon(Icons.precision_manufacturing),
             label: 'Machine',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.login),
+            label: 'Check-In',
+            enabled: false,
           ),
           NavigationDestination(icon: Icon(Icons.info_outline), label: 'Info'),
         ],

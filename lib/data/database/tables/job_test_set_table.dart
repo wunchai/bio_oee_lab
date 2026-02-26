@@ -11,6 +11,10 @@ class JobTestSets extends Table {
   TextColumn get documentId => text().named('documentId').nullable()();
 
   TextColumn get setItemNo => text().named('setItemNo').nullable()();
+  IntColumn get oeeJobId =>
+      integer().named('oeeJobId').nullable()(); // <<< New Field
+  IntColumn get rowId => integer().named('rowId').nullable()();
+  TextColumn get testItemName => text().named('testItemName').nullable()();
   TextColumn get registerDateTime =>
       text().named('registerDateTime').nullable()();
   TextColumn get registerUser => text().named('registerUser').nullable()();

@@ -1595,6 +1595,59 @@ class $DocumentsTable extends Documents
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _sampleNoMeta = const VerificationMeta(
+    'sampleNo',
+  );
+  @override
+  late final GeneratedColumn<String> sampleNo = GeneratedColumn<String>(
+    'SampleNo',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sampleNameMeta = const VerificationMeta(
+    'sampleName',
+  );
+  @override
+  late final GeneratedColumn<String> sampleName = GeneratedColumn<String>(
+    'SampleName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _lotNoMeta = const VerificationMeta('lotNo');
+  @override
+  late final GeneratedColumn<String> lotNo = GeneratedColumn<String>(
+    'LOTNO',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _planAnalysisDateMeta = const VerificationMeta(
+    'planAnalysisDate',
+  );
+  @override
+  late final GeneratedColumn<String> planAnalysisDate = GeneratedColumn<String>(
+    'PlanAnalysisDate',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _assignmentIdMeta = const VerificationMeta(
+    'assignmentId',
+  );
+  @override
+  late final GeneratedColumn<String> assignmentId = GeneratedColumn<String>(
+    'AssignmentID',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _recordVersionMeta = const VerificationMeta(
     'recordVersion',
   );
@@ -1624,6 +1677,11 @@ class $DocumentsTable extends Documents
     deleteDate,
     cancelDate,
     postDate,
+    sampleNo,
+    sampleName,
+    lotNo,
+    planAnalysisDate,
+    assignmentId,
     recordVersion,
   ];
   @override
@@ -1734,6 +1792,42 @@ class $DocumentsTable extends Documents
         postDate.isAcceptableOrUnknown(data['PostDate']!, _postDateMeta),
       );
     }
+    if (data.containsKey('SampleNo')) {
+      context.handle(
+        _sampleNoMeta,
+        sampleNo.isAcceptableOrUnknown(data['SampleNo']!, _sampleNoMeta),
+      );
+    }
+    if (data.containsKey('SampleName')) {
+      context.handle(
+        _sampleNameMeta,
+        sampleName.isAcceptableOrUnknown(data['SampleName']!, _sampleNameMeta),
+      );
+    }
+    if (data.containsKey('LOTNO')) {
+      context.handle(
+        _lotNoMeta,
+        lotNo.isAcceptableOrUnknown(data['LOTNO']!, _lotNoMeta),
+      );
+    }
+    if (data.containsKey('PlanAnalysisDate')) {
+      context.handle(
+        _planAnalysisDateMeta,
+        planAnalysisDate.isAcceptableOrUnknown(
+          data['PlanAnalysisDate']!,
+          _planAnalysisDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('AssignmentID')) {
+      context.handle(
+        _assignmentIdMeta,
+        assignmentId.isAcceptableOrUnknown(
+          data['AssignmentID']!,
+          _assignmentIdMeta,
+        ),
+      );
+    }
     if (data.containsKey('RecordVersion')) {
       context.handle(
         _recordVersionMeta,
@@ -1812,6 +1906,26 @@ class $DocumentsTable extends Documents
         DriftSqlType.string,
         data['${effectivePrefix}PostDate'],
       ),
+      sampleNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}SampleNo'],
+      ),
+      sampleName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}SampleName'],
+      ),
+      lotNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}LOTNO'],
+      ),
+      planAnalysisDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}PlanAnalysisDate'],
+      ),
+      assignmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}AssignmentID'],
+      ),
       recordVersion: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}RecordVersion'],
@@ -1841,6 +1955,11 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
   final String? deleteDate;
   final String? cancelDate;
   final String? postDate;
+  final String? sampleNo;
+  final String? sampleName;
+  final String? lotNo;
+  final String? planAnalysisDate;
+  final String? assignmentId;
   final int recordVersion;
   const DbDocument({
     required this.uid,
@@ -1858,6 +1977,11 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     this.deleteDate,
     this.cancelDate,
     this.postDate,
+    this.sampleNo,
+    this.sampleName,
+    this.lotNo,
+    this.planAnalysisDate,
+    this.assignmentId,
     required this.recordVersion,
   });
   @override
@@ -1901,6 +2025,21 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     }
     if (!nullToAbsent || postDate != null) {
       map['PostDate'] = Variable<String>(postDate);
+    }
+    if (!nullToAbsent || sampleNo != null) {
+      map['SampleNo'] = Variable<String>(sampleNo);
+    }
+    if (!nullToAbsent || sampleName != null) {
+      map['SampleName'] = Variable<String>(sampleName);
+    }
+    if (!nullToAbsent || lotNo != null) {
+      map['LOTNO'] = Variable<String>(lotNo);
+    }
+    if (!nullToAbsent || planAnalysisDate != null) {
+      map['PlanAnalysisDate'] = Variable<String>(planAnalysisDate);
+    }
+    if (!nullToAbsent || assignmentId != null) {
+      map['AssignmentID'] = Variable<String>(assignmentId);
     }
     map['RecordVersion'] = Variable<int>(recordVersion);
     return map;
@@ -1947,6 +2086,21 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       postDate: postDate == null && nullToAbsent
           ? const Value.absent()
           : Value(postDate),
+      sampleNo: sampleNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sampleNo),
+      sampleName: sampleName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(sampleName),
+      lotNo: lotNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lotNo),
+      planAnalysisDate: planAnalysisDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(planAnalysisDate),
+      assignmentId: assignmentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(assignmentId),
       recordVersion: Value(recordVersion),
     );
   }
@@ -1972,6 +2126,11 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       deleteDate: serializer.fromJson<String?>(json['deleteDate']),
       cancelDate: serializer.fromJson<String?>(json['cancelDate']),
       postDate: serializer.fromJson<String?>(json['postDate']),
+      sampleNo: serializer.fromJson<String?>(json['sampleNo']),
+      sampleName: serializer.fromJson<String?>(json['sampleName']),
+      lotNo: serializer.fromJson<String?>(json['lotNo']),
+      planAnalysisDate: serializer.fromJson<String?>(json['planAnalysisDate']),
+      assignmentId: serializer.fromJson<String?>(json['assignmentId']),
       recordVersion: serializer.fromJson<int>(json['recordVersion']),
     );
   }
@@ -1994,6 +2153,11 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
       'deleteDate': serializer.toJson<String?>(deleteDate),
       'cancelDate': serializer.toJson<String?>(cancelDate),
       'postDate': serializer.toJson<String?>(postDate),
+      'sampleNo': serializer.toJson<String?>(sampleNo),
+      'sampleName': serializer.toJson<String?>(sampleName),
+      'lotNo': serializer.toJson<String?>(lotNo),
+      'planAnalysisDate': serializer.toJson<String?>(planAnalysisDate),
+      'assignmentId': serializer.toJson<String?>(assignmentId),
       'recordVersion': serializer.toJson<int>(recordVersion),
     };
   }
@@ -2014,6 +2178,11 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     Value<String?> deleteDate = const Value.absent(),
     Value<String?> cancelDate = const Value.absent(),
     Value<String?> postDate = const Value.absent(),
+    Value<String?> sampleNo = const Value.absent(),
+    Value<String?> sampleName = const Value.absent(),
+    Value<String?> lotNo = const Value.absent(),
+    Value<String?> planAnalysisDate = const Value.absent(),
+    Value<String?> assignmentId = const Value.absent(),
     int? recordVersion,
   }) => DbDocument(
     uid: uid ?? this.uid,
@@ -2031,6 +2200,13 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     deleteDate: deleteDate.present ? deleteDate.value : this.deleteDate,
     cancelDate: cancelDate.present ? cancelDate.value : this.cancelDate,
     postDate: postDate.present ? postDate.value : this.postDate,
+    sampleNo: sampleNo.present ? sampleNo.value : this.sampleNo,
+    sampleName: sampleName.present ? sampleName.value : this.sampleName,
+    lotNo: lotNo.present ? lotNo.value : this.lotNo,
+    planAnalysisDate: planAnalysisDate.present
+        ? planAnalysisDate.value
+        : this.planAnalysisDate,
+    assignmentId: assignmentId.present ? assignmentId.value : this.assignmentId,
     recordVersion: recordVersion ?? this.recordVersion,
   );
   DbDocument copyWithCompanion(DocumentsCompanion data) {
@@ -2064,6 +2240,17 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
           ? data.cancelDate.value
           : this.cancelDate,
       postDate: data.postDate.present ? data.postDate.value : this.postDate,
+      sampleNo: data.sampleNo.present ? data.sampleNo.value : this.sampleNo,
+      sampleName: data.sampleName.present
+          ? data.sampleName.value
+          : this.sampleName,
+      lotNo: data.lotNo.present ? data.lotNo.value : this.lotNo,
+      planAnalysisDate: data.planAnalysisDate.present
+          ? data.planAnalysisDate.value
+          : this.planAnalysisDate,
+      assignmentId: data.assignmentId.present
+          ? data.assignmentId.value
+          : this.assignmentId,
       recordVersion: data.recordVersion.present
           ? data.recordVersion.value
           : this.recordVersion,
@@ -2088,13 +2275,18 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
           ..write('deleteDate: $deleteDate, ')
           ..write('cancelDate: $cancelDate, ')
           ..write('postDate: $postDate, ')
+          ..write('sampleNo: $sampleNo, ')
+          ..write('sampleName: $sampleName, ')
+          ..write('lotNo: $lotNo, ')
+          ..write('planAnalysisDate: $planAnalysisDate, ')
+          ..write('assignmentId: $assignmentId, ')
           ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     uid,
     documentId,
     jobId,
@@ -2110,8 +2302,13 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
     deleteDate,
     cancelDate,
     postDate,
+    sampleNo,
+    sampleName,
+    lotNo,
+    planAnalysisDate,
+    assignmentId,
     recordVersion,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2131,6 +2328,11 @@ class DbDocument extends DataClass implements Insertable<DbDocument> {
           other.deleteDate == this.deleteDate &&
           other.cancelDate == this.cancelDate &&
           other.postDate == this.postDate &&
+          other.sampleNo == this.sampleNo &&
+          other.sampleName == this.sampleName &&
+          other.lotNo == this.lotNo &&
+          other.planAnalysisDate == this.planAnalysisDate &&
+          other.assignmentId == this.assignmentId &&
           other.recordVersion == this.recordVersion);
 }
 
@@ -2150,6 +2352,11 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
   final Value<String?> deleteDate;
   final Value<String?> cancelDate;
   final Value<String?> postDate;
+  final Value<String?> sampleNo;
+  final Value<String?> sampleName;
+  final Value<String?> lotNo;
+  final Value<String?> planAnalysisDate;
+  final Value<String?> assignmentId;
   final Value<int> recordVersion;
   const DocumentsCompanion({
     this.uid = const Value.absent(),
@@ -2167,6 +2374,11 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     this.deleteDate = const Value.absent(),
     this.cancelDate = const Value.absent(),
     this.postDate = const Value.absent(),
+    this.sampleNo = const Value.absent(),
+    this.sampleName = const Value.absent(),
+    this.lotNo = const Value.absent(),
+    this.planAnalysisDate = const Value.absent(),
+    this.assignmentId = const Value.absent(),
     this.recordVersion = const Value.absent(),
   });
   DocumentsCompanion.insert({
@@ -2185,6 +2397,11 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     this.deleteDate = const Value.absent(),
     this.cancelDate = const Value.absent(),
     this.postDate = const Value.absent(),
+    this.sampleNo = const Value.absent(),
+    this.sampleName = const Value.absent(),
+    this.lotNo = const Value.absent(),
+    this.planAnalysisDate = const Value.absent(),
+    this.assignmentId = const Value.absent(),
     this.recordVersion = const Value.absent(),
   });
   static Insertable<DbDocument> custom({
@@ -2203,6 +2420,11 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     Expression<String>? deleteDate,
     Expression<String>? cancelDate,
     Expression<String>? postDate,
+    Expression<String>? sampleNo,
+    Expression<String>? sampleName,
+    Expression<String>? lotNo,
+    Expression<String>? planAnalysisDate,
+    Expression<String>? assignmentId,
     Expression<int>? recordVersion,
   }) {
     return RawValuesInsertable({
@@ -2221,6 +2443,11 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
       if (deleteDate != null) 'DeleteDate': deleteDate,
       if (cancelDate != null) 'CancleDate': cancelDate,
       if (postDate != null) 'PostDate': postDate,
+      if (sampleNo != null) 'SampleNo': sampleNo,
+      if (sampleName != null) 'SampleName': sampleName,
+      if (lotNo != null) 'LOTNO': lotNo,
+      if (planAnalysisDate != null) 'PlanAnalysisDate': planAnalysisDate,
+      if (assignmentId != null) 'AssignmentID': assignmentId,
       if (recordVersion != null) 'RecordVersion': recordVersion,
     });
   }
@@ -2241,6 +2468,11 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     Value<String?>? deleteDate,
     Value<String?>? cancelDate,
     Value<String?>? postDate,
+    Value<String?>? sampleNo,
+    Value<String?>? sampleName,
+    Value<String?>? lotNo,
+    Value<String?>? planAnalysisDate,
+    Value<String?>? assignmentId,
     Value<int>? recordVersion,
   }) {
     return DocumentsCompanion(
@@ -2259,6 +2491,11 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
       deleteDate: deleteDate ?? this.deleteDate,
       cancelDate: cancelDate ?? this.cancelDate,
       postDate: postDate ?? this.postDate,
+      sampleNo: sampleNo ?? this.sampleNo,
+      sampleName: sampleName ?? this.sampleName,
+      lotNo: lotNo ?? this.lotNo,
+      planAnalysisDate: planAnalysisDate ?? this.planAnalysisDate,
+      assignmentId: assignmentId ?? this.assignmentId,
       recordVersion: recordVersion ?? this.recordVersion,
     );
   }
@@ -2311,6 +2548,21 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
     if (postDate.present) {
       map['PostDate'] = Variable<String>(postDate.value);
     }
+    if (sampleNo.present) {
+      map['SampleNo'] = Variable<String>(sampleNo.value);
+    }
+    if (sampleName.present) {
+      map['SampleName'] = Variable<String>(sampleName.value);
+    }
+    if (lotNo.present) {
+      map['LOTNO'] = Variable<String>(lotNo.value);
+    }
+    if (planAnalysisDate.present) {
+      map['PlanAnalysisDate'] = Variable<String>(planAnalysisDate.value);
+    }
+    if (assignmentId.present) {
+      map['AssignmentID'] = Variable<String>(assignmentId.value);
+    }
     if (recordVersion.present) {
       map['RecordVersion'] = Variable<int>(recordVersion.value);
     }
@@ -2335,6 +2587,11 @@ class DocumentsCompanion extends UpdateCompanion<DbDocument> {
           ..write('deleteDate: $deleteDate, ')
           ..write('cancelDate: $cancelDate, ')
           ..write('postDate: $postDate, ')
+          ..write('sampleNo: $sampleNo, ')
+          ..write('sampleName: $sampleName, ')
+          ..write('lotNo: $lotNo, ')
+          ..write('planAnalysisDate: $planAnalysisDate, ')
+          ..write('assignmentId: $assignmentId, ')
           ..write('recordVersion: $recordVersion')
           ..write(')'))
         .toString();
@@ -3002,6 +3259,37 @@ class $JobTestSetsTable extends JobTestSets
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _oeeJobIdMeta = const VerificationMeta(
+    'oeeJobId',
+  );
+  @override
+  late final GeneratedColumn<int> oeeJobId = GeneratedColumn<int>(
+    'oeeJobId',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _rowIdMeta = const VerificationMeta('rowId');
+  @override
+  late final GeneratedColumn<int> rowId = GeneratedColumn<int>(
+    'rowId',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _testItemNameMeta = const VerificationMeta(
+    'testItemName',
+  );
+  @override
+  late final GeneratedColumn<String> testItemName = GeneratedColumn<String>(
+    'testItemName',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _registerDateTimeMeta = const VerificationMeta(
     'registerDateTime',
   );
@@ -3086,6 +3374,9 @@ class $JobTestSetsTable extends JobTestSets
     recId,
     documentId,
     setItemNo,
+    oeeJobId,
+    rowId,
+    testItemName,
     registerDateTime,
     registerUser,
     status,
@@ -3130,6 +3421,27 @@ class $JobTestSetsTable extends JobTestSets
       context.handle(
         _setItemNoMeta,
         setItemNo.isAcceptableOrUnknown(data['setItemNo']!, _setItemNoMeta),
+      );
+    }
+    if (data.containsKey('oeeJobId')) {
+      context.handle(
+        _oeeJobIdMeta,
+        oeeJobId.isAcceptableOrUnknown(data['oeeJobId']!, _oeeJobIdMeta),
+      );
+    }
+    if (data.containsKey('rowId')) {
+      context.handle(
+        _rowIdMeta,
+        rowId.isAcceptableOrUnknown(data['rowId']!, _rowIdMeta),
+      );
+    }
+    if (data.containsKey('testItemName')) {
+      context.handle(
+        _testItemNameMeta,
+        testItemName.isAcceptableOrUnknown(
+          data['testItemName']!,
+          _testItemNameMeta,
+        ),
       );
     }
     if (data.containsKey('registerDateTime')) {
@@ -3208,6 +3520,18 @@ class $JobTestSetsTable extends JobTestSets
         DriftSqlType.string,
         data['${effectivePrefix}setItemNo'],
       ),
+      oeeJobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}oeeJobId'],
+      ),
+      rowId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rowId'],
+      ),
+      testItemName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}testItemName'],
+      ),
       registerDateTime: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}registerDateTime'],
@@ -3250,6 +3574,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
   final String recId;
   final String? documentId;
   final String? setItemNo;
+  final int? oeeJobId;
+  final int? rowId;
+  final String? testItemName;
   final String? registerDateTime;
   final String? registerUser;
   final int status;
@@ -3262,6 +3589,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
     required this.recId,
     this.documentId,
     this.setItemNo,
+    this.oeeJobId,
+    this.rowId,
+    this.testItemName,
     this.registerDateTime,
     this.registerUser,
     required this.status,
@@ -3280,6 +3610,15 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
     }
     if (!nullToAbsent || setItemNo != null) {
       map['setItemNo'] = Variable<String>(setItemNo);
+    }
+    if (!nullToAbsent || oeeJobId != null) {
+      map['oeeJobId'] = Variable<int>(oeeJobId);
+    }
+    if (!nullToAbsent || rowId != null) {
+      map['rowId'] = Variable<int>(rowId);
+    }
+    if (!nullToAbsent || testItemName != null) {
+      map['testItemName'] = Variable<String>(testItemName);
     }
     if (!nullToAbsent || registerDateTime != null) {
       map['registerDateTime'] = Variable<String>(registerDateTime);
@@ -3309,6 +3648,15 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
       setItemNo: setItemNo == null && nullToAbsent
           ? const Value.absent()
           : Value(setItemNo),
+      oeeJobId: oeeJobId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(oeeJobId),
+      rowId: rowId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rowId),
+      testItemName: testItemName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(testItemName),
       registerDateTime: registerDateTime == null && nullToAbsent
           ? const Value.absent()
           : Value(registerDateTime),
@@ -3337,6 +3685,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
       recId: serializer.fromJson<String>(json['recId']),
       documentId: serializer.fromJson<String?>(json['documentId']),
       setItemNo: serializer.fromJson<String?>(json['setItemNo']),
+      oeeJobId: serializer.fromJson<int?>(json['oeeJobId']),
+      rowId: serializer.fromJson<int?>(json['rowId']),
+      testItemName: serializer.fromJson<String?>(json['testItemName']),
       registerDateTime: serializer.fromJson<String?>(json['registerDateTime']),
       registerUser: serializer.fromJson<String?>(json['registerUser']),
       status: serializer.fromJson<int>(json['status']),
@@ -3354,6 +3705,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
       'recId': serializer.toJson<String>(recId),
       'documentId': serializer.toJson<String?>(documentId),
       'setItemNo': serializer.toJson<String?>(setItemNo),
+      'oeeJobId': serializer.toJson<int?>(oeeJobId),
+      'rowId': serializer.toJson<int?>(rowId),
+      'testItemName': serializer.toJson<String?>(testItemName),
       'registerDateTime': serializer.toJson<String?>(registerDateTime),
       'registerUser': serializer.toJson<String?>(registerUser),
       'status': serializer.toJson<int>(status),
@@ -3369,6 +3723,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
     String? recId,
     Value<String?> documentId = const Value.absent(),
     Value<String?> setItemNo = const Value.absent(),
+    Value<int?> oeeJobId = const Value.absent(),
+    Value<int?> rowId = const Value.absent(),
+    Value<String?> testItemName = const Value.absent(),
     Value<String?> registerDateTime = const Value.absent(),
     Value<String?> registerUser = const Value.absent(),
     int? status,
@@ -3381,6 +3738,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
     recId: recId ?? this.recId,
     documentId: documentId.present ? documentId.value : this.documentId,
     setItemNo: setItemNo.present ? setItemNo.value : this.setItemNo,
+    oeeJobId: oeeJobId.present ? oeeJobId.value : this.oeeJobId,
+    rowId: rowId.present ? rowId.value : this.rowId,
+    testItemName: testItemName.present ? testItemName.value : this.testItemName,
     registerDateTime: registerDateTime.present
         ? registerDateTime.value
         : this.registerDateTime,
@@ -3399,6 +3759,11 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
           ? data.documentId.value
           : this.documentId,
       setItemNo: data.setItemNo.present ? data.setItemNo.value : this.setItemNo,
+      oeeJobId: data.oeeJobId.present ? data.oeeJobId.value : this.oeeJobId,
+      rowId: data.rowId.present ? data.rowId.value : this.rowId,
+      testItemName: data.testItemName.present
+          ? data.testItemName.value
+          : this.testItemName,
       registerDateTime: data.registerDateTime.present
           ? data.registerDateTime.value
           : this.registerDateTime,
@@ -3424,6 +3789,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
           ..write('recId: $recId, ')
           ..write('documentId: $documentId, ')
           ..write('setItemNo: $setItemNo, ')
+          ..write('oeeJobId: $oeeJobId, ')
+          ..write('rowId: $rowId, ')
+          ..write('testItemName: $testItemName, ')
           ..write('registerDateTime: $registerDateTime, ')
           ..write('registerUser: $registerUser, ')
           ..write('status: $status, ')
@@ -3441,6 +3809,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
     recId,
     documentId,
     setItemNo,
+    oeeJobId,
+    rowId,
+    testItemName,
     registerDateTime,
     registerUser,
     status,
@@ -3457,6 +3828,9 @@ class DbJobTestSet extends DataClass implements Insertable<DbJobTestSet> {
           other.recId == this.recId &&
           other.documentId == this.documentId &&
           other.setItemNo == this.setItemNo &&
+          other.oeeJobId == this.oeeJobId &&
+          other.rowId == this.rowId &&
+          other.testItemName == this.testItemName &&
           other.registerDateTime == this.registerDateTime &&
           other.registerUser == this.registerUser &&
           other.status == this.status &&
@@ -3471,6 +3845,9 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
   final Value<String> recId;
   final Value<String?> documentId;
   final Value<String?> setItemNo;
+  final Value<int?> oeeJobId;
+  final Value<int?> rowId;
+  final Value<String?> testItemName;
   final Value<String?> registerDateTime;
   final Value<String?> registerUser;
   final Value<int> status;
@@ -3483,6 +3860,9 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     this.recId = const Value.absent(),
     this.documentId = const Value.absent(),
     this.setItemNo = const Value.absent(),
+    this.oeeJobId = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.testItemName = const Value.absent(),
     this.registerDateTime = const Value.absent(),
     this.registerUser = const Value.absent(),
     this.status = const Value.absent(),
@@ -3496,6 +3876,9 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     required String recId,
     this.documentId = const Value.absent(),
     this.setItemNo = const Value.absent(),
+    this.oeeJobId = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.testItemName = const Value.absent(),
     this.registerDateTime = const Value.absent(),
     this.registerUser = const Value.absent(),
     this.status = const Value.absent(),
@@ -3509,6 +3892,9 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     Expression<String>? recId,
     Expression<String>? documentId,
     Expression<String>? setItemNo,
+    Expression<int>? oeeJobId,
+    Expression<int>? rowId,
+    Expression<String>? testItemName,
     Expression<String>? registerDateTime,
     Expression<String>? registerUser,
     Expression<int>? status,
@@ -3522,6 +3908,9 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
       if (recId != null) 'recID': recId,
       if (documentId != null) 'documentId': documentId,
       if (setItemNo != null) 'setItemNo': setItemNo,
+      if (oeeJobId != null) 'oeeJobId': oeeJobId,
+      if (rowId != null) 'rowId': rowId,
+      if (testItemName != null) 'testItemName': testItemName,
       if (registerDateTime != null) 'registerDateTime': registerDateTime,
       if (registerUser != null) 'registerUser': registerUser,
       if (status != null) 'status': status,
@@ -3537,6 +3926,9 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     Value<String>? recId,
     Value<String?>? documentId,
     Value<String?>? setItemNo,
+    Value<int?>? oeeJobId,
+    Value<int?>? rowId,
+    Value<String?>? testItemName,
     Value<String?>? registerDateTime,
     Value<String?>? registerUser,
     Value<int>? status,
@@ -3550,6 +3942,9 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
       recId: recId ?? this.recId,
       documentId: documentId ?? this.documentId,
       setItemNo: setItemNo ?? this.setItemNo,
+      oeeJobId: oeeJobId ?? this.oeeJobId,
+      rowId: rowId ?? this.rowId,
+      testItemName: testItemName ?? this.testItemName,
       registerDateTime: registerDateTime ?? this.registerDateTime,
       registerUser: registerUser ?? this.registerUser,
       status: status ?? this.status,
@@ -3574,6 +3969,15 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
     }
     if (setItemNo.present) {
       map['setItemNo'] = Variable<String>(setItemNo.value);
+    }
+    if (oeeJobId.present) {
+      map['oeeJobId'] = Variable<int>(oeeJobId.value);
+    }
+    if (rowId.present) {
+      map['rowId'] = Variable<int>(rowId.value);
+    }
+    if (testItemName.present) {
+      map['testItemName'] = Variable<String>(testItemName.value);
     }
     if (registerDateTime.present) {
       map['registerDateTime'] = Variable<String>(registerDateTime.value);
@@ -3606,6 +4010,9 @@ class JobTestSetsCompanion extends UpdateCompanion<DbJobTestSet> {
           ..write('recId: $recId, ')
           ..write('documentId: $documentId, ')
           ..write('setItemNo: $setItemNo, ')
+          ..write('oeeJobId: $oeeJobId, ')
+          ..write('rowId: $rowId, ')
+          ..write('testItemName: $testItemName, ')
           ..write('registerDateTime: $registerDateTime, ')
           ..write('registerUser: $registerUser, ')
           ..write('status: $status, ')
@@ -12286,6 +12693,482 @@ class JobTestItemsCompanion extends UpdateCompanion<DbJobTestItem> {
   }
 }
 
+class $JobActivitiesTable extends JobActivities
+    with TableInfo<$JobActivitiesTable, DbJobActivity> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $JobActivitiesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _uidMeta = const VerificationMeta('uid');
+  @override
+  late final GeneratedColumn<int> uid = GeneratedColumn<int>(
+    'uid',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _rowIdMeta = const VerificationMeta('rowId');
+  @override
+  late final GeneratedColumn<int> rowId = GeneratedColumn<int>(
+    'row_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _oeeJobIdMeta = const VerificationMeta(
+    'oeeJobId',
+  );
+  @override
+  late final GeneratedColumn<int> oeeJobId = GeneratedColumn<int>(
+    'oee_job_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _testItemIdMeta = const VerificationMeta(
+    'testItemId',
+  );
+  @override
+  late final GeneratedColumn<String> testItemId = GeneratedColumn<String>(
+    'test_item_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activityIdMeta = const VerificationMeta(
+    'activityId',
+  );
+  @override
+  late final GeneratedColumn<int> activityId = GeneratedColumn<int>(
+    'activity_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activityNameMeta = const VerificationMeta(
+    'activityName',
+  );
+  @override
+  late final GeneratedColumn<String> activityName = GeneratedColumn<String>(
+    'activity_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createDateMeta = const VerificationMeta(
+    'createDate',
+  );
+  @override
+  late final GeneratedColumn<String> createDate = GeneratedColumn<String>(
+    'create_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    uid,
+    rowId,
+    oeeJobId,
+    testItemId,
+    activityId,
+    activityName,
+    createDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'job_activities';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<DbJobActivity> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('uid')) {
+      context.handle(
+        _uidMeta,
+        uid.isAcceptableOrUnknown(data['uid']!, _uidMeta),
+      );
+    }
+    if (data.containsKey('row_id')) {
+      context.handle(
+        _rowIdMeta,
+        rowId.isAcceptableOrUnknown(data['row_id']!, _rowIdMeta),
+      );
+    }
+    if (data.containsKey('oee_job_id')) {
+      context.handle(
+        _oeeJobIdMeta,
+        oeeJobId.isAcceptableOrUnknown(data['oee_job_id']!, _oeeJobIdMeta),
+      );
+    }
+    if (data.containsKey('test_item_id')) {
+      context.handle(
+        _testItemIdMeta,
+        testItemId.isAcceptableOrUnknown(
+          data['test_item_id']!,
+          _testItemIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('activity_id')) {
+      context.handle(
+        _activityIdMeta,
+        activityId.isAcceptableOrUnknown(data['activity_id']!, _activityIdMeta),
+      );
+    }
+    if (data.containsKey('activity_name')) {
+      context.handle(
+        _activityNameMeta,
+        activityName.isAcceptableOrUnknown(
+          data['activity_name']!,
+          _activityNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('create_date')) {
+      context.handle(
+        _createDateMeta,
+        createDate.isAcceptableOrUnknown(data['create_date']!, _createDateMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {uid};
+  @override
+  DbJobActivity map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DbJobActivity(
+      uid: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}uid'],
+      )!,
+      rowId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}row_id'],
+      ),
+      oeeJobId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}oee_job_id'],
+      ),
+      testItemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}test_item_id'],
+      ),
+      activityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}activity_id'],
+      ),
+      activityName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}activity_name'],
+      ),
+      createDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}create_date'],
+      ),
+    );
+  }
+
+  @override
+  $JobActivitiesTable createAlias(String alias) {
+    return $JobActivitiesTable(attachedDatabase, alias);
+  }
+}
+
+class DbJobActivity extends DataClass implements Insertable<DbJobActivity> {
+  final int uid;
+  final int? rowId;
+  final int? oeeJobId;
+  final String? testItemId;
+  final int? activityId;
+  final String? activityName;
+  final String? createDate;
+  const DbJobActivity({
+    required this.uid,
+    this.rowId,
+    this.oeeJobId,
+    this.testItemId,
+    this.activityId,
+    this.activityName,
+    this.createDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['uid'] = Variable<int>(uid);
+    if (!nullToAbsent || rowId != null) {
+      map['row_id'] = Variable<int>(rowId);
+    }
+    if (!nullToAbsent || oeeJobId != null) {
+      map['oee_job_id'] = Variable<int>(oeeJobId);
+    }
+    if (!nullToAbsent || testItemId != null) {
+      map['test_item_id'] = Variable<String>(testItemId);
+    }
+    if (!nullToAbsent || activityId != null) {
+      map['activity_id'] = Variable<int>(activityId);
+    }
+    if (!nullToAbsent || activityName != null) {
+      map['activity_name'] = Variable<String>(activityName);
+    }
+    if (!nullToAbsent || createDate != null) {
+      map['create_date'] = Variable<String>(createDate);
+    }
+    return map;
+  }
+
+  JobActivitiesCompanion toCompanion(bool nullToAbsent) {
+    return JobActivitiesCompanion(
+      uid: Value(uid),
+      rowId: rowId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rowId),
+      oeeJobId: oeeJobId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(oeeJobId),
+      testItemId: testItemId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(testItemId),
+      activityId: activityId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activityId),
+      activityName: activityName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(activityName),
+      createDate: createDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(createDate),
+    );
+  }
+
+  factory DbJobActivity.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DbJobActivity(
+      uid: serializer.fromJson<int>(json['uid']),
+      rowId: serializer.fromJson<int?>(json['rowId']),
+      oeeJobId: serializer.fromJson<int?>(json['oeeJobId']),
+      testItemId: serializer.fromJson<String?>(json['testItemId']),
+      activityId: serializer.fromJson<int?>(json['activityId']),
+      activityName: serializer.fromJson<String?>(json['activityName']),
+      createDate: serializer.fromJson<String?>(json['createDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'uid': serializer.toJson<int>(uid),
+      'rowId': serializer.toJson<int?>(rowId),
+      'oeeJobId': serializer.toJson<int?>(oeeJobId),
+      'testItemId': serializer.toJson<String?>(testItemId),
+      'activityId': serializer.toJson<int?>(activityId),
+      'activityName': serializer.toJson<String?>(activityName),
+      'createDate': serializer.toJson<String?>(createDate),
+    };
+  }
+
+  DbJobActivity copyWith({
+    int? uid,
+    Value<int?> rowId = const Value.absent(),
+    Value<int?> oeeJobId = const Value.absent(),
+    Value<String?> testItemId = const Value.absent(),
+    Value<int?> activityId = const Value.absent(),
+    Value<String?> activityName = const Value.absent(),
+    Value<String?> createDate = const Value.absent(),
+  }) => DbJobActivity(
+    uid: uid ?? this.uid,
+    rowId: rowId.present ? rowId.value : this.rowId,
+    oeeJobId: oeeJobId.present ? oeeJobId.value : this.oeeJobId,
+    testItemId: testItemId.present ? testItemId.value : this.testItemId,
+    activityId: activityId.present ? activityId.value : this.activityId,
+    activityName: activityName.present ? activityName.value : this.activityName,
+    createDate: createDate.present ? createDate.value : this.createDate,
+  );
+  DbJobActivity copyWithCompanion(JobActivitiesCompanion data) {
+    return DbJobActivity(
+      uid: data.uid.present ? data.uid.value : this.uid,
+      rowId: data.rowId.present ? data.rowId.value : this.rowId,
+      oeeJobId: data.oeeJobId.present ? data.oeeJobId.value : this.oeeJobId,
+      testItemId: data.testItemId.present
+          ? data.testItemId.value
+          : this.testItemId,
+      activityId: data.activityId.present
+          ? data.activityId.value
+          : this.activityId,
+      activityName: data.activityName.present
+          ? data.activityName.value
+          : this.activityName,
+      createDate: data.createDate.present
+          ? data.createDate.value
+          : this.createDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DbJobActivity(')
+          ..write('uid: $uid, ')
+          ..write('rowId: $rowId, ')
+          ..write('oeeJobId: $oeeJobId, ')
+          ..write('testItemId: $testItemId, ')
+          ..write('activityId: $activityId, ')
+          ..write('activityName: $activityName, ')
+          ..write('createDate: $createDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    uid,
+    rowId,
+    oeeJobId,
+    testItemId,
+    activityId,
+    activityName,
+    createDate,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DbJobActivity &&
+          other.uid == this.uid &&
+          other.rowId == this.rowId &&
+          other.oeeJobId == this.oeeJobId &&
+          other.testItemId == this.testItemId &&
+          other.activityId == this.activityId &&
+          other.activityName == this.activityName &&
+          other.createDate == this.createDate);
+}
+
+class JobActivitiesCompanion extends UpdateCompanion<DbJobActivity> {
+  final Value<int> uid;
+  final Value<int?> rowId;
+  final Value<int?> oeeJobId;
+  final Value<String?> testItemId;
+  final Value<int?> activityId;
+  final Value<String?> activityName;
+  final Value<String?> createDate;
+  const JobActivitiesCompanion({
+    this.uid = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.oeeJobId = const Value.absent(),
+    this.testItemId = const Value.absent(),
+    this.activityId = const Value.absent(),
+    this.activityName = const Value.absent(),
+    this.createDate = const Value.absent(),
+  });
+  JobActivitiesCompanion.insert({
+    this.uid = const Value.absent(),
+    this.rowId = const Value.absent(),
+    this.oeeJobId = const Value.absent(),
+    this.testItemId = const Value.absent(),
+    this.activityId = const Value.absent(),
+    this.activityName = const Value.absent(),
+    this.createDate = const Value.absent(),
+  });
+  static Insertable<DbJobActivity> custom({
+    Expression<int>? uid,
+    Expression<int>? rowId,
+    Expression<int>? oeeJobId,
+    Expression<String>? testItemId,
+    Expression<int>? activityId,
+    Expression<String>? activityName,
+    Expression<String>? createDate,
+  }) {
+    return RawValuesInsertable({
+      if (uid != null) 'uid': uid,
+      if (rowId != null) 'row_id': rowId,
+      if (oeeJobId != null) 'oee_job_id': oeeJobId,
+      if (testItemId != null) 'test_item_id': testItemId,
+      if (activityId != null) 'activity_id': activityId,
+      if (activityName != null) 'activity_name': activityName,
+      if (createDate != null) 'create_date': createDate,
+    });
+  }
+
+  JobActivitiesCompanion copyWith({
+    Value<int>? uid,
+    Value<int?>? rowId,
+    Value<int?>? oeeJobId,
+    Value<String?>? testItemId,
+    Value<int?>? activityId,
+    Value<String?>? activityName,
+    Value<String?>? createDate,
+  }) {
+    return JobActivitiesCompanion(
+      uid: uid ?? this.uid,
+      rowId: rowId ?? this.rowId,
+      oeeJobId: oeeJobId ?? this.oeeJobId,
+      testItemId: testItemId ?? this.testItemId,
+      activityId: activityId ?? this.activityId,
+      activityName: activityName ?? this.activityName,
+      createDate: createDate ?? this.createDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (uid.present) {
+      map['uid'] = Variable<int>(uid.value);
+    }
+    if (rowId.present) {
+      map['row_id'] = Variable<int>(rowId.value);
+    }
+    if (oeeJobId.present) {
+      map['oee_job_id'] = Variable<int>(oeeJobId.value);
+    }
+    if (testItemId.present) {
+      map['test_item_id'] = Variable<String>(testItemId.value);
+    }
+    if (activityId.present) {
+      map['activity_id'] = Variable<int>(activityId.value);
+    }
+    if (activityName.present) {
+      map['activity_name'] = Variable<String>(activityName.value);
+    }
+    if (createDate.present) {
+      map['create_date'] = Variable<String>(createDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('JobActivitiesCompanion(')
+          ..write('uid: $uid, ')
+          ..write('rowId: $rowId, ')
+          ..write('oeeJobId: $oeeJobId, ')
+          ..write('testItemId: $testItemId, ')
+          ..write('activityId: $activityId, ')
+          ..write('activityName: $activityName, ')
+          ..write('createDate: $createDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -12320,6 +13203,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $HumanActivityTypesTable humanActivityTypes =
       $HumanActivityTypesTable(this);
   late final $JobTestItemsTable jobTestItems = $JobTestItemsTable(this);
+  late final $JobActivitiesTable jobActivities = $JobActivitiesTable(this);
   late final JobDao jobDao = JobDao(this as AppDatabase);
   late final DocumentDao documentDao = DocumentDao(this as AppDatabase);
   late final UserDao userDao = UserDao(this as AppDatabase);
@@ -12342,6 +13226,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this as AppDatabase,
   );
   late final JobTestItemDao jobTestItemDao = JobTestItemDao(
+    this as AppDatabase,
+  );
+  late final JobActivityDao jobActivityDao = JobActivityDao(
     this as AppDatabase,
   );
   @override
@@ -12368,6 +13255,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     machineSummaryEvents,
     humanActivityTypes,
     jobTestItems,
+    jobActivities,
   ];
 }
 
@@ -12995,6 +13883,11 @@ typedef $$DocumentsTableCreateCompanionBuilder =
       Value<String?> deleteDate,
       Value<String?> cancelDate,
       Value<String?> postDate,
+      Value<String?> sampleNo,
+      Value<String?> sampleName,
+      Value<String?> lotNo,
+      Value<String?> planAnalysisDate,
+      Value<String?> assignmentId,
       Value<int> recordVersion,
     });
 typedef $$DocumentsTableUpdateCompanionBuilder =
@@ -13014,6 +13907,11 @@ typedef $$DocumentsTableUpdateCompanionBuilder =
       Value<String?> deleteDate,
       Value<String?> cancelDate,
       Value<String?> postDate,
+      Value<String?> sampleNo,
+      Value<String?> sampleName,
+      Value<String?> lotNo,
+      Value<String?> planAnalysisDate,
+      Value<String?> assignmentId,
       Value<int> recordVersion,
     });
 
@@ -13098,6 +13996,31 @@ class $$DocumentsTableFilterComposer
 
   ColumnFilters<String> get postDate => $composableBuilder(
     column: $table.postDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sampleNo => $composableBuilder(
+    column: $table.sampleNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get sampleName => $composableBuilder(
+    column: $table.sampleName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get lotNo => $composableBuilder(
+    column: $table.lotNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get planAnalysisDate => $composableBuilder(
+    column: $table.planAnalysisDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get assignmentId => $composableBuilder(
+    column: $table.assignmentId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13191,6 +14114,31 @@ class $$DocumentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get sampleNo => $composableBuilder(
+    column: $table.sampleNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get sampleName => $composableBuilder(
+    column: $table.sampleName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get lotNo => $composableBuilder(
+    column: $table.lotNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get planAnalysisDate => $composableBuilder(
+    column: $table.planAnalysisDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get assignmentId => $composableBuilder(
+    column: $table.assignmentId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get recordVersion => $composableBuilder(
     column: $table.recordVersion,
     builder: (column) => ColumnOrderings(column),
@@ -13265,6 +14213,27 @@ class $$DocumentsTableAnnotationComposer
   GeneratedColumn<String> get postDate =>
       $composableBuilder(column: $table.postDate, builder: (column) => column);
 
+  GeneratedColumn<String> get sampleNo =>
+      $composableBuilder(column: $table.sampleNo, builder: (column) => column);
+
+  GeneratedColumn<String> get sampleName => $composableBuilder(
+    column: $table.sampleName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get lotNo =>
+      $composableBuilder(column: $table.lotNo, builder: (column) => column);
+
+  GeneratedColumn<String> get planAnalysisDate => $composableBuilder(
+    column: $table.planAnalysisDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get assignmentId => $composableBuilder(
+    column: $table.assignmentId,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get recordVersion => $composableBuilder(
     column: $table.recordVersion,
     builder: (column) => column,
@@ -13317,6 +14286,11 @@ class $$DocumentsTableTableManager
                 Value<String?> deleteDate = const Value.absent(),
                 Value<String?> cancelDate = const Value.absent(),
                 Value<String?> postDate = const Value.absent(),
+                Value<String?> sampleNo = const Value.absent(),
+                Value<String?> sampleName = const Value.absent(),
+                Value<String?> lotNo = const Value.absent(),
+                Value<String?> planAnalysisDate = const Value.absent(),
+                Value<String?> assignmentId = const Value.absent(),
                 Value<int> recordVersion = const Value.absent(),
               }) => DocumentsCompanion(
                 uid: uid,
@@ -13334,6 +14308,11 @@ class $$DocumentsTableTableManager
                 deleteDate: deleteDate,
                 cancelDate: cancelDate,
                 postDate: postDate,
+                sampleNo: sampleNo,
+                sampleName: sampleName,
+                lotNo: lotNo,
+                planAnalysisDate: planAnalysisDate,
+                assignmentId: assignmentId,
                 recordVersion: recordVersion,
               ),
           createCompanionCallback:
@@ -13353,6 +14332,11 @@ class $$DocumentsTableTableManager
                 Value<String?> deleteDate = const Value.absent(),
                 Value<String?> cancelDate = const Value.absent(),
                 Value<String?> postDate = const Value.absent(),
+                Value<String?> sampleNo = const Value.absent(),
+                Value<String?> sampleName = const Value.absent(),
+                Value<String?> lotNo = const Value.absent(),
+                Value<String?> planAnalysisDate = const Value.absent(),
+                Value<String?> assignmentId = const Value.absent(),
                 Value<int> recordVersion = const Value.absent(),
               }) => DocumentsCompanion.insert(
                 uid: uid,
@@ -13370,6 +14354,11 @@ class $$DocumentsTableTableManager
                 deleteDate: deleteDate,
                 cancelDate: cancelDate,
                 postDate: postDate,
+                sampleNo: sampleNo,
+                sampleName: sampleName,
+                lotNo: lotNo,
+                planAnalysisDate: planAnalysisDate,
+                assignmentId: assignmentId,
                 recordVersion: recordVersion,
               ),
           withReferenceMapper: (p0) => p0
@@ -13684,6 +14673,9 @@ typedef $$JobTestSetsTableCreateCompanionBuilder =
       required String recId,
       Value<String?> documentId,
       Value<String?> setItemNo,
+      Value<int?> oeeJobId,
+      Value<int?> rowId,
+      Value<String?> testItemName,
       Value<String?> registerDateTime,
       Value<String?> registerUser,
       Value<int> status,
@@ -13698,6 +14690,9 @@ typedef $$JobTestSetsTableUpdateCompanionBuilder =
       Value<String> recId,
       Value<String?> documentId,
       Value<String?> setItemNo,
+      Value<int?> oeeJobId,
+      Value<int?> rowId,
+      Value<String?> testItemName,
       Value<String?> registerDateTime,
       Value<String?> registerUser,
       Value<int> status,
@@ -13733,6 +14728,21 @@ class $$JobTestSetsTableFilterComposer
 
   ColumnFilters<String> get setItemNo => $composableBuilder(
     column: $table.setItemNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get oeeJobId => $composableBuilder(
+    column: $table.oeeJobId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testItemName => $composableBuilder(
+    column: $table.testItemName,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -13801,6 +14811,21 @@ class $$JobTestSetsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get oeeJobId => $composableBuilder(
+    column: $table.oeeJobId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testItemName => $composableBuilder(
+    column: $table.testItemName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get registerDateTime => $composableBuilder(
     column: $table.registerDateTime,
     builder: (column) => ColumnOrderings(column),
@@ -13859,6 +14884,17 @@ class $$JobTestSetsTableAnnotationComposer
 
   GeneratedColumn<String> get setItemNo =>
       $composableBuilder(column: $table.setItemNo, builder: (column) => column);
+
+  GeneratedColumn<int> get oeeJobId =>
+      $composableBuilder(column: $table.oeeJobId, builder: (column) => column);
+
+  GeneratedColumn<int> get rowId =>
+      $composableBuilder(column: $table.rowId, builder: (column) => column);
+
+  GeneratedColumn<String> get testItemName => $composableBuilder(
+    column: $table.testItemName,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<String> get registerDateTime => $composableBuilder(
     column: $table.registerDateTime,
@@ -13925,6 +14961,9 @@ class $$JobTestSetsTableTableManager
                 Value<String> recId = const Value.absent(),
                 Value<String?> documentId = const Value.absent(),
                 Value<String?> setItemNo = const Value.absent(),
+                Value<int?> oeeJobId = const Value.absent(),
+                Value<int?> rowId = const Value.absent(),
+                Value<String?> testItemName = const Value.absent(),
                 Value<String?> registerDateTime = const Value.absent(),
                 Value<String?> registerUser = const Value.absent(),
                 Value<int> status = const Value.absent(),
@@ -13937,6 +14976,9 @@ class $$JobTestSetsTableTableManager
                 recId: recId,
                 documentId: documentId,
                 setItemNo: setItemNo,
+                oeeJobId: oeeJobId,
+                rowId: rowId,
+                testItemName: testItemName,
                 registerDateTime: registerDateTime,
                 registerUser: registerUser,
                 status: status,
@@ -13951,6 +14993,9 @@ class $$JobTestSetsTableTableManager
                 required String recId,
                 Value<String?> documentId = const Value.absent(),
                 Value<String?> setItemNo = const Value.absent(),
+                Value<int?> oeeJobId = const Value.absent(),
+                Value<int?> rowId = const Value.absent(),
+                Value<String?> testItemName = const Value.absent(),
                 Value<String?> registerDateTime = const Value.absent(),
                 Value<String?> registerUser = const Value.absent(),
                 Value<int> status = const Value.absent(),
@@ -13963,6 +15008,9 @@ class $$JobTestSetsTableTableManager
                 recId: recId,
                 documentId: documentId,
                 setItemNo: setItemNo,
+                oeeJobId: oeeJobId,
+                rowId: rowId,
+                testItemName: testItemName,
                 registerDateTime: registerDateTime,
                 registerUser: registerUser,
                 status: status,
@@ -18312,6 +19360,246 @@ typedef $$JobTestItemsTableProcessedTableManager =
       DbJobTestItem,
       PrefetchHooks Function()
     >;
+typedef $$JobActivitiesTableCreateCompanionBuilder =
+    JobActivitiesCompanion Function({
+      Value<int> uid,
+      Value<int?> rowId,
+      Value<int?> oeeJobId,
+      Value<String?> testItemId,
+      Value<int?> activityId,
+      Value<String?> activityName,
+      Value<String?> createDate,
+    });
+typedef $$JobActivitiesTableUpdateCompanionBuilder =
+    JobActivitiesCompanion Function({
+      Value<int> uid,
+      Value<int?> rowId,
+      Value<int?> oeeJobId,
+      Value<String?> testItemId,
+      Value<int?> activityId,
+      Value<String?> activityName,
+      Value<String?> createDate,
+    });
+
+class $$JobActivitiesTableFilterComposer
+    extends Composer<_$AppDatabase, $JobActivitiesTable> {
+  $$JobActivitiesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get oeeJobId => $composableBuilder(
+    column: $table.oeeJobId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get testItemId => $composableBuilder(
+    column: $table.testItemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get activityId => $composableBuilder(
+    column: $table.activityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get createDate => $composableBuilder(
+    column: $table.createDate,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$JobActivitiesTableOrderingComposer
+    extends Composer<_$AppDatabase, $JobActivitiesTable> {
+  $$JobActivitiesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get uid => $composableBuilder(
+    column: $table.uid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rowId => $composableBuilder(
+    column: $table.rowId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get oeeJobId => $composableBuilder(
+    column: $table.oeeJobId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get testItemId => $composableBuilder(
+    column: $table.testItemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get activityId => $composableBuilder(
+    column: $table.activityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get createDate => $composableBuilder(
+    column: $table.createDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$JobActivitiesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $JobActivitiesTable> {
+  $$JobActivitiesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get uid =>
+      $composableBuilder(column: $table.uid, builder: (column) => column);
+
+  GeneratedColumn<int> get rowId =>
+      $composableBuilder(column: $table.rowId, builder: (column) => column);
+
+  GeneratedColumn<int> get oeeJobId =>
+      $composableBuilder(column: $table.oeeJobId, builder: (column) => column);
+
+  GeneratedColumn<String> get testItemId => $composableBuilder(
+    column: $table.testItemId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get activityId => $composableBuilder(
+    column: $table.activityId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get activityName => $composableBuilder(
+    column: $table.activityName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get createDate => $composableBuilder(
+    column: $table.createDate,
+    builder: (column) => column,
+  );
+}
+
+class $$JobActivitiesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $JobActivitiesTable,
+          DbJobActivity,
+          $$JobActivitiesTableFilterComposer,
+          $$JobActivitiesTableOrderingComposer,
+          $$JobActivitiesTableAnnotationComposer,
+          $$JobActivitiesTableCreateCompanionBuilder,
+          $$JobActivitiesTableUpdateCompanionBuilder,
+          (
+            DbJobActivity,
+            BaseReferences<_$AppDatabase, $JobActivitiesTable, DbJobActivity>,
+          ),
+          DbJobActivity,
+          PrefetchHooks Function()
+        > {
+  $$JobActivitiesTableTableManager(_$AppDatabase db, $JobActivitiesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$JobActivitiesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$JobActivitiesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$JobActivitiesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<int?> rowId = const Value.absent(),
+                Value<int?> oeeJobId = const Value.absent(),
+                Value<String?> testItemId = const Value.absent(),
+                Value<int?> activityId = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
+                Value<String?> createDate = const Value.absent(),
+              }) => JobActivitiesCompanion(
+                uid: uid,
+                rowId: rowId,
+                oeeJobId: oeeJobId,
+                testItemId: testItemId,
+                activityId: activityId,
+                activityName: activityName,
+                createDate: createDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> uid = const Value.absent(),
+                Value<int?> rowId = const Value.absent(),
+                Value<int?> oeeJobId = const Value.absent(),
+                Value<String?> testItemId = const Value.absent(),
+                Value<int?> activityId = const Value.absent(),
+                Value<String?> activityName = const Value.absent(),
+                Value<String?> createDate = const Value.absent(),
+              }) => JobActivitiesCompanion.insert(
+                uid: uid,
+                rowId: rowId,
+                oeeJobId: oeeJobId,
+                testItemId: testItemId,
+                activityId: activityId,
+                activityName: activityName,
+                createDate: createDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$JobActivitiesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $JobActivitiesTable,
+      DbJobActivity,
+      $$JobActivitiesTableFilterComposer,
+      $$JobActivitiesTableOrderingComposer,
+      $$JobActivitiesTableAnnotationComposer,
+      $$JobActivitiesTableCreateCompanionBuilder,
+      $$JobActivitiesTableUpdateCompanionBuilder,
+      (
+        DbJobActivity,
+        BaseReferences<_$AppDatabase, $JobActivitiesTable, DbJobActivity>,
+      ),
+      DbJobActivity,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -18353,4 +19641,6 @@ class $AppDatabaseManager {
       $$HumanActivityTypesTableTableManager(_db, _db.humanActivityTypes);
   $$JobTestItemsTableTableManager get jobTestItems =>
       $$JobTestItemsTableTableManager(_db, _db.jobTestItems);
+  $$JobActivitiesTableTableManager get jobActivities =>
+      $$JobActivitiesTableTableManager(_db, _db.jobActivities);
 }

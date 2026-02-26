@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:bio_oee_lab/data/repositories/job_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 import 'package:bio_oee_lab/data/repositories/document_repository.dart';
+import 'package:bio_oee_lab/data/repositories/sync_repository.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
 
 import 'package:mobile_scanner/mobile_scanner.dart';
@@ -24,7 +25,7 @@ class _JobScreenState extends State<JobScreen> {
   final TextEditingController _manualJobNameController =
       TextEditingController();
   String _searchQuery = '';
-  bool _showManualOnly = true;
+  bool _showManualOnly = false; // Default: Show All
   bool _showMyAssignments = true; // Default: Show My Jobs
   bool _showRunning = false; // Default: Show All (not just running)
 
@@ -126,28 +127,109 @@ class _JobScreenState extends State<JobScreen> {
   }
 
   Future<void> _handleSync() async {
-    final jobRepo = context.read<JobRepository>();
     final loginRepo = context.read<LoginRepository>();
+    final syncRepo = context.read<SyncRepository>();
 
     final userId = loginRepo.loggedInUser?.userId ?? '';
     if (userId.isEmpty) return;
 
-    await jobRepo.syncJobs(userId);
+    if (!mounted) return;
 
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(jobRepo.syncMessage)));
-    }
+    // Show Progress Dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Consumer<SyncRepository>(
+          builder: (context, repository, child) {
+            String statusText = repository.lastSyncMessage;
+            bool isSyncing = repository.syncStatus == SyncStatus.syncing;
+            bool isSuccess = repository.syncStatus == SyncStatus.success;
+            bool isFailure = repository.syncStatus == SyncStatus.failure;
+
+            if (isSuccess) {
+              Future.delayed(const Duration(seconds: 1), () {
+                if (Navigator.canPop(dialogContext)) {
+                  Navigator.pop(dialogContext);
+                }
+              });
+            }
+
+            return AlertDialog(
+              title: Text(
+                isFailure
+                    ? 'Sync Failed'
+                    : isSuccess
+                    ? 'Sync Complete'
+                    : 'Syncing Data',
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (isSyncing) const LinearProgressIndicator(),
+                  if (isSyncing || isSuccess) const SizedBox(height: 16),
+                  Text(statusText),
+                  if (isFailure) ...[
+                    const SizedBox(height: 16),
+                    const Icon(Icons.error, color: Colors.red, size: 48),
+                  ] else if (isSuccess) ...[
+                    const SizedBox(height: 16),
+                    const Icon(
+                      Icons.check_circle,
+                      color: Colors.green,
+                      size: 48,
+                    ),
+                  ],
+                ],
+              ),
+              actions: [
+                if (!isSyncing)
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(dialogContext).pop();
+                    },
+                    child: const Text('Close'),
+                  ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    // Run the synchronized process
+    await syncRepo.syncJobScreenData(userId);
   }
 
   void _onStartJobPressed(BuildContext context, DbJob job) async {
     final documentRepo = context.read<DocumentRepository>();
     final loginRepo = context.read<LoginRepository>();
+    final db = context.read<AppDatabase>();
     final userId = loginRepo.loggedInUser?.userId ?? '';
 
     try {
-      await documentRepo.createDocumentFromJob(job: job, userId: userId);
+      final newDocId = await documentRepo.createDocumentFromJob(
+        job: job,
+        userId: userId,
+      );
+
+      if (job.oeeJobId != null) {
+        final testItems = await db.jobTestItemDao.getItemsByOeeJobId(
+          job.oeeJobId!,
+        );
+        for (final item in testItems) {
+          final code = item.testItemId ?? item.testItemName ?? 'Unknown';
+          await documentRepo.addTestSetByQrCode(
+            documentId: newDocId,
+            qrCode: code,
+            userId: userId,
+            rowId: item.rowId,
+            oeeJobId: job.oeeJobId, // <<< Fix: Add oeeJobId
+            testItemName: item.testItemName,
+          );
+        }
+      }
+
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -588,6 +670,15 @@ class _JobScreenState extends State<JobScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Text(
+                                    'Job Name: ${job.jobName ?? '-'}',
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
                                   Row(
                                     children: [
                                       const Icon(

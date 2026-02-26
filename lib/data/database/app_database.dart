@@ -43,6 +43,9 @@ import 'package:bio_oee_lab/data/database/daos/job_test_item_dao.dart';
 import 'package:bio_oee_lab/data/database/tables/human_activity_type_table.dart';
 import 'package:bio_oee_lab/data/database/daos/human_activity_type_dao.dart'; // <<< New
 
+import 'package:bio_oee_lab/data/database/tables/job_activity_table.dart';
+import 'package:bio_oee_lab/data/database/daos/job_activity_dao.dart';
+
 part 'app_database.g.dart';
 
 @DriftDatabase(
@@ -66,6 +69,7 @@ part 'app_database.g.dart';
     MachineSummaryEvents,
     HumanActivityTypes,
     JobTestItems, // <<< New Table
+    JobActivities, // <<< Master Job Activity
   ],
   daos: [
     JobDao,
@@ -80,6 +84,7 @@ part 'app_database.g.dart';
     MachineSummaryDao,
     HumanActivityTypeDao,
     JobTestItemDao, // <<< New Dao
+    JobActivityDao, // <<< Master Job Activity Dao
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -93,7 +98,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   @override
-  int get schemaVersion => 26; // <<< Bump to 26
+  int get schemaVersion => 29; // <<< Bump to 29
 
   // Define the migration strategy.
   @override
@@ -162,6 +167,37 @@ class AppDatabase extends _$AppDatabase {
 
       if (from < 26) {
         await m.createTable(jobTestItems);
+      }
+
+      if (from < 27) {
+        await m.createTable(jobActivities);
+      }
+
+      if (from < 28) {
+        await m.addColumn(jobTestSets, jobTestSets.oeeJobId);
+      }
+
+      if (from < 29) {
+        await m.addColumn(
+          documents,
+          documents.sampleNo as GeneratedColumn<Object>,
+        );
+        await m.addColumn(
+          documents,
+          documents.sampleName as GeneratedColumn<Object>,
+        );
+        await m.addColumn(
+          documents,
+          documents.lotNo as GeneratedColumn<Object>,
+        );
+        await m.addColumn(
+          documents,
+          documents.planAnalysisDate as GeneratedColumn<Object>,
+        );
+        await m.addColumn(
+          documents,
+          documents.assignmentId as GeneratedColumn<Object>,
+        );
       }
     },
   );

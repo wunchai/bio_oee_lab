@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:bio_oee_lab/data/database/app_database.dart';
+import 'package:bio_oee_lab/data/database/daos/activity_log_dao.dart';
 import 'package:bio_oee_lab/data/repositories/activity_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
@@ -291,7 +292,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Machine Activities'),
+        title: const Text('Machine Setup'),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(120),
@@ -390,15 +391,16 @@ class _ActivityScreenState extends State<ActivityScreen> {
           ),
         ],
       ),
-      body: StreamBuilder<List<DbActivityLog>>(
+      body: StreamBuilder<List<ActivityLogWithMachine>>(
         stream: repo.watchMyActivities(
           userId,
           query: _searchQuery,
           status: _selectedStatus,
         ),
         builder: (context, snapshot) {
-          if (snapshot.hasError)
+          if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
+          }
           if (!snapshot.hasData)
             return const Center(child: CircularProgressIndicator());
 
@@ -430,11 +432,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
             itemCount: list.length,
             padding: const EdgeInsets.fromLTRB(8, 8, 8, 80),
             itemBuilder: (context, index) {
-              final item = list[index];
+              final itemWithMachine = list[index];
               return ActivityListItem(
-                item: item,
-                onDelete: () => _deleteActivity(item),
-                onFinish: () => _endActivity(item),
+                item: itemWithMachine,
+                onDelete: () => _deleteActivity(itemWithMachine.log),
+                onFinish: () => _endActivity(itemWithMachine.log),
               );
             },
           );
@@ -452,7 +454,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
 }
 
 class ActivityListItem extends StatefulWidget {
-  final DbActivityLog item;
+  final ActivityLogWithMachine item;
   final VoidCallback onDelete;
   final VoidCallback onFinish;
 
@@ -472,7 +474,8 @@ class _ActivityListItemState extends State<ActivityListItem> {
 
   @override
   Widget build(BuildContext context) {
-    final item = widget.item;
+    final item = widget.item.log;
+    final machine = widget.item.machine;
     final start = DateTime.tryParse(item.startTime ?? '');
     final duration = start != null
         ? DateTime.now().difference(start)
@@ -505,6 +508,14 @@ class _ActivityListItemState extends State<ActivityListItem> {
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (machine?.machineName != null)
+                Text(
+                  machine!.machineName!,
+                  style: TextStyle(
+                    color: Colors.blue.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               Text(
                 'Started: ${start != null ? DateFormat('dd/MM/yyyy HH:mm').format(start) : '-'} ($durationStr)',
               ),

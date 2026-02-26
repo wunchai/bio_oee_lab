@@ -17,12 +17,16 @@ class ActivityRepository extends ChangeNotifier {
        _apiService = apiService ?? ActivityApiService();
 
   // Stream สำหรับแสดงรายการหน้าจอ
-  Stream<List<DbActivityLog>> watchMyActivities(
+  Stream<List<ActivityLogWithMachine>> watchMyActivities(
     String userId, {
     String? query,
     int? status,
   }) {
-    return _dao.watchActivities(userId, query: query, status: status);
+    return _dao.watchActivitiesWithMachine(
+      userId,
+      query: query,
+      status: status,
+    );
   }
 
   // 🟢 เริ่มกิจกรรม (Start)
