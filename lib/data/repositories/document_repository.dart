@@ -31,6 +31,34 @@ class DocumentRepository {
     required String userId,
   }) async {
     try {
+      // 1. เช็คว่ามี Machine นี้กำลังทำงานอยู่แล้วหรือไม่ (Status = 0)
+      final existingMachine = await _runningJobDetailsDao
+          .select(_runningJobDetailsDao.runningJobMachines)
+          .get()
+          .then(
+            (list) => list.where((m) => m.machineNo == qrCode && m.status == 0),
+          );
+
+      if (existingMachine.isNotEmpty) {
+        throw Exception(
+          'Machine "$qrCode" is already active. Please End its event before adding again.',
+        );
+      }
+
+      // 1.5 เช็คว่า Machine นี้มีกิจกรรม Setup/Clean ค้างอยู่หรือไม่ (Status = 1)ใน DbActivityLog
+      final existingActivity = await _activityLogDao
+          .select(_activityLogDao.activityLogs)
+          .get()
+          .then(
+            (list) => list.where((a) => a.machineNo == qrCode && a.status == 1),
+          );
+
+      if (existingActivity.isNotEmpty) {
+        throw Exception(
+          'Machine "$qrCode" is currently in a Setup/Clean activity. Please finish the activity in the Machine Setup screen before adding it to a job.',
+        );
+      }
+
       final now = DateTime.now().toIso8601String();
       final newRecId = const Uuid().v4(); // สร้าง ID ใหม่
 
@@ -598,6 +626,68 @@ class DocumentRepository {
         recordVersion: const drift.Value(0),
       ),
     );
+
+    // 3. ปรับ Status ของ Machine เป็น 1 (จบงาน) ถ้าเป็นการกด Event End
+    // 3. ปรับ Status ของ Machine เป็น 1 (จบงาน) ถ้าเป็นการกด Event End
+    if (activityType == 'Event End' || activityType == 'End') {
+      await _runningJobDetailsDao.finishRunningJobMachine(machineRecId);
+    }
+  }
+
+  Future<void> addMachineEventWithTime({
+    required String machineRecId,
+    required String activityType, // 'Start' or 'Breakdown'
+    required String userId,
+    required String startTime,
+  }) async {
+    final nowStr = startTime;
+
+    // 1. Close previous open event (if any)
+    final lastLog = await _runningJobDetailsDao.getLastOpenMachineLog(
+      machineRecId,
+    );
+
+    if (lastLog != null) {
+      // Close it
+      final closedLog = lastLog.copyWith(
+        endTime: drift.Value(nowStr),
+        recordVersion: DateTime.now().millisecondsSinceEpoch, // Update version
+        syncStatus: 0, // Mark for sync
+        // Note: recordUserId remains unchanged as per requirement
+      );
+      await _runningJobDetailsDao.updateMachineLog(closedLog);
+    }
+
+    // 2. Insert New Log
+    // If Start -> Open (endTime null)
+    // If Stop/Breakdown -> Closed (endTime = startTime)
+    final isTerminal =
+        activityType == 'Stop' ||
+        activityType == 'Breakdown' ||
+        activityType == 'End';
+
+    await _runningJobDetailsDao.insertMachineLog(
+      JobMachineEventLogsCompanion(
+        recId: drift.Value(const Uuid().v4()),
+        jobMachineRecId: drift.Value(machineRecId),
+        recordUserId: drift.Value(userId), // Save UserID
+        startTime: drift.Value(nowStr),
+        eventType: drift.Value(
+          activityType,
+        ), // Save event type (Start/Breakdown)
+        endTime: drift.Value(
+          isTerminal ? nowStr : null,
+        ), // Close immediately if terminal
+        status: const drift.Value(1), // 1=Active
+        syncStatus: const drift.Value(0),
+        recordVersion: const drift.Value(0),
+      ),
+    );
+
+    // 3. ปรับ Status ของ Machine เป็น 1 (จบงาน) ถ้าเป็นการกด Event End
+    if (activityType == 'Event End' || activityType == 'End') {
+      await _runningJobDetailsDao.finishRunningJobMachine(machineRecId);
+    }
   }
 
   Future<void> addMachineItem({

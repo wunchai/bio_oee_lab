@@ -4,8 +4,6 @@ import 'dart:async';
 import 'dart:io'; // For SocketException
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
-
-// ⚠️ แก้ชื่อ 'bio_oee_lab' ให้เป็นชื่อโปรเจกต์ของคุณ
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/core/app_config.dart';
 import 'package:bio_oee_lab/data/models/user_sync_page.dart';
@@ -98,7 +96,9 @@ class SyncApiService {
 
       if (response.statusCode == 200) {
         // เราคาดหวังว่า Server จะส่ง JSON List `[...]` กลับมา
-        final List<dynamic> jsonResponse = jsonDecode(response.body);
+        final List<dynamic> jsonResponse = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
 
         try {
           // แปลง JSON แต่ละก้อนใน List ให้เป็น DbUser

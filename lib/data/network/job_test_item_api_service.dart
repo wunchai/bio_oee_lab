@@ -41,7 +41,9 @@ class JobTestItemApiService {
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
 
         // Debug full response if needed
         // if (kDebugMode) print(utf8.decode(response.bodyBytes));

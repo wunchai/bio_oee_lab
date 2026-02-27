@@ -9,11 +9,13 @@ import 'package:bio_oee_lab/data/network/activity_api_service.dart';
 class ActivityRepository extends ChangeNotifier {
   final ActivityLogDao _dao;
   final ActivityApiService _apiService;
+  final AppDatabase _db; // Added to access other tables
 
   ActivityRepository({
     required AppDatabase appDatabase,
     ActivityApiService? apiService,
   }) : _dao = appDatabase.activityLogDao,
+       _db = appDatabase,
        _apiService = apiService ?? ActivityApiService();
 
   // Stream สำหรับแสดงรายการหน้าจอ
@@ -37,6 +39,36 @@ class ActivityRepository extends ChangeNotifier {
     String? remark,
   }) async {
     try {
+      // 1. Check if this machine already has an active activity (Status = 1)
+      final existingActiveActivities = await _dao
+          .select(_dao.activityLogs)
+          .get()
+          .then(
+            (list) =>
+                list.where((a) => a.machineNo == machineNo && a.status == 1),
+          );
+
+      if (existingActiveActivities.isNotEmpty) {
+        throw Exception(
+          'Machine "$machineNo" is already active. Please finish or delete its current activity before starting a new one.',
+        );
+      }
+
+      // 2. Check if this machine is already actively running a job (status = 0 in DbRunningJobMachine)
+      final existingRunningJobs = await _db.runningJobDetailsDao
+          .select(_db.runningJobMachines)
+          .get()
+          .then(
+            (list) =>
+                list.where((m) => m.machineNo == machineNo && m.status == 0),
+          );
+
+      if (existingRunningJobs.isNotEmpty) {
+        throw Exception(
+          'Machine "$machineNo" is already running a job. Please add an "Event End" in the Machine Dashboard or delete the draft before starting a setup/clean activity.',
+        );
+      }
+
       final now = DateTime.now().toIso8601String();
       final newId = const Uuid().v4();
 
@@ -56,6 +88,42 @@ class ActivityRepository extends ChangeNotifier {
       if (kDebugMode) print('Started Activity: $activityType on $machineNo');
     } catch (e) {
       if (kDebugMode) print('Error starting activity: $e');
+      rethrow;
+    }
+  }
+
+  // 🟢 เริ่มกิจกรรมแบบกำหนดเวลา (Auto Finish)
+  Future<void> startActivityWithTime({
+    required String machineNo,
+    required String activityType, // "Clean"
+    required String userId,
+    required String startTime,
+    required String endTime,
+    String? remark,
+  }) async {
+    try {
+      final newId = const Uuid().v4();
+
+      final entry = ActivityLogsCompanion(
+        recId: drift.Value(newId),
+        machineNo: drift.Value(machineNo),
+        activityType: drift.Value(activityType),
+        operatorId: drift.Value(userId),
+        startTime: drift.Value(startTime),
+        endTime: drift.Value(endTime),
+        status: const drift.Value(2), // 2 = Finished
+        remark: drift.Value(remark),
+        syncStatus: const drift.Value(0),
+        recordVersion: const drift.Value(0),
+      );
+
+      await _dao.insertActivity(entry);
+      if (kDebugMode)
+        print(
+          'Auto-Started and Finished Activity: $activityType on $machineNo',
+        );
+    } catch (e) {
+      if (kDebugMode) print('Error in startActivityWithTime: $e');
       rethrow;
     }
   }

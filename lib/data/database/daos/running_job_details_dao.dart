@@ -113,14 +113,22 @@ class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
 
   // Watch All Active Machines with Master Details (Joined)
   Stream<List<MachineWithDetails>> watchAllActiveMachinesWithDetails() {
-    final query = select(runningJobMachines).join([
-      leftOuterJoin(
-        machines,
-        machines.machineNo.equalsExp(runningJobMachines.machineNo) |
-            machines.machineId.equalsExp(runningJobMachines.machineNo) |
-            machines.barcodeGuid.equalsExp(runningJobMachines.machineNo),
-      ),
-    ])..where(runningJobMachines.status.isNotValue(9));
+    final query =
+        select(runningJobMachines).join([
+            leftOuterJoin(
+              machines,
+              machines.machineNo.equalsExp(runningJobMachines.machineNo) |
+                  machines.machineId.equalsExp(runningJobMachines.machineNo) |
+                  machines.barcodeGuid.equalsExp(runningJobMachines.machineNo),
+            ),
+          ])
+          ..where(runningJobMachines.status.isNotValue(9))
+          ..orderBy([
+            OrderingTerm(
+              expression: runningJobMachines.uid,
+              mode: OrderingMode.desc,
+            ),
+          ]);
 
     return query.watch().map((rows) {
       return rows.map((row) {
@@ -150,6 +158,19 @@ class RunningJobDetailsDao extends DatabaseAccessor<AppDatabase>
     )..where((t) => t.recId.equals(recId))).write(
       RunningJobMachinesCompanion(
         status: const Value(9),
+        syncStatus: const Value(0),
+        recordVersion: Value(DateTime.now().millisecondsSinceEpoch),
+      ),
+    );
+  }
+
+  // Finish Running Job Machine (Set Status to 1)
+  Future<void> finishRunningJobMachine(String recId) {
+    return (update(
+      runningJobMachines,
+    )..where((t) => t.recId.equals(recId))).write(
+      RunningJobMachinesCompanion(
+        status: const Value(1),
         syncStatus: const Value(0),
         recordVersion: Value(DateTime.now().millisecondsSinceEpoch),
       ),

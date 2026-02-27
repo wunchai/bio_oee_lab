@@ -18,6 +18,7 @@ class MachineDashboardScreen extends StatefulWidget {
 class _MachineDashboardScreenState extends State<MachineDashboardScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  bool _showEndedMachines = false;
 
   @override
   void dispose() {
@@ -45,8 +46,24 @@ class _MachineDashboardScreenState extends State<MachineDashboardScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                SizedBox(width: 8),
+                Text('Cannot Add Machine'),
+              ],
+            ),
+            content: Text(e.toString().replaceAll('Exception: ', '')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
         );
       }
     }
@@ -205,6 +222,15 @@ class _MachineDashboardScreenState extends State<MachineDashboardScreen> {
       appBar: AppBar(
         title: const Text('Machine Job Dashboard'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              setState(() {});
+            },
+            tooltip: 'Refresh',
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
@@ -220,6 +246,27 @@ class _MachineDashboardScreenState extends State<MachineDashboardScreen> {
                 decoration: InputDecoration(
                   hintText: 'Search Active Machine...',
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.qr_code_scanner,
+                      color: Colors.purple,
+                    ),
+                    onPressed: () async {
+                      final result = await Navigator.push<String>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ScannerScreen(),
+                        ),
+                      );
+                      if (result != null && result.isNotEmpty) {
+                        setState(() {
+                          _searchController.text = result;
+                          _searchQuery = result;
+                        });
+                      }
+                    },
+                    tooltip: 'Scan Machine QR to Search',
+                  ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 10),
                 ),
@@ -275,6 +322,29 @@ class _MachineDashboardScreenState extends State<MachineDashboardScreen> {
             ),
           ),
 
+          // Filter Checkbox
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Text(
+                  'Show Ended (Status 1)',
+                  style: TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+                Checkbox(
+                  value: _showEndedMachines,
+                  activeColor: Colors.purple,
+                  onChanged: (val) {
+                    setState(() {
+                      _showEndedMachines = val ?? false;
+                    });
+                  },
+                ),
+              ],
+            ),
+          ),
+
           // 2. Active Machines List
           Expanded(
             child: StreamBuilder<List<MachineWithDetails>>(
@@ -285,6 +355,13 @@ class _MachineDashboardScreenState extends State<MachineDashboardScreen> {
                   return const Center(child: CircularProgressIndicator());
 
                 var items = snapshot.data!;
+
+                // Filter by ended status
+                if (!_showEndedMachines) {
+                  items = items
+                      .where((m) => m.runningMachine.status == 0)
+                      .toList();
+                }
 
                 // Filter by search query
                 if (_searchQuery.isNotEmpty) {

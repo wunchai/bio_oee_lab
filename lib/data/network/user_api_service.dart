@@ -7,9 +7,9 @@ import 'package:flutter/foundation.dart';
 
 // ⚠️ แก้ชื่อ 'bio_oee_lab' ให้เป็นชื่อโปรเจกต์ของคุณ
 import 'package:bio_oee_lab/core/app_config.dart';
-import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/database/tables/user_table.dart';
 import 'package:bio_oee_lab/data/models/login_result.dart';
+import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/models/package_data.dart';
 import 'package:bio_oee_lab/data/models/logged_in_user.dart';
 
@@ -56,7 +56,9 @@ class UserApiService {
         }
 
         // --- 3.1 สำเร็จ (Success) ---
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
 
         // ⬇️⬇️⬇️ --- เริ่มส่วนที่แก้ไข --- ⬇️⬇️⬇️
         try {

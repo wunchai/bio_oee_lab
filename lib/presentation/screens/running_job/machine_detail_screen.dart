@@ -5,6 +5,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:bio_oee_lab/data/database/app_database.dart';
 import 'package:bio_oee_lab/data/repositories/document_repository.dart';
 import 'package:bio_oee_lab/data/repositories/login_repository.dart';
+import 'package:bio_oee_lab/data/repositories/activity_repository.dart';
 import 'package:bio_oee_lab/presentation/widgets/scanner_screen.dart';
 
 class MachineDetailScreen extends StatefulWidget {
@@ -119,7 +120,64 @@ class _MachineDetailScreenState extends State<MachineDetailScreen>
         final repo = context.read<DocumentRepository>();
         final loginRepo = context.read<LoginRepository>();
         final userId = loginRepo.loggedInUser?.userId ?? 'Unknown';
+        final db = Provider.of<AppDatabase>(context, listen: false);
 
+        if (result == 'Event End') {
+          // Check if there is already a 'Start' event
+          final logs = await db.runningJobDetailsDao
+              .watchMachineLogs(widget.machine.recId)
+              .first;
+          final hasStart = logs
+              .where((l) => l.status != 9)
+              .any((l) => l.eventType == 'Start');
+
+          if (!hasStart) {
+            // Show dialog to input Start and Clean times
+            final times = await _showMissingStartDialog();
+            if (times == null) {
+              return; // User cancelled
+            }
+
+            final startDateTimeStr = times['startDateTime']!;
+            final cleanDateTimeStr = times['cleanDateTime']!;
+
+            // 1. Add Start Event at chosen start time
+            await repo.addMachineEventWithTime(
+              machineRecId: widget.machine.recId,
+              activityType: 'Start',
+              userId: userId,
+              startTime: startDateTimeStr,
+            );
+
+            // 2. Add Event End (current time handles normally in repo, but we might want them consecutive)
+            // Using standard repo method (will use DateTime.now() if not modified, or we can pass cleanDateTimeStr)
+            await repo.addMachineEvent(
+              machineRecId: widget.machine.recId,
+              activityType: 'Event End',
+              userId: userId,
+            );
+
+            // 3. Add Clean Event in DbActivityLog
+            final activityRepo = context.read<ActivityRepository>();
+            await activityRepo.startActivityWithTime(
+              machineNo: widget.machine.machineNo ?? '',
+              activityType: 'Clean',
+              userId: userId,
+              startTime: startDateTimeStr,
+              endTime: cleanDateTimeStr,
+              remark: 'Auto-generated from Event End',
+            );
+
+            if (mounted) {
+              _showFloatingSnackBar(
+                'Auto-recorded Start, Event End, and Clean for ${widget.machine.machineNo}',
+              );
+            }
+            return;
+          }
+        }
+
+        // Normal flow for other events or if Start already exists
         await repo.addMachineEvent(
           machineRecId: widget.machine.recId,
           activityType: result,
@@ -137,6 +195,145 @@ class _MachineDetailScreenState extends State<MachineDetailScreen>
         }
       }
     }
+  }
+
+  Future<Map<String, String>?> _showMissingStartDialog() async {
+    DateTime selectedStartDate = DateTime.now();
+    TimeOfDay selectedStartTime = TimeOfDay.now();
+
+    DateTime selectedCleanDate = DateTime.now();
+    TimeOfDay selectedCleanTime = TimeOfDay.now();
+
+    return await showDialog<Map<String, String>>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            Future<void> pickStartDateTime() async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: selectedStartDate,
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+              );
+              if (date == null) return;
+              if (!mounted) return;
+              final time = await showTimePicker(
+                context: context,
+                initialTime: selectedStartTime,
+              );
+              if (time == null) return;
+
+              setState(() {
+                selectedStartDate = date;
+                selectedStartTime = time;
+              });
+            }
+
+            Future<void> pickCleanDateTime() async {
+              final date = await showDatePicker(
+                context: context,
+                initialDate: selectedCleanDate,
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+              );
+              if (date == null) return;
+              if (!mounted) return;
+              final time = await showTimePicker(
+                context: context,
+                initialTime: selectedCleanTime,
+              );
+              if (time == null) return;
+
+              setState(() {
+                selectedCleanDate = date;
+                selectedCleanTime = time;
+              });
+            }
+
+            final startStr =
+                DateFormat('yyyy-MM-dd').format(selectedStartDate) +
+                ' ' +
+                selectedStartTime.format(context);
+            final cleanStr =
+                DateFormat('yyyy-MM-dd').format(selectedCleanDate) +
+                ' ' +
+                selectedCleanTime.format(context);
+
+            return AlertDialog(
+              title: const Text(
+                'Missing Start Event',
+                style: TextStyle(color: Colors.orange),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'This machine has no "Start" event. Please provide the Start and Clean times.',
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Start Time:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(startStr),
+                      trailing: const Icon(Icons.calendar_today),
+                      onTap: pickStartDateTime,
+                    ),
+                    const Divider(),
+                    const Text(
+                      'Clean Finish Time:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(cleanStr),
+                      trailing: const Icon(Icons.calendar_today),
+                      onTap: pickCleanDateTime,
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx, null),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    final startDateTime = DateTime(
+                      selectedStartDate.year,
+                      selectedStartDate.month,
+                      selectedStartDate.day,
+                      selectedStartTime.hour,
+                      selectedStartTime.minute,
+                    );
+                    final cleanDateTime = DateTime(
+                      selectedCleanDate.year,
+                      selectedCleanDate.month,
+                      selectedCleanDate.day,
+                      selectedCleanTime.hour,
+                      selectedCleanTime.minute,
+                    );
+
+                    Navigator.pop(ctx, {
+                      'startDateTime': startDateTime.toIso8601String(),
+                      'cleanDateTime': cleanDateTime.toIso8601String(),
+                    });
+                  },
+                  child: const Text('Save Events'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   // --- Add Test Set to Machine ---

@@ -41,7 +41,9 @@ class JobActivityApiService {
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
 
         final int totalPages =
             jsonResponse['TotalPages'] ?? jsonResponse['totalPages'] ?? 0;

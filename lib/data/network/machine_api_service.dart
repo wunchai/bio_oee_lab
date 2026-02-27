@@ -40,7 +40,9 @@ class MachineApiService {
           .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
 
         if (kDebugMode) {
           print('--- MachineSync API RESPONSE (Page $pageIndex) ---');
@@ -120,7 +122,9 @@ class MachineApiService {
           .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+        final Map<String, dynamic> jsonResponse = jsonDecode(
+          utf8.decode(response.bodyBytes),
+        );
 
         if (kDebugMode) {
           print('--- MachineSummary API RESPONSE ---');

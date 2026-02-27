@@ -72,7 +72,7 @@ class CheckInApiService {
       );
 
       if (response.statusCode == 200) {
-        final jsonResponse = jsonDecode(response.body);
+        final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
         final execResult =
             jsonResponse['ExecResult'] ?? jsonResponse['execResult'];
         final dataList = jsonResponse['Data'] ?? jsonResponse['data'];

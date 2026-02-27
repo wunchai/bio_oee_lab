@@ -41,7 +41,7 @@ class JobSyncApiService {
   // Helper to parse response
   List<JobSyncResult> _parseResponse(http.Response response) {
     if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
+      final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
       final execResult =
           jsonResponse['ExecResult'] ?? jsonResponse['execResult'];
       final dataList = jsonResponse['Data'] ?? jsonResponse['data'];
@@ -98,6 +98,11 @@ class JobSyncApiService {
               "cancleDate":
                   item.cancelDate, // Note: API might expect 'cancleDate'
               "deleteDate": item.deleteDate,
+              "sampleNo": item.sampleNo,
+              "sampleName": item.sampleName,
+              "lotNo": item.lotNo,
+              "planAnalysisDate": item.planAnalysisDate,
+              "assignmentId": item.assignmentId,
               "recordVersion": item.recordVersion,
             },
           )
@@ -141,6 +146,8 @@ class JobSyncApiService {
               "documentId": item.documentId,
               "userId": item.userId,
               "activityId": item.activityId,
+              "activityName": item.activityName,
+              "jobTestSetRecId": item.jobTestSetRecId,
               "startTime": item.startTime,
               "endTime": item.endTime,
               "status": item.status,
@@ -185,6 +192,9 @@ class JobSyncApiService {
               "recId": item.recId,
               "documentId": item.documentId,
               "setItemNo": item.setItemNo,
+              "oeeJobId": item.oeeJobId,
+              "rowId": item.rowId,
+              "testItemName": item.testItemName,
               "registerDateTime": item.registerDateTime,
               "registerUser": item.registerUser,
               "status": item.status,
@@ -277,6 +287,7 @@ class JobSyncApiService {
               "recordUserId": item.recordUserId,
               "startTime": item.startTime,
               "endTime": item.endTime,
+              "eventType": item.eventType,
               "status": item.status,
               "recordVersion": item.recordVersion,
             },
